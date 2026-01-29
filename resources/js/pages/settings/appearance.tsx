@@ -1,0 +1,39 @@
+import { Head } from '@inertiajs/react';
+
+import AppearanceTabs from '@/components/appearance-tabs';
+import HeadingSmall from '@/components/heading-small';
+import { type BreadcrumbItem } from '@/types';
+
+import AppLayout from '@/layouts/app-layout';
+import SettingsLayout from '@/layouts/settings/layout';
+import { edit as editAppearance } from '@/routes/appearance';
+import { useTranslation } from 'react-i18next';
+
+export default function Appearance() {
+    const { t } = useTranslation();
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('appearance_settings'),
+            href: editAppearance().url,
+        },
+    ];
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title={t('appearance_settings')} />
+
+            <h1 className="sr-only">{t('appearance_settings')}</h1>
+
+            <SettingsLayout>
+                <div className="space-y-6">
+                    <HeadingSmall
+                        title={t('appearance_settings')}
+                        description={t('update_account_appearance')}
+                    />
+                    <AppearanceTabs />
+                </div>
+            </SettingsLayout>
+        </AppLayout>
+    );
+}

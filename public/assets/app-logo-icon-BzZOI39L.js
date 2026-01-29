@@ -1,0 +1,1 @@
+import{c as n,j as e}from"./app-foyV2SfS.js";function i(o){const t=n.c(3),c=`object-contain brightness-110 contrast-110 ${o.className||""}`;let s;return t[0]!==o||t[1]!==c?(s=e.jsx("img",{...o,src:"/favicon.jpg",alt:"Logo",className:c}),t[0]=o,t[1]=c,t[2]=s):s=t[2],s}export{i as A};
