@@ -9,6 +9,9 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Copy custom PHP INI files
+COPY docker/php/*.ini /usr/local/etc/php/conf.d/
+
 # Install PHP deps via Composer (cache layer)
 COPY composer.json composer.lock* ./
 RUN if [ -f composer.json ]; then composer install --no-dev --optimize-autoloader --no-interaction --no-progress || true; fi
