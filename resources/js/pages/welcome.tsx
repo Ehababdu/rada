@@ -1,4 +1,5 @@
 import LanguageSwitcher from '@/components/language-switcher';
+import { Button } from '@/components/ui/button';
 import { dashboard, login, register } from '@/routes';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -136,45 +137,7 @@ export default function Welcome({ canRegister = true, app_title, app_description
                 </div>
             </footer>
 
-            {/* إضافة انيميشن بسيط للشعار */}
-            <style dangerouslySetInnerHTML={{ __html: `
-                @keyframes float {
-                    0% { transform: translateY(0px); }
-                    50% { transform: translateY(-10px); }
-                    100% { transform: translateY(0px); }
-                }
-                .animate-float {
-                    animation: float 4s ease-in-out infinite;
-                }
-            `}} />
+            {/* animation moved to global CSS */}
         </div>
-    );
-}
-
-// Button Component
-function Button({ className, variant = 'default', size = 'default', asChild, ...props }: any) {
-    const Component = asChild ? 'span' : 'button';
-    
-    const variants = {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        outline: "border border-input bg-background hover:bg-accent",
-    };
-
-    const sizes = {
-        default: "h-9 px-4",
-        lg: "h-11 px-8",
-        xl: "h-12 px-8 text-lg",
-    };
-
-    return (
-        <Component 
-            className={cn(
-                "inline-flex items-center justify-center rounded-xl transition-all active:scale-95 disabled:opacity-50", 
-                variants[variant as keyof typeof variants],
-                sizes[size as keyof typeof sizes],
-                className
-            )} 
-            {...props} 
-        />
     );
 }
