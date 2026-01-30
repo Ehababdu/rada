@@ -21,7 +21,7 @@ class AttachmentTypePermissionTest extends TestCase
     public function test_user_with_permission_can_access_attachment_types_index()
     {
         $user = User::factory()->create();
-        $permission = Permission::where('name', 'attachment-types.view')->first();
+        $permission = Permission::firstOrCreate(['name' => 'attachment-types.view']);
         $user->givePermissionTo($permission);
 
         $response = $this->actingAs($user)->get('/attachment-types');

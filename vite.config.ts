@@ -1,4 +1,7 @@
+import { wayfinder } from '@laravel/vite-plugin-wayfinder';
+// @ts-expect-error
 import tailwindcss from '@tailwindcss/vite';
+// @ts-expect-error
 import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
@@ -17,9 +20,9 @@ export default defineConfig({
             },
         }),
         tailwindcss(),
-        // wayfinder({
-        //     formVariants: true,
-        // }),
+        wayfinder({
+            formVariants: true,
+        }),
     ],
     server: {
         host: '127.0.0.1',
