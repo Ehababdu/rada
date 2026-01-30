@@ -1,8 +1,4 @@
-// @ts-ignore
-import { wayfinder } from '@laravel/vite-plugin-wayfinder';
-// @ts-ignore
 import tailwindcss from '@tailwindcss/vite';
-// @ts-ignore
 import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';

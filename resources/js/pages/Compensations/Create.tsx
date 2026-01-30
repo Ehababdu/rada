@@ -61,7 +61,7 @@ export default function Create({ martyrs, selectedMartyr }: Props) {
         if (!currentMartyr) return { total: 0, items: [], base: 0 };
         
         const activePrice = isCustomAmount ? unitPrice : 500;
-        let items = [];
+        const items = [];
         let baseAmount = 0;
 
         if (currentMartyr.children_count > 0) {
