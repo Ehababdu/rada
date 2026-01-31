@@ -6,6 +6,7 @@
         "build": "vite build",
         "build:ssr": "vite build && vite build --ssr",
         "dev": "vite",
+        "dev:root": "sudo docker exec -u root laravel.test npm run dev",
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",

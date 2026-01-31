@@ -15,23 +15,20 @@ export default defineConfig({
             refresh: true,
         }),
         react({
-            babel: {
-                plugins: ['babel-plugin-react-compiler'],
-            },
         }),
         tailwindcss(),
-        wayfinder({
-            formVariants: true,
-        }),
+        // wayfinder({
+        //     formVariants: true,
+        // }),
     ],
     server: {
         host: '0.0.0.0',
+        port: 5173,
         hmr: {
             host: 'localhost',
         },
     },
     esbuild: {
-        jsx: 'automatic',
     },
     resolve: {
         alias: {

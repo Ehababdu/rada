@@ -4,6 +4,7 @@
     "manage_attachment_types": "إدارة أنواع المرفقات",
     "active": "نشط",
     "dataTable.export": "تصدير إكسيل",
+    "martyrs.enter_decision_number": "أدخل رقم القرار",
     "navigation.attachment-types": "أنواع المرفقات",
     "all_rights_reserved": "جميع الحقوق محفوظة.",
     "dataTable.view": "عرض",
@@ -18,6 +19,7 @@
     "columns_visibility": "رؤية الأعمدة",
     "no_results": "لا توجد نتائج",
     "showing": "عرض",
+    "test_hot_reload": "اختبار Hot Reload يعمل الآن بشكل مثالي! ✅",
     "of": "من",
     "save_promotion": "حفظ الترقية",
     "advanced_filters": "الفلاتر المتقدمة",
@@ -432,6 +434,7 @@
     "martyrs": {
         "actions": "الإجراءات",
         "add_new": "إضافة شهيد جديد",
+        "enter_decision_number": "أدخل رقم القرار",
         "employer_location": "مكان جهة العمل",
         "select_employer_location": "اختر مكان جهة العمل",
         "has_previous_workplace": "لديه مكان عمل سابق",

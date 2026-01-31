@@ -3,7 +3,6 @@ import './i18n';
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
 
@@ -20,9 +19,7 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <StrictMode>
-                <App {...props} />
-            </StrictMode>,
+            <App {...props} />
         );
     },
     progress: {
