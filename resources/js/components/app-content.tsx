@@ -12,10 +12,7 @@ export function AppContent({
 }: AppContentProps) {
     if (variant === 'sidebar') {
         return (
-            <SidebarInset
-                className="overflow-x-hidden"
-                {...props}
-            >
+            <SidebarInset className="overflow-x-hidden" {...props}>
                 {children}
             </SidebarInset>
         );

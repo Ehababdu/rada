@@ -1446,7 +1446,11 @@ export default function Edit({
                             {previewUrl && (
                                 <div className="mb-3">
                                     <img
-                                        src={previewUrl.startsWith('blob:') ? previewUrl : `/storage/${previewUrl}`}
+                                        src={
+                                            previewUrl.startsWith('blob:')
+                                                ? previewUrl
+                                                : `/storage/${previewUrl}`
+                                        }
                                         alt="profile"
                                         className="h-28 w-28 rounded-md border object-cover"
                                     />

@@ -174,9 +174,7 @@ export function DataTable<TData, TValue>({
           <div className="flex-1 text-sm text-muted-foreground">
             {enablePagination ? (
               `Showing ${((currentPage || 1) - 1) * (pageSize || 10) + 1} to ${Math.min((currentPage || 1) * (pageSize || 10), totalItems || 0)} of ${totalItems || 0} entries`
-            ) : (
-              `${table.getFilteredSelectedRowModel().rows.length} of ${table.getFilteredRowModel().rows.length} row(s) selected.`
-            )}
+            ) : null}
           </div>
           <div className="flex items-center space-x-2">
             {enablePagination && pageSizeOptions && onPageSizeChange && (
@@ -199,50 +197,6 @@ export function DataTable<TData, TValue>({
                 </select>
               </div>
             )}
-            <div className="space-x-2">
-              {enablePagination ? (
-                <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onPageChange?.((currentPage || 1) - 1)}
-                    disabled={(currentPage || 1) <= 1}
-                  >
-                    Previous
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    Page {currentPage || 1} of {totalPages || 1}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onPageChange?.((currentPage || 1) + 1)}
-                    disabled={(currentPage || 1) >= (totalPages || 1)}
-                  >
-                    Next
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                  >
-                    Next
-                  </Button>
-                </>
-              )}
-            </div>
           </div>
         </div>
       )}

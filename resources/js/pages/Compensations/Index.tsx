@@ -2,7 +2,7 @@ import { usePermissions } from '@/hooks/use-permissions';
 import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
-import { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Shadcn UI Components
@@ -20,6 +20,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -28,11 +37,19 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover';
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
+    ScrollArea,
+} from '@/components/ui/scroll-area';
 import {
     Select,
     SelectContent,
@@ -41,13 +58,15 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { DataTable } from '@/components/ui/data-table';
 
 // Icons
 import {
@@ -66,11 +85,6 @@ import {
 
 import {
     ColumnDef,
-    createColumnHelper,
-    flexRender,
-    getCoreRowModel,
-    SortingState,
-    useReactTable,
 } from '@tanstack/react-table';
 
 // --- Interfaces ---
@@ -89,6 +103,13 @@ interface Martyr {
     national_id: string;
 }
 
+interface Filters {
+    search?: string;
+    martyr_id?: string;
+    parents_status_id?: string;
+    employment_status_id?: string;
+}
+
 interface Props {
     compensations: {
         data: Compensation[];
@@ -96,15 +117,15 @@ interface Props {
         from: number;
         to: number;
         last_page: number;
+        current_page: number;
+        per_page: number;
         links: { url: string | null; label: string; active: boolean }[];
     };
     martyrs: Martyr[];
     parentsStatuses: { id: number; name_ar: string; name_en: string }[];
     employmentStatuses: { id: number; name: string }[];
-    filters: any;
+    filters: Filters;
 }
-
-const columnHelper = createColumnHelper<Compensation>();
 
 export default function Index({
     compensations,
@@ -118,31 +139,59 @@ export default function Index({
     const { toast } = useToast();
     const { can } = usePermissions('compensations');
 
-    // States
-    const [search, setSearch] = useState(filters.search || '');
-    const [selectedMartyr, setSelectedMartyr] = useState(
-        filters.martyr_id && filters.martyr_id !== ''
-            ? filters.martyr_id
-            : 'all',
-    );
-    const [pStatus, setPStatus] = useState(
-        filters.parents_status_id && filters.parents_status_id !== ''
-            ? filters.parents_status_id
-            : 'all',
-    );
-    const [eStatus, setEStatus] = useState(
-        filters.employment_status_id && filters.employment_status_id !== ''
-            ? filters.employment_status_id
-            : 'all',
-    );
-    const [sorting, setSorting] = useState<SortingState>([]);
-    const [deleteId, setDeleteId] = useState<number | null>(null);
+    const canViewDetails = can('canRead');
+    const canUpdate = can('canUpdate');
+    const canDelete = can('canDelete');
+    const canCreate = can('canCreate');
 
-    const columns = useMemo<ColumnDef<Compensation, any>[]>(
+    // State
+    const [localFilters, setLocalFilters] = useState<Filters>(filters);
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState<number | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    // Filter Logic
+    const handleFilterChange = (key: keyof Filters, value: string) => {
+        const newValue = value === 'all' ? '' : value;
+        setLocalFilters((prev) => ({ ...prev, [key]: newValue }));
+    };
+
+    const cleanFilters = (f: Filters) => {
+        return Object.entries(f).reduce<Record<string, string>>(
+            (acc, [k, v]) => {
+                if (v && v.trim() !== '') acc[k] = v;
+                return acc;
+            },
+            {},
+        );
+    };
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            router.get('/compensations', cleanFilters(localFilters), {
+                preserveState: true,
+                preserveScroll: true,
+            });
+        }, 300);
+        return () => clearTimeout(timeout);
+    }, [localFilters]);
+
+    const clearFilters = () => {
+        setLocalFilters({});
+        router.get(
+            '/compensations',
+            {},
+            { preserveState: true, preserveScroll: true },
+        );
+    };
+
+    const columns = useMemo<ColumnDef<Compensation>[]>(
         () => [
-            columnHelper.accessor('martyr_name', {
+            {
+                id: 'martyr_name',
+                accessorKey: 'martyr_name',
                 header: t('compensations.martyr_name'),
-                cell: ({ row }) => (
+                cell: ({ row }: { row: { original: Compensation } }) => (
                     <div className="flex items-center gap-3 font-medium">
                         <UserCircle className="h-8 w-8 text-muted-foreground/50" />
                         <div className="grid gap-0.5">
@@ -155,18 +204,22 @@ export default function Index({
                         </div>
                     </div>
                 ),
-            }),
-            columnHelper.accessor('military_rank', {
+            },
+            {
+                id: 'military_rank',
+                accessorKey: 'military_rank',
                 header: t('martyrs.military_rank'),
-                cell: ({ row }) => (
+                cell: ({ row }: { row: { original: Compensation } }) => (
                     <Badge variant="secondary" className="rounded-md">
                         {row.original.military_rank || '-'}
                     </Badge>
                 ),
-            }),
-            columnHelper.accessor('amount', {
+            },
+            {
+                id: 'amount',
+                accessorKey: 'amount',
                 header: t('compensations.amount'),
-                cell: ({ row }) => (
+                cell: ({ row }: { row: { original: Compensation } }) => (
                     <span className="font-bold text-primary">
                         {new Intl.NumberFormat('ar-LY', {
                             style: 'currency',
@@ -174,13 +227,16 @@ export default function Index({
                         }).format(row.original.amount)}
                     </span>
                 ),
-            }),
-            columnHelper.accessor('receipt_date_formatted', {
+            },
+            {
+                id: 'receipt_date_formatted',
+                accessorKey: 'receipt_date_formatted',
                 header: t('compensations.receipt_date'),
-            }),
-            columnHelper.display({
+            },
+            {
                 id: 'actions',
-                cell: ({ row }) => (
+                header: '',
+                cell: ({ row }: { row: { original: Compensation } }) => (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
@@ -191,77 +247,49 @@ export default function Index({
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            align={isRTL ? 'start' : 'end'}
-                            className="w-44"
-                        >
+                        <DropdownMenuContent align="end">
                             <DropdownMenuLabel>
                                 {t('actions')}
                             </DropdownMenuLabel>
-                            <DropdownMenuItem
-                                onClick={() =>
-                                    router.get(
-                                        `/compensations/${row.original.id}`,
-                                    )
-                                }
-                            >
-                                <Eye className="mr-2 h-4 w-4" /> {t('view')}
-                            </DropdownMenuItem>
-                            {can('canUpdate') && (
-                                <DropdownMenuItem
-                                    onClick={() =>
-                                        router.get(
-                                            `/compensations/${row.original.id}/edit`,
-                                        )
-                                    }
-                                >
-                                    <Edit className="mr-2 h-4 w-4" />{' '}
-                                    {t('edit')}
+                            <DropdownMenuSeparator />
+                            {canViewDetails && (
+                                <DropdownMenuItem asChild>
+                                    <Link
+                                        href={`/compensations/${row.original.id}`}
+                                        className="flex cursor-pointer items-center"
+                                    >
+                                        <Eye className="mr-2 h-4 w-4 text-muted-foreground" />
+                                        {t('view')}
+                                    </Link>
                                 </DropdownMenuItem>
                             )}
-                            {can('canDelete') && (
-                                <>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem
-                                        className="text-destructive"
-                                        onClick={() =>
-                                            setDeleteId(row.original.id)
-                                        }
+                            {canUpdate && (
+                                <DropdownMenuItem asChild>
+                                    <Link
+                                        href={`/compensations/${row.original.id}/edit`}
+                                        className="flex cursor-pointer items-center"
                                     >
-                                        <Trash2 className="mr-2 h-4 w-4" />{' '}
-                                        {t('delete')}
-                                    </DropdownMenuItem>
-                                </>
+                                        <Edit className="mr-2 h-4 w-4 text-muted-foreground" />
+                                        {t('edit')}
+                                    </Link>
+                                </DropdownMenuItem>
+                            )}
+                            {canDelete && (
+                                <DropdownMenuItem
+                                    onClick={() => setDeleteId(row.original.id)}
+                                    className="cursor-pointer text-destructive focus:text-destructive"
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    {t('delete')}
+                                </DropdownMenuItem>
                             )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 ),
-            }),
-        ],
-        [t, isRTL, can],
-    );
-
-    const table = useReactTable({
-        data: compensations.data,
-        columns,
-        state: { sorting },
-        onSortingChange: setSorting,
-        getCoreRowModel: getCoreRowModel(),
-    });
-
-    const handleSearch = () => {
-        router.get(
-            '/compensations',
-            {
-                search: search || undefined,
-                martyr_id:
-                    selectedMartyr === 'all' ? undefined : selectedMartyr,
-                parents_status_id: pStatus === 'all' ? undefined : pStatus,
-                employment_status_id: eStatus === 'all' ? undefined : eStatus,
             },
-            { preserveState: true },
-        );
-    };
+        ],
+        [t, canViewDetails, canUpdate, canDelete],
+    );
 
     const confirmDelete = () => {
         if (deleteId) {
@@ -278,317 +306,374 @@ export default function Index({
     };
 
     return (
-        <AppLayout
-            breadcrumbs={[
-                { title: t('compensations.title'), href: '/compensations' },
-            ]}
-        >
-            <Head title={t('compensations.title')} />
+        <TooltipProvider>
+            <AppLayout
+                breadcrumbs={[
+                    { title: t('compensations.title'), href: '/compensations' },
+                ]}
+            >
+                <Head title={t('compensations.title')} />
 
-            <div className="mx-auto max-w-7xl space-y-6 p-4 md:p-8">
-                {/* Top Header */}
-                <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+                <div className="space-y-6 p-6">
+                    {/* Header Stats / Info */}
+                    <div className="space-y-1">
+                        <h1 className="text-3xl font-bold tracking-tight text-foreground">
                             {t('compensations.title')}
                         </h1>
                         <p className="text-muted-foreground">
-                            {t('compensations.description')}
+                            {t('compensations.description', { count: compensations.total })}
                         </p>
                     </div>
-                    {can('canCreate') && (
-                        <Button asChild size="lg" className="shadow-md">
-                            <Link href="/compensations/create">
-                                <Plus className="mr-2 h-5 w-5" />{' '}
-                                {t('compensations.add_compensation')}
-                            </Link>
-                        </Button>
+
+                    {/* Toolbar */}
+                    <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+                        {/* Search */}
+                        <div className="relative w-full md:w-72">
+                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                placeholder={t('compensations.search_placeholder')}
+                                className="bg-background pl-9"
+                                value={localFilters.search || ''}
+                                onChange={(e) =>
+                                    handleFilterChange('search', e.target.value)
+                                }
+                            />
+                        </div>
+
+                        <div className="flex w-full flex-wrap items-center gap-2 md:w-auto">
+                            {/* Filters Sheet */}
+                            <Sheet
+                                open={isFiltersOpen}
+                                onOpenChange={setIsFiltersOpen}
+                            >
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <SheetTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                title={t('compensations.filters.advanced')}
+                                            >
+                                                <Filter className="h-4 w-4" />
+                                            </Button>
+                                        </SheetTrigger>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{t('compensations.filters.advanced')}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                                <SheetContent
+                                    side={isRTL ? 'left' : 'right'}
+                                    className="w-full p-0 sm:max-w-md"
+                                >
+                                    <SheetHeader className="border-b p-6">
+                                        <SheetTitle>
+                                            {t('compensations.filters.advanced')}
+                                        </SheetTitle>
+                                        <SheetDescription>
+                                            {t('compensations.filters.advanced_description')}
+                                        </SheetDescription>
+                                    </SheetHeader>
+                                    <ScrollArea className="h-[calc(100vh-10rem)] p-6">
+                                        <div className="grid gap-6">
+                                            {/* Filters Fields */}
+                                            <div className="space-y-4">
+                                                {/* Martyr Filter */}
+                                                <div className="space-y-2">
+                                                    <Label>
+                                                        {t('compensations.filter_by_martyr')}
+                                                    </Label>
+                                                    <Select
+                                                        value={
+                                                            localFilters.martyr_id || 'all'
+                                                        }
+                                                        onValueChange={(v) =>
+                                                            handleFilterChange(
+                                                                'martyr_id',
+                                                                v,
+                                                            )
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue
+                                                                placeholder={t('compensations.all_martyrs')}
+                                                            />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="all">
+                                                                {t('compensations.all_martyrs')}
+                                                            </SelectItem>
+                                                            {martyrs.map(
+                                                                (m) => (
+                                                                    <SelectItem
+                                                                        key={m.id}
+                                                                        value={String(m.id)}
+                                                                    >
+                                                                        {m.full_name}
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+
+                                                {/* Parents Status */}
+                                                <div className="space-y-2">
+                                                    <Label>
+                                                        {t('martyrs.parents_status')}
+                                                    </Label>
+                                                    <Select
+                                                        value={
+                                                            localFilters.parents_status_id || 'all'
+                                                        }
+                                                        onValueChange={(v) =>
+                                                            handleFilterChange(
+                                                                'parents_status_id',
+                                                                v,
+                                                            )
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue
+                                                                placeholder={t('all')}
+                                                            />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="all">
+                                                                {t('all')}
+                                                            </SelectItem>
+                                                            {parentsStatuses.map(
+                                                                (s) => (
+                                                                    <SelectItem
+                                                                        key={s.id}
+                                                                        value={String(s.id)}
+                                                                    >
+                                                                        {isRTL
+                                                                            ? s.name_ar
+                                                                            : s.name_en}
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+
+                                                {/* Employment Status */}
+                                                <div className="space-y-2">
+                                                    <Label>
+                                                        {t('martyrs.employment_status')}
+                                                    </Label>
+                                                    <Select
+                                                        value={
+                                                            localFilters.employment_status_id || 'all'
+                                                        }
+                                                        onValueChange={(v) =>
+                                                            handleFilterChange(
+                                                                'employment_status_id',
+                                                                v,
+                                                            )
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue
+                                                                placeholder={t('all')}
+                                                            />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="all">
+                                                                {t('all')}
+                                                            </SelectItem>
+                                                            {employmentStatuses.map(
+                                                                (s) => (
+                                                                    <SelectItem
+                                                                        key={s.id}
+                                                                        value={String(s.id)}
+                                                                    >
+                                                                        {s.name}
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ScrollArea>
+                                    <div className="border-t bg-muted/20 p-6">
+                                        <Button
+                                            onClick={clearFilters}
+                                            variant="outline"
+                                            className="w-full"
+                                        >
+                                            <RotateCcw className="mr-2 h-4 w-4" />
+                                            {t('clear_filters')}
+                                        </Button>
+                                    </div>
+                                </SheetContent>
+                            </Sheet>
+
+                            <div className="mx-1 hidden h-6 w-px bg-border md:block" />
+
+                            {/* Create Button */}
+                            {canCreate && (
+                                <Button asChild>
+                                    <Link href="/compensations/create">
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        {t('compensations.add_compensation')}
+                                    </Link>
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Data Table Card */}
+                    <Card className="border-muted shadow-sm">
+                        <CardContent className="p-0">
+                            <DataTable
+                                columns={columns}
+                                data={compensations.data}
+                            />
+                        </CardContent>
+                    </Card>
+
+                    {/* Pagination */}
+                    {compensations.last_page > 1 && (
+                        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+                            <p className="order-2 text-sm text-muted-foreground sm:order-1">
+                                {t('compensations.pagination.showing', {
+                                    from: compensations.from,
+                                    to: compensations.to,
+                                    total: compensations.total,
+                                })}
+                            </p>
+                            <Pagination className="order-1 w-auto sm:order-2">
+                                <PaginationContent>
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            href={
+                                                compensations.current_page > 1
+                                                    ? `/compensations?page=${compensations.current_page - 1}`
+                                                    : '#'
+                                            }
+                                            className={compensations.current_page <= 1 ? 'pointer-events-none opacity-50' : ''}
+                                        />
+                                    </PaginationItem>
+                                    {/* Show first page */}
+                                    {compensations.current_page > 3 && (
+                                        <>
+                                            <PaginationItem>
+                                                <PaginationLink href="/compensations?page=1">
+                                                    1
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                            {compensations.current_page > 4 && (
+                                                <PaginationItem>
+                                                    <PaginationEllipsis />
+                                                </PaginationItem>
+                                            )}
+                                        </>
+                                    )}
+                                    {/* Show pages around current */}
+                                    {Array.from(
+                                        {
+                                            length: Math.min(5, compensations.last_page),
+                                        },
+                                        (_, i) => {
+                                            const page = Math.max(
+                                                1,
+                                                Math.min(
+                                                    compensations.last_page,
+                                                    compensations.current_page - 2 + i,
+                                                ),
+                                            );
+                                            return (
+                                                <PaginationItem key={page}>
+                                                    <PaginationLink
+                                                        href={`/compensations?page=${page}`}
+                                                        isActive={page === compensations.current_page}
+                                                    >
+                                                        {page}
+                                                    </PaginationLink>
+                                                </PaginationItem>
+                                            );
+                                        },
+                                    )}
+                                    {/* Show last page */}
+                                    {compensations.current_page < compensations.last_page - 2 && (
+                                        <>
+                                            {compensations.current_page < compensations.last_page - 3 && (
+                                                <PaginationItem>
+                                                    <PaginationEllipsis />
+                                                </PaginationItem>
+                                            )}
+                                            <PaginationItem>
+                                                <PaginationLink href={`/compensations?page=${compensations.last_page}`}>
+                                                    {compensations.last_page}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        </>
+                                    )}
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            href={
+                                                compensations.current_page < compensations.last_page
+                                                    ? `/compensations?page=${compensations.current_page + 1}`
+                                                    : '#'
+                                            }
+                                            className={compensations.current_page >= compensations.last_page ? 'pointer-events-none opacity-50' : ''}
+                                        />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
+                        </div>
                     )}
                 </div>
 
-                {/* Filters Section */}
-                <Card className="border-muted/60 shadow-sm">
-                    <CardContent className="flex flex-wrap items-end gap-3 p-4">
-                        <div className="min-w-[240px] flex-1 space-y-1.5">
-                            <span className="ml-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                                {t('search')}
-                            </span>
-                            <div className="relative">
-                                <Search className="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    placeholder={t('search_placeholder')}
-                                    className="bg-muted/20 pl-9"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    onKeyDown={(e) =>
-                                        e.key === 'Enter' && handleSearch()
+                {/* Delete Alert Dialog */}
+                <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                {t('compensations.confirm_delete')}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-destructive">
+                                {t('compensations.delete_warning_message') ||
+                                    'This action cannot be undone. This will permanently delete the compensation record.'}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={async () => {
+                                    if (deleteId) {
+                                        setIsDeleting(true);
+                                        try {
+                                            await router.delete(
+                                                `/compensations/${deleteId}`,
+                                                {
+                                                    onSuccess: () => {
+                                                        toast({
+                                                            title: t('compensations.deleted'),
+                                                            variant: 'default',
+                                                        });
+                                                        setDeleteId(null);
+                                                    },
+                                                },
+                                            );
+                                        } finally {
+                                            setIsDeleting(false);
+                                        }
                                     }
-                                />
-                            </div>
-                        </div>
-
-                        <div className="w-[200px] space-y-1.5">
-                            <span className="ml-1 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                                {t('compensations.filter_by_martyr')}
-                            </span>
-                            <Select
-                                value={selectedMartyr}
-                                onValueChange={setSelectedMartyr}
+                                }}
+                                disabled={isDeleting}
+                                className="bg-destructive hover:bg-destructive/90"
                             >
-                                <SelectTrigger className="bg-muted/20">
-                                    <SelectValue
-                                        placeholder={t('all_martyrs')}
-                                    />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">
-                                        {t('all_martyrs')}
-                                    </SelectItem>
-                                    {martyrs
-                                        .filter(
-                                            (m) =>
-                                                m.id &&
-                                                m.id.toString().trim() !== '',
-                                        )
-                                        .map((m) => (
-                                            <SelectItem
-                                                key={m.id}
-                                                value={m.id.toString()}
-                                            >
-                                                {m.full_name}
-                                            </SelectItem>
-                                        ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="outline" className="gap-2">
-                                    <Filter className="h-4 w-4" />{' '}
-                                    {t('advanced_filters')}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-80 space-y-4 p-4">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">
-                                        {t('martyrs.parents_status')}
-                                    </label>
-                                    <Select
-                                        value={pStatus}
-                                        onValueChange={setPStatus}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">
-                                                {t('all')}
-                                            </SelectItem>
-                                            {parentsStatuses
-                                                .filter(
-                                                    (s) =>
-                                                        s.id &&
-                                                        s.id
-                                                            .toString()
-                                                            .trim() !== '',
-                                                )
-                                                .map((s) => (
-                                                    <SelectItem
-                                                        key={s.id}
-                                                        value={s.id.toString()}
-                                                    >
-                                                        {isRTL
-                                                            ? s.name_ar
-                                                            : s.name_en}
-                                                    </SelectItem>
-                                                ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">
-                                        {t('martyrs.employment_status')}
-                                    </label>
-                                    <Select
-                                        value={eStatus}
-                                        onValueChange={setEStatus}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">
-                                                {t('all')}
-                                            </SelectItem>
-                                            {employmentStatuses
-                                                .filter(
-                                                    (s) =>
-                                                        s.id &&
-                                                        s.id
-                                                            .toString()
-                                                            .trim() !== '',
-                                                )
-                                                .map((s) => (
-                                                    <SelectItem
-                                                        key={s.id}
-                                                        value={s.id.toString()}
-                                                    >
-                                                        {s.name}
-                                                    </SelectItem>
-                                                ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <Button
-                                    className="w-full"
-                                    onClick={handleSearch}
-                                >
-                                    {t('apply_filters')}
-                                </Button>
-                            </PopoverContent>
-                        </Popover>
-
-                        <div className="flex gap-2">
-                            <Button
-                                onClick={handleSearch}
-                                variant="default"
-                                className="px-6"
-                            >
-                                {t('apply')}
-                            </Button>
-                            <Button
-                                onClick={() => router.get('/compensations')}
-                                variant="ghost"
-                                size="icon"
-                            >
-                                <RotateCcw className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Table Section */}
-                <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-                    <Table>
-                        <TableHeader className="bg-muted/40">
-                            {table.getHeaderGroups().map((hg) => (
-                                <TableRow key={hg.id}>
-                                    {hg.headers.map((header) => (
-                                        <TableHead
-                                            key={header.id}
-                                            className="h-12 font-bold text-foreground/80"
-                                        >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext(),
-                                            )}
-                                        </TableHead>
-                                    ))}
-                                </TableRow>
-                            ))}
-                        </TableHeader>
-                        <TableBody>
-                            {table.getRowModel().rows.length ? (
-                                table.getRowModel().rows.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        className="group transition-colors hover:bg-muted/30"
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell
-                                                key={cell.id}
-                                                className="py-3"
-                                            >
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
-                                                )}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={columns.length}
-                                        className="h-32 text-center text-muted-foreground italic"
-                                    >
-                                        {t('no_results')}
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-
-                    {/* Footer / Pagination */}
-                    <div className="flex items-center justify-between border-t bg-muted/5 p-4">
-                        <span className="text-sm text-muted-foreground">
-                            {t('showing')} <b>{compensations.from}</b> -{' '}
-                            <b>{compensations.to}</b> {t('of')}{' '}
-                            <b>{compensations.total}</b>
-                        </span>
-                        <div className="flex gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={!compensations.links[0].url}
-                                onClick={() =>
-                                    router.get(compensations.links[0].url!)
-                                }
-                            >
-                                <ChevronLeft className="h-4 w-4" />{' '}
-                                {t('previous')}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={
-                                    !compensations.links[
-                                        compensations.links.length - 1
-                                    ].url
-                                }
-                                onClick={() =>
-                                    router.get(
-                                        compensations.links[
-                                            compensations.links.length - 1
-                                        ].url!,
-                                    )
-                                }
-                            >
-                                {t('next')} <ChevronRight className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Delete Confirmation Dialog */}
-            <AlertDialog
-                open={!!deleteId}
-                onOpenChange={(open) => !open && setDeleteId(null)}
-            >
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            {t('confirm_delete')}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {t('delete_warning_message') ||
-                                'Are you sure? This action cannot be undone.'}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter className="gap-2">
-                        <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={confirmDelete}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                            {t('delete')}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </AppLayout>
+                                {isDeleting ? t('deleting') : t('delete')}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </AppLayout>
+        </TooltipProvider>
     );
 }

@@ -4,6 +4,7 @@
     "manage_attachment_types": "إدارة أنواع المرفقات",
     "active": "نشط",
     "dataTable.export": "تصدير إكسيل",
+    "martyrs.pagination.showing": "عرض {{from}} إلى {{to}} من {{total}}",
     "martyrs.enter_decision_number": "أدخل رقم القرار",
     "navigation.attachment-types": "أنواع المرفقات",
     "all_rights_reserved": "جميع الحقوق محفوظة.",
@@ -438,6 +439,8 @@
         "employer_location": "مكان جهة العمل",
         "select_employer_location": "اختر مكان جهة العمل",
         "has_previous_workplace": "لديه مكان عمل سابق",
+        "pagination.showing": "عرض {{from}} إلى {{to}} من {{total}}",
+
         "previous_employer": "جهة العمل السابقة",
         "martyr_decision_info": "معلومات قرار الشهيد",
         "wife_status": "حالة الزوجة",

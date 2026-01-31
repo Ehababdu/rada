@@ -43,6 +43,7 @@ import { Label } from '@/components/ui/label';
 import {
     Pagination,
     PaginationContent,
+    PaginationEllipsis,
     PaginationItem,
     PaginationLink,
     PaginationNext,
@@ -65,6 +66,13 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
+
 import { usePermissions } from '@/hooks/use-permissions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -73,6 +81,8 @@ import { ColumnDef } from '@tanstack/react-table';
 // Icons
 import {
     ArrowUpDown,
+    ChevronLeft,
+    ChevronRight,
     Columns,
     Download,
     Edit,
@@ -83,6 +93,7 @@ import {
     Plus,
     Search,
     Trash2,
+    User,
 } from 'lucide-react';
 
 interface Martyr {
@@ -170,6 +181,7 @@ interface Filters {
     date_from?: string;
     date_to?: string;
     sort?: string;
+    per_page?: string;
 }
 
 interface Props {
@@ -188,7 +200,6 @@ interface Props {
     banks: Array<{ id: number; name_ar: string }>;
     parentsStatuses: Array<{ id: number; name_ar: string; name_en: string }>;
     militaryRanks?: Array<{ id: number; name_ar: string; name_en: string }>;
-    branches?: Array<{ id: number; name_ar: string }>;
 }
 
 export default function Index({
@@ -199,7 +210,6 @@ export default function Index({
     banks,
     parentsStatuses,
     militaryRanks = [],
-    branches = [],
 }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
@@ -224,117 +234,137 @@ export default function Index({
     const [latestExportUrl, setLatestExportUrl] = useState<string | null>(null);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     // Columns Configuration
-    const availableColumns = [
-        { key: 'id', label: 'ID', required: true },
-        { key: 'full_name', label: t('martyrs.full_name'), required: true },
-        { key: 'national_id', label: t('martyrs.national_id'), required: true },
-        { key: 'address', label: t('martyrs.address'), required: false },
-        { key: 'status', label: t('martyrs.status'), required: false },
-        {
-            key: 'children_count',
-            label: t('martyrs.children_count'),
-            required: false,
-        },
-        {
-            key: 'military_rank',
-            label: t('martyrs.military_rank'),
-            required: false,
-        },
-        { key: 'job_grade', label: t('martyrs.job_grade'), required: false },
-        {
-            key: 'employment_status',
-            label: t('martyrs.employment_status'),
-            required: false,
-        },
-        {
-            key: 'marital_status',
-            label: t('martyrs.marital_status'),
-            required: false,
-        },
-        {
-            key: 'wife_status',
-            label: t('martyrs.wife_status'),
-            required: false,
-        },
-        {
-            key: 'military_number',
-            label: t('martyrs.military_number'),
-            required: false,
-        },
-        {
-            key: 'parents_status',
-            label: t('martyrs.parents_status'),
-            required: false,
-        },
-        { key: 'bank', label: t('martyrs.bank'), required: false },
-        { key: 'branch', label: t('martyrs.branch'), required: false },
-        { key: 'employer', label: t('martyrs.employer'), required: false },
-        {
-            key: 'employer_location',
-            label: t('martyrs.employer_location'),
-            required: false,
-        },
-        {
-            key: 'previous_employer',
-            label: t('martyrs.previous_employer'),
-            required: false,
-        },
-        {
-            key: 'previous_employer_location',
-            label: t('martyrs.previous_employer_location'),
-            required: false,
-        },
-        {
-            key: 'bank_account_number',
-            label: t('martyrs.bank_account_number'),
-            required: false,
-        },
-        { key: 'death_date', label: t('martyrs.death_date'), required: false },
-        {
-            key: 'has_martyr_decision',
-            label: t('martyrs.decision'),
-            required: false,
-        },
-        {
-            key: 'decision_number',
-            label: t('martyrs.decision_number'),
-            required: false,
-        },
-        {
-            key: 'decision_date',
-            label: t('martyrs.decision_date'),
-            required: false,
-        },
-        { key: 'agent_name', label: t('martyrs.agent_name'), required: false },
-        {
-            key: 'agent_phone',
-            label: t('martyrs.agent_phone'),
-            required: false,
-        },
-        {
-            key: 'agent_passport_number',
-            label: t('martyrs.agent_passport_number'),
-            required: false,
-        },
-        {
-            key: 'agent_relationship',
-            label: t('martyrs.agent_relationship'),
-            required: false,
-        },
+    const availableColumns = useMemo(
+        () => [
+            { key: 'id', label: 'ID', required: true },
+            { key: 'full_name', label: t('martyrs.full_name'), required: true },
+            {
+                key: 'national_id',
+                label: t('martyrs.national_id'),
+                required: true,
+            },
+            { key: 'address', label: t('martyrs.address'), required: false },
+            { key: 'status', label: t('martyrs.status'), required: false },
+            {
+                key: 'children_count',
+                label: t('martyrs.children_count'),
+                required: false,
+            },
+            {
+                key: 'military_rank',
+                label: t('martyrs.military_rank'),
+                required: false,
+            },
+            {
+                key: 'job_grade',
+                label: t('martyrs.job_grade'),
+                required: false,
+            },
+            {
+                key: 'employment_status',
+                label: t('martyrs.employment_status'),
+                required: false,
+            },
+            {
+                key: 'marital_status',
+                label: t('martyrs.marital_status'),
+                required: false,
+            },
+            {
+                key: 'wife_status',
+                label: t('martyrs.wife_status'),
+                required: false,
+            },
+            {
+                key: 'military_number',
+                label: t('martyrs.military_number'),
+                required: false,
+            },
+            {
+                key: 'parents_status',
+                label: t('martyrs.parents_status'),
+                required: false,
+            },
+            { key: 'bank', label: t('martyrs.bank'), required: false },
+            { key: 'branch', label: t('martyrs.branch'), required: false },
+            { key: 'employer', label: t('martyrs.employer'), required: false },
+            {
+                key: 'employer_location',
+                label: t('martyrs.employer_location'),
+                required: false,
+            },
+            {
+                key: 'previous_employer',
+                label: t('martyrs.previous_employer'),
+                required: false,
+            },
+            {
+                key: 'previous_employer_location',
+                label: t('martyrs.previous_employer_location'),
+                required: false,
+            },
+            {
+                key: 'bank_account_number',
+                label: t('martyrs.bank_account_number'),
+                required: false,
+            },
+            {
+                key: 'death_date',
+                label: t('martyrs.death_date'),
+                required: false,
+            },
+            {
+                key: 'has_martyr_decision',
+                label: t('martyrs.decision'),
+                required: false,
+            },
+            {
+                key: 'decision_number',
+                label: t('martyrs.decision_number'),
+                required: false,
+            },
+            {
+                key: 'decision_date',
+                label: t('martyrs.decision_date'),
+                required: false,
+            },
+            {
+                key: 'agent_name',
+                label: t('martyrs.agent_name'),
+                required: false,
+            },
+            {
+                key: 'agent_phone',
+                label: t('martyrs.agent_phone'),
+                required: false,
+            },
+            {
+                key: 'agent_passport_number',
+                label: t('martyrs.agent_passport_number'),
+                required: false,
+            },
+            {
+                key: 'agent_relationship',
+                label: t('martyrs.agent_relationship'),
+                required: false,
+            },
 
-        ...(canViewAttachments
-            ? [
-                  {
-                      key: 'attachments',
-                      label: t('martyrs.attachments'),
-                      required: false,
-                  },
-              ]
-            : []),
-        { key: 'actions', label: t('martyrs.actions'), required: true },
-    ];
+            ...(canViewAttachments
+                ? [
+                      {
+                          key: 'attachments',
+                          label: t('martyrs.attachments'),
+                          required: false,
+                      },
+                  ]
+                : []),
+            { key: 'actions', label: t('martyrs.actions'), required: true },
+        ],
+        [t, canViewAttachments],
+    );
 
     const [visibleColumns, setVisibleColumns] = useState<string[]>(() =>
         availableColumns.map((c) => c.key),
@@ -350,10 +380,17 @@ export default function Index({
                 const parsed = JSON.parse(raw) as string[];
                 const allowed = new Set(availableColumns.map((c) => c.key));
                 const valid = parsed.filter((k) => allowed.has(k));
-                if (valid.length) setVisibleColumns(valid);
+                if (valid.length) {
+                    setVisibleColumns((prev) => {
+                        const combined = [...new Set([...prev, ...valid])];
+                        return combined.filter((k) => allowed.has(k));
+                    });
+                }
             }
-        } catch {}
-    }, []);
+        } catch {
+            // Ignore errors
+        }
+    }, [availableColumns]);
 
     useEffect(() => {
         if (typeof window !== 'undefined')
@@ -422,7 +459,7 @@ export default function Index({
                 id: 'id',
                 accessorKey: 'id',
                 header: '#',
-                cell: ({ row }) => (
+                cell: ({ row }: { row: { original: Martyr } }) => (
                     <span className="font-mono text-xs text-muted-foreground">
                         {row.original.id}
                     </span>
@@ -443,7 +480,7 @@ export default function Index({
                         <ArrowUpDown className="ml-2 h-4 w-4" />
                     </Button>
                 ),
-                cell: ({ row }) => (
+                cell: ({ row }: { row: { original: Martyr } }) => (
                     <div className="flex items-center gap-3">
                         <Avatar className="h-9 w-9 border border-border">
                             <AvatarImage
@@ -474,7 +511,7 @@ export default function Index({
                 id: 'national_id',
                 accessorKey: 'national_id',
                 header: t('martyrs.national_id'),
-                cell: ({ row }) => (
+                cell: ({ row }: { row: { original: Martyr } }) => (
                     <div className="w-fit rounded bg-muted/50 px-2 py-1 font-mono text-sm">
                         {row.original.national_id}
                     </div>
@@ -484,7 +521,7 @@ export default function Index({
                 id: 'military_number',
                 accessorKey: 'military_number',
                 header: t('martyrs.military_number'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.military_number ? (
                         <div className="font-mono text-sm">
                             {row.original.military_number}
@@ -497,7 +534,7 @@ export default function Index({
                 id: 'status',
                 accessorKey: 'status',
                 header: t('martyrs.status'),
-                cell: ({ row }) => {
+                cell: ({ row }: { row: { original: Martyr } }) => {
                     const status = row.original.status;
                     const variants: Record<
                         string,
@@ -520,7 +557,7 @@ export default function Index({
                 id: 'military_rank',
                 accessorKey: 'military_rank',
                 header: t('martyrs.military_rank'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.military_rank
                         ? isRTL
                             ? row.original.military_rank.name_ar
@@ -531,7 +568,7 @@ export default function Index({
                 id: 'job_grade',
                 accessorKey: 'job_grade',
                 header: t('martyrs.job_grade'),
-                cell: ({ row }) => {
+                cell: ({ row }: { row: { original: Martyr } }) => {
                     const j = row.original.job_grade;
                     if (!j) return '-';
                     if (typeof j === 'string') return j;
@@ -544,13 +581,13 @@ export default function Index({
                 id: 'children_count',
                 accessorKey: 'children_count',
                 header: t('martyrs.children_count'),
-                cell: ({ row }) => row.original.children_count ?? 0,
+                cell: ({ row }: { row: { original: Martyr } }) => row.original.children_count ?? 0,
             },
             {
                 id: 'marital_status',
                 accessorKey: 'marital_status',
                 header: t('martyrs.marital_status'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.marital_status
                         ? isRTL
                             ? row.original.marital_status.name_ar
@@ -561,25 +598,25 @@ export default function Index({
                 id: 'employment_status',
                 accessorKey: 'employment_status',
                 header: t('martyrs.employment_status'),
-                cell: ({ row }) => row.original.employment_status?.name || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => row.original.employment_status?.name || '-',
             },
             {
                 id: 'bank',
                 accessorKey: 'bank',
                 header: t('martyrs.bank'),
-                cell: ({ row }) => row.original.bank?.name_ar || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => row.original.bank?.name_ar || '-',
             },
             {
                 id: 'branch',
                 accessorKey: 'branch',
                 header: t('martyrs.branch'),
-                cell: ({ row }) => row.original.branch?.name_ar || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => row.original.branch?.name_ar || '-',
             },
             {
                 id: 'employer',
                 accessorKey: 'employer',
                 header: t('martyrs.employer'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.employer
                         ? isRTL
                             ? row.original.employer.name_ar
@@ -591,7 +628,7 @@ export default function Index({
                 id: 'employer_location',
                 accessorKey: 'employer_location',
                 header: t('martyrs.employer_location'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.employer_location
                         ? isRTL
                             ? row.original.employer_location.name_ar
@@ -603,7 +640,7 @@ export default function Index({
                 id: 'previous_employer',
                 accessorKey: 'previous_employer',
                 header: t('martyrs.previous_employer'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.previous_employer
                         ? isRTL
                             ? row.original.previous_employer.name_ar
@@ -615,7 +652,7 @@ export default function Index({
                 id: 'previous_employer_location',
                 accessorKey: 'previous_employer_location',
                 header: t('martyrs.previous_employer_location'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.previous_employer_location
                         ? isRTL
                             ? row.original.previous_employer_location.name_ar
@@ -627,7 +664,7 @@ export default function Index({
                 id: 'bank_account_number',
                 accessorKey: 'bank_account_number',
                 header: t('martyrs.bank_account_number'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.bank_account_number ? (
                         <span className="font-mono">
                             {row.original.bank_account_number}
@@ -640,7 +677,7 @@ export default function Index({
                 id: 'address',
                 accessorKey: 'address',
                 header: t('martyrs.address'),
-                cell: ({ row }) => (
+                cell: ({ row }: { row: { original: Martyr } }) => (
                     <span
                         className="max-w-[200px] truncate"
                         title={row.original.address}
@@ -653,8 +690,8 @@ export default function Index({
                 id: 'wife_status',
                 accessorKey: 'wife_status',
                 header: t('martyrs.wife_status'),
-                cell: ({ row }) => {
-                    if (row.original.marital_status_id !== 1)
+                cell: ({ row }: { row: { original: Martyr } }) => {
+                    if (row.original.marital_status_id === 1)
                         return <span className="text-muted-foreground">-</span>;
                     return row.original.wife_status ? (
                         <Badge
@@ -675,7 +712,7 @@ export default function Index({
                 id: 'has_martyr_decision',
                 accessorKey: 'has_martyr_decision',
                 header: t('martyrs.decision'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.has_martyr_decision ? (
                         <Badge className="bg-green-600">
                             {t('martyrs.yes')}
@@ -688,31 +725,31 @@ export default function Index({
                 id: 'decision_number',
                 accessorKey: 'decision_number',
                 header: t('martyrs.decision_number'),
-                cell: ({ row }) => row.original.decision_number || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => row.original.decision_number || '-',
             },
             {
                 id: 'decision_date',
                 accessorKey: 'decision_date',
                 header: t('martyrs.decision_date'),
-                cell: ({ row }) => row.original.decision_date || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => row.original.decision_date || '-',
             },
             {
                 id: 'death_date',
                 accessorKey: 'death_date',
                 header: t('martyrs.death_date'),
-                cell: ({ row }) => row.original.death_date || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => row.original.death_date || '-',
             },
             {
                 id: 'agent_name',
                 accessorKey: 'agent_name',
                 header: t('martyrs.agent_name'),
-                cell: ({ row }) => row.original.agent_name || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => row.original.agent_name || '-',
             },
             {
                 id: 'agent_phone',
                 accessorKey: 'agent_phone',
                 header: t('martyrs.agent_phone'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.agent_phone ? (
                         <span className="font-mono" dir="ltr">
                             {row.original.agent_phone}
@@ -725,7 +762,7 @@ export default function Index({
                 id: 'agent_passport_number',
                 accessorKey: 'agent_passport_number',
                 header: t('martyrs.agent_passport_number'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.agent_passport_number ? (
                         <span className="font-mono">
                             {row.original.agent_passport_number}
@@ -738,14 +775,13 @@ export default function Index({
                 id: 'agent_relationship',
                 accessorKey: 'agent_relationship',
                 header: t('martyrs.agent_relationship'),
-                cell: ({ row }) =>
-                    (row.original as any).agent_relationship || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => row.original.agent_relationship || '-',
             },
             {
                 id: 'parents_status',
                 accessorKey: 'parents_status',
                 header: t('martyrs.parents_status'),
-                cell: ({ row }) =>
+                cell: ({ row }: { row: { original: Martyr } }) =>
                     row.original.parents_status
                         ? isRTL
                             ? row.original.parents_status.name_ar
@@ -757,7 +793,7 @@ export default function Index({
                       {
                           id: 'attachments',
                           header: t('martyrs.attachments'),
-                          cell: ({ row }: { row: any }) => (
+                          cell: ({ row }: { row: { original: Martyr } }) => (
                               <Button variant="link" size="sm" asChild>
                                   <Link
                                       href={`/martyrs/${row.original.id}/attachments`}
@@ -772,7 +808,7 @@ export default function Index({
             {
                 id: 'actions',
                 header: '',
-                cell: ({ row }) => (
+                cell: ({ row }: { row: { original: Martyr } }) => (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
@@ -827,7 +863,7 @@ export default function Index({
                 ),
             },
         ],
-        [t, isRTL, visibleColumns],
+        [t, isRTL, canViewAttachments, canViewDetails, canUpdate, canDelete],
     );
 
     const filteredColumns = columns.filter(
@@ -845,7 +881,9 @@ export default function Index({
                 params.append('columns', visibleColumns.join(','));
 
             window.open(`/martyrs/export?${params.toString()}`, '_blank');
-        } catch {}
+        } catch {
+            // Ignore errors
+        }
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -853,130 +891,125 @@ export default function Index({
     ];
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={t('martyrs.title')} />
+        <TooltipProvider>
+            <AppLayout breadcrumbs={breadcrumbs}>
+                <Head title={t('martyrs.title')} />
 
-            <div className="space-y-6 p-6">
-                {/* Header Stats / Info */}
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                        {t('martyrs.title')}
-                    </h1>
-                    <p className="text-muted-foreground">
-                        {t('martyrs.description', { count: martyrs.total })}
-                    </p>
-                </div>
-
-                {/* Toolbar */}
-                <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-                    {/* Search */}
-                    <div className="relative w-full md:w-72">
-                        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            placeholder={t('martyrs.search_placeholder')}
-                            className="bg-background pl-9"
-                            value={localFilters.search || ''}
-                            onChange={(e) =>
-                                handleFilterChange('search', e.target.value)
-                            }
-                        />
+                <div className="space-y-6 p-6">
+                    {/* Header Stats / Info */}
+                    <div className="flex flex-col gap-4 rounded-xl border bg-card p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="rounded-lg bg-primary/10 p-3 text-primary">
+                                <User className="h-8 w-8" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-bold tracking-tight">
+                                    {t('martyrs.title')}
+                                </h1>
+                                <p className="text-sm text-muted-foreground">
+                                    {t('martyrs.description', { count: martyrs.total })}
+                                </p>
+                            </div>
+                        </div>
+                        {canCreate && (
+                            <Button asChild className="transition-all hover:scale-105">
+                                <Link href="/martyrs/create">
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    {t('martyrs.create')}
+                                </Link>
+                            </Button>
+                        )}
                     </div>
 
-                    <div className="flex w-full flex-wrap items-center gap-2 md:w-auto">
-                        {/* Filters Sheet */}
-                        <Sheet
-                            open={isFiltersOpen}
-                            onOpenChange={setIsFiltersOpen}
-                        >
-                            <SheetTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    title={t('martyrs.filters.advanced')}
-                                >
-                                    <Filter className="h-4 w-4" />
-                                </Button>
-                            </SheetTrigger>
-                            <SheetContent
-                                side={isRTL ? 'left' : 'right'}
-                                className="w-full p-0 sm:max-w-md"
+                    {/* Toolbar */}
+                    <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+                        {/* Search and Per Page */}
+                        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center md:w-auto">
+                            <div className="relative w-full sm:w-72">
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <Input
+                                    placeholder={t('martyrs.search_placeholder')}
+                                    className="bg-background pl-9 transition-all focus:ring-2 focus:ring-primary/20"
+                                    value={localFilters.search || ''}
+                                    onChange={(e) =>
+                                        handleFilterChange('search', e.target.value)
+                                    }
+                                />
+                            </div>
+                            <Select
+                                value={localFilters.per_page || martyrs.per_page.toString()}
+                                onValueChange={(value) => handleFilterChange('per_page', value)}
                             >
-                                <SheetHeader className="border-b p-6">
-                                    <SheetTitle>
-                                        {t('martyrs.filters.advanced')}
-                                    </SheetTitle>
-                                    <SheetDescription>
-                                        {t(
-                                            'martyrs.filters.advanced_description',
-                                        )}
-                                    </SheetDescription>
-                                </SheetHeader>
-                                <ScrollArea className="h-[calc(100vh-10rem)] p-6">
-                                    <div className="grid gap-6">
-                                        {/* Filters Fields */}
-                                        <div className="space-y-4">
-                                            {/* Military Rank */}
-                                            <div className="space-y-2">
-                                                <Label>
-                                                    {t('martyrs.military_rank')}
-                                                </Label>
-                                                <Select
-                                                    value={
-                                                        localFilters.military_rank ||
-                                                        'all'
-                                                    }
-                                                    onValueChange={(v) =>
-                                                        handleFilterChange(
-                                                            'military_rank',
-                                                            v,
-                                                        )
-                                                    }
-                                                >
-                                                    <SelectTrigger>
-                                                        <SelectValue
-                                                            placeholder={t(
-                                                                'martyrs.select',
-                                                            )}
-                                                        />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">
-                                                            {t('martyrs.all')}
-                                                        </SelectItem>
-                                                        {militaryRanks.map(
-                                                            (r) => (
-                                                                <SelectItem
-                                                                    key={r.id}
-                                                                    value={String(
-                                                                        r.id,
-                                                                    )}
-                                                                >
-                                                                    {isRTL
-                                                                        ? r.name_ar
-                                                                        : r.name_en}
-                                                                </SelectItem>
-                                                            ),
-                                                        )}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
+                                <SelectTrigger className="w-20">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="10">10</SelectItem>
+                                    <SelectItem value="25">25</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                    <SelectItem value="100">100</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-                                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                                {/* Marital Status */}
+                        <div className="flex w-full flex-wrap items-center gap-2 md:w-auto">
+                            {/* Filters Sheet */}
+                            <Sheet
+                                open={isFiltersOpen}
+                                onOpenChange={setIsFiltersOpen}
+                            >
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <SheetTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                title={t(
+                                                    'martyrs.filters.advanced',
+                                                )}
+                                                className="transition-colors hover:bg-accent"
+                                            >
+                                                <Filter className="h-4 w-4" />
+                                            </Button>
+                                        </SheetTrigger>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{t('martyrs.filters.advanced')}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                                <SheetContent
+                                    side={isRTL ? 'left' : 'right'}
+                                    className="w-full p-0 sm:max-w-md"
+                                >
+                                    <SheetHeader className="border-b p-6">
+                                        <SheetTitle>
+                                            {t('martyrs.filters.advanced')}
+                                        </SheetTitle>
+                                        <SheetDescription>
+                                            {t(
+                                                'martyrs.filters.advanced_description',
+                                            )}
+                                        </SheetDescription>
+                                    </SheetHeader>
+                                    <ScrollArea className="h-[calc(100vh-10rem)] p-6">
+                                        <div className="grid gap-6">
+                                            {/* Filters Fields */}
+                                            <div className="space-y-4">
+                                                {/* Military Rank */}
                                                 <div className="space-y-2">
                                                     <Label>
                                                         {t(
-                                                            'martyrs.marital_status',
+                                                            'martyrs.military_rank',
                                                         )}
                                                     </Label>
                                                     <Select
                                                         value={
-                                                            localFilters.marital_status_id ||
+                                                            localFilters.military_rank ||
                                                             'all'
                                                         }
                                                         onValueChange={(v) =>
                                                             handleFilterChange(
-                                                                'marital_status_id',
+                                                                'military_rank',
                                                                 v,
                                                             )
                                                         }
@@ -994,7 +1027,273 @@ export default function Index({
                                                                     'martyrs.all',
                                                                 )}
                                                             </SelectItem>
-                                                            {maritalStatuses.map(
+                                                            {militaryRanks.map(
+                                                                (r) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            r.id
+                                                                        }
+                                                                        value={String(
+                                                                            r.id,
+                                                                        )}
+                                                                    >
+                                                                        {isRTL
+                                                                            ? r.name_ar
+                                                                            : r.name_en}
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                                    {/* Marital Status */}
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            {t(
+                                                                'martyrs.marital_status',
+                                                            )}
+                                                        </Label>
+                                                        <Select
+                                                            value={
+                                                                localFilters.marital_status_id ||
+                                                                'all'
+                                                            }
+                                                            onValueChange={(
+                                                                v,
+                                                            ) =>
+                                                                handleFilterChange(
+                                                                    'marital_status_id',
+                                                                    v,
+                                                                )
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        'martyrs.select',
+                                                                    )}
+                                                                />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">
+                                                                    {t(
+                                                                        'martyrs.all',
+                                                                    )}
+                                                                </SelectItem>
+                                                                {maritalStatuses.map(
+                                                                    (s) => (
+                                                                        <SelectItem
+                                                                            key={
+                                                                                s.id
+                                                                            }
+                                                                            value={String(
+                                                                                s.id,
+                                                                            )}
+                                                                        >
+                                                                            {isRTL
+                                                                                ? s.name_ar
+                                                                                : s.name_en}
+                                                                        </SelectItem>
+                                                                    ),
+                                                                )}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+
+                                                    {/* Wife Status */}
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            {t(
+                                                                'martyrs.wife_status',
+                                                            )}
+                                                        </Label>
+                                                        <Select
+                                                            value={
+                                                                localFilters.wife_status ||
+                                                                'all'
+                                                            }
+                                                            onValueChange={(
+                                                                v,
+                                                            ) =>
+                                                                handleFilterChange(
+                                                                    'wife_status',
+                                                                    v,
+                                                                )
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        'martyrs.select',
+                                                                    )}
+                                                                />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">
+                                                                    {t(
+                                                                        'martyrs.all',
+                                                                    )}
+                                                                </SelectItem>
+                                                                <SelectItem value="أرملة">
+                                                                    {t(
+                                                                        'martyrs.wife_status.widow',
+                                                                    ) ||
+                                                                        'أرملة'}
+                                                                </SelectItem>
+                                                                <SelectItem value="متزوجة">
+                                                                    {t(
+                                                                        'martyrs.wife_status.married',
+                                                                    ) ||
+                                                                        'متزوجة'}
+                                                                </SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                                    {/* Employment Status */}
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            {t(
+                                                                'martyrs.employment_status',
+                                                            )}
+                                                        </Label>
+                                                        <Select
+                                                            value={
+                                                                localFilters.employment_status_id ||
+                                                                'all'
+                                                            }
+                                                            onValueChange={(
+                                                                v,
+                                                            ) =>
+                                                                handleFilterChange(
+                                                                    'employment_status_id',
+                                                                    v,
+                                                                )
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        'martyrs.select',
+                                                                    )}
+                                                                />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">
+                                                                    {t(
+                                                                        'martyrs.all',
+                                                                    )}
+                                                                </SelectItem>
+                                                                {employmentStatuses.map(
+                                                                    (s) => (
+                                                                        <SelectItem
+                                                                            key={
+                                                                                s.id
+                                                                            }
+                                                                            value={String(
+                                                                                s.id,
+                                                                            )}
+                                                                        >
+                                                                            {
+                                                                                s.name
+                                                                            }
+                                                                        </SelectItem>
+                                                                    ),
+                                                                )}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+
+                                                    {/* Bank */}
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            {t('martyrs.bank')}
+                                                        </Label>
+                                                        <Select
+                                                            value={
+                                                                localFilters.bank_id ||
+                                                                'all'
+                                                            }
+                                                            onValueChange={(
+                                                                v,
+                                                            ) =>
+                                                                handleFilterChange(
+                                                                    'bank_id',
+                                                                    v,
+                                                                )
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        'martyrs.select',
+                                                                    )}
+                                                                />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">
+                                                                    {t(
+                                                                        'martyrs.all',
+                                                                    )}
+                                                                </SelectItem>
+                                                                {banks.map(
+                                                                    (b) => (
+                                                                        <SelectItem
+                                                                            key={
+                                                                                b.id
+                                                                            }
+                                                                            value={String(
+                                                                                b.id,
+                                                                            )}
+                                                                        >
+                                                                            {
+                                                                                b.name_ar
+                                                                            }
+                                                                        </SelectItem>
+                                                                    ),
+                                                                )}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+
+                                                {/* Parents Status */}
+                                                <div className="space-y-2">
+                                                    <Label>
+                                                        {t(
+                                                            'martyrs.parents_status',
+                                                        )}
+                                                    </Label>
+                                                    <Select
+                                                        value={
+                                                            localFilters.parents_status_id ||
+                                                            'all'
+                                                        }
+                                                        onValueChange={(v) =>
+                                                            handleFilterChange(
+                                                                'parents_status_id',
+                                                                v,
+                                                            )
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'martyrs.select',
+                                                                )}
+                                                            />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="all">
+                                                                {t(
+                                                                    'martyrs.all',
+                                                                )}
+                                                            </SelectItem>
+                                                            {parentsStatuses.map(
                                                                 (s) => (
                                                                     <SelectItem
                                                                         key={
@@ -1014,543 +1313,440 @@ export default function Index({
                                                     </Select>
                                                 </div>
 
-                                                {/* Wife Status */}
-                                                <div className="space-y-2">
-                                                    <Label>
-                                                        {t(
-                                                            'martyrs.wife_status',
-                                                        )}
-                                                    </Label>
-                                                    <Select
-                                                        value={
-                                                            localFilters.wife_status ||
-                                                            'all'
-                                                        }
-                                                        onValueChange={(v) =>
-                                                            handleFilterChange(
-                                                                'wife_status',
-                                                                v,
-                                                            )
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue
-                                                                placeholder={t(
-                                                                    'martyrs.select',
-                                                                )}
-                                                            />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="all">
-                                                                {t(
-                                                                    'martyrs.all',
-                                                                )}
-                                                            </SelectItem>
-                                                            <SelectItem value="أرملة">
-                                                                {t(
-                                                                    'martyrs.wife_status.widow',
-                                                                ) || 'أرملة'}
-                                                            </SelectItem>
-                                                            <SelectItem value="متزوجة">
-                                                                {t(
-                                                                    'martyrs.wife_status.married',
-                                                                ) || 'متزوجة'}
-                                                            </SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                            </div>
+                                                <Separator />
 
-                                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                                {/* Employment Status */}
-                                                <div className="space-y-2">
-                                                    <Label>
-                                                        {t(
-                                                            'martyrs.employment_status',
-                                                        )}
-                                                    </Label>
-                                                    <Select
-                                                        value={
-                                                            localFilters.employment_status_id ||
-                                                            'all'
-                                                        }
-                                                        onValueChange={(v) =>
-                                                            handleFilterChange(
-                                                                'employment_status_id',
-                                                                v,
-                                                            )
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue
-                                                                placeholder={t(
-                                                                    'martyrs.select',
-                                                                )}
-                                                            />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="all">
-                                                                {t(
-                                                                    'martyrs.all',
-                                                                )}
-                                                            </SelectItem>
-                                                            {employmentStatuses.map(
-                                                                (s) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            s.id
-                                                                        }
-                                                                        value={String(
-                                                                            s.id,
-                                                                        )}
-                                                                    >
-                                                                        {s.name}
-                                                                    </SelectItem>
-                                                                ),
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            {t(
+                                                                'martyrs.has_martyr_decision',
                                                             )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                {/* Bank */}
-                                                <div className="space-y-2">
-                                                    <Label>
-                                                        {t('martyrs.bank')}
-                                                    </Label>
-                                                    <Select
-                                                        value={
-                                                            localFilters.bank_id ||
-                                                            'all'
-                                                        }
-                                                        onValueChange={(v) =>
-                                                            handleFilterChange(
-                                                                'bank_id',
+                                                        </Label>
+                                                        <Select
+                                                            value={
+                                                                localFilters.has_martyr_decision ||
+                                                                'all'
+                                                            }
+                                                            onValueChange={(
                                                                 v,
-                                                            )
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue
-                                                                placeholder={t(
-                                                                    'martyrs.select',
-                                                                )}
-                                                            />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="all">
-                                                                {t(
-                                                                    'martyrs.all',
-                                                                )}
-                                                            </SelectItem>
-                                                            {banks.map((b) => (
-                                                                <SelectItem
-                                                                    key={b.id}
-                                                                    value={String(
-                                                                        b.id,
+                                                            ) =>
+                                                                handleFilterChange(
+                                                                    'has_martyr_decision',
+                                                                    v,
+                                                                )
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">
+                                                                    {t(
+                                                                        'martyrs.all',
                                                                     )}
-                                                                >
-                                                                    {b.name_ar}
                                                                 </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                            </div>
+                                                                <SelectItem value="1">
+                                                                    {t(
+                                                                        'martyrs.yes',
+                                                                    )}
+                                                                </SelectItem>
+                                                                <SelectItem value="0">
+                                                                    {t(
+                                                                        'martyrs.no',
+                                                                    )}
+                                                                </SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
 
-                                            {/* Parents Status */}
-                                            <div className="space-y-2">
-                                                <Label>
-                                                    {t(
-                                                        'martyrs.parents_status',
-                                                    )}
-                                                </Label>
-                                                <Select
-                                                    value={
-                                                        localFilters.parents_status_id ||
-                                                        'all'
-                                                    }
-                                                    onValueChange={(v) =>
-                                                        handleFilterChange(
-                                                            'parents_status_id',
-                                                            v,
-                                                        )
-                                                    }
-                                                >
-                                                    <SelectTrigger>
-                                                        <SelectValue
-                                                            placeholder={t(
-                                                                'martyrs.select',
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            {t(
+                                                                'martyrs.sort_by',
                                                             )}
-                                                        />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="all">
-                                                            {t('martyrs.all')}
-                                                        </SelectItem>
-                                                        {parentsStatuses.map(
-                                                            (s) => (
-                                                                <SelectItem
-                                                                    key={s.id}
-                                                                    value={String(
-                                                                        s.id,
+                                                        </Label>
+                                                        <Select
+                                                            value={
+                                                                localFilters.sort ||
+                                                                '-created_at'
+                                                            }
+                                                            onValueChange={(
+                                                                v,
+                                                            ) =>
+                                                                handleFilterChange(
+                                                                    'sort',
+                                                                    v,
+                                                                )
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="-created_at">
+                                                                    {t(
+                                                                        'martyrs.sort.newest',
                                                                     )}
-                                                                >
-                                                                    {isRTL
-                                                                        ? s.name_ar
-                                                                        : s.name_en}
                                                                 </SelectItem>
-                                                            ),
-                                                        )}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-
-                                            <Separator />
-
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="space-y-2">
-                                                    <Label>
-                                                        {t(
-                                                            'martyrs.has_martyr_decision',
-                                                        )}
-                                                    </Label>
-                                                    <Select
-                                                        value={
-                                                            localFilters.has_martyr_decision ||
-                                                            'all'
-                                                        }
-                                                        onValueChange={(v) =>
-                                                            handleFilterChange(
-                                                                'has_martyr_decision',
-                                                                v,
-                                                            )
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="all">
-                                                                {t(
-                                                                    'martyrs.all',
-                                                                )}
-                                                            </SelectItem>
-                                                            <SelectItem value="1">
-                                                                {t(
-                                                                    'martyrs.yes',
-                                                                )}
-                                                            </SelectItem>
-                                                            <SelectItem value="0">
-                                                                {t(
-                                                                    'martyrs.no',
-                                                                )}
-                                                            </SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                <div className="space-y-2">
-                                                    <Label>
-                                                        {t('martyrs.sort_by')}
-                                                    </Label>
-                                                    <Select
-                                                        value={
-                                                            localFilters.sort ||
-                                                            '-created_at'
-                                                        }
-                                                        onValueChange={(v) =>
-                                                            handleFilterChange(
-                                                                'sort',
-                                                                v,
-                                                            )
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="-created_at">
-                                                                {t(
-                                                                    'martyrs.sort.newest',
-                                                                )}
-                                                            </SelectItem>
-                                                            <SelectItem value="created_at">
-                                                                {t(
-                                                                    'martyrs.sort.oldest',
-                                                                )}
-                                                            </SelectItem>
-                                                            <SelectItem value="full_name">
-                                                                {t(
-                                                                    'martyrs.sort.name_asc',
-                                                                )}
-                                                            </SelectItem>
-                                                            <SelectItem value="-full_name">
-                                                                {t(
-                                                                    'martyrs.sort.name_desc',
-                                                                )}
-                                                            </SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
+                                                                <SelectItem value="created_at">
+                                                                    {t(
+                                                                        'martyrs.sort.oldest',
+                                                                    )}
+                                                                </SelectItem>
+                                                                <SelectItem value="full_name">
+                                                                    {t(
+                                                                        'martyrs.sort.name_asc',
+                                                                    )}
+                                                                </SelectItem>
+                                                                <SelectItem value="-full_name">
+                                                                    {t(
+                                                                        'martyrs.sort.name_desc',
+                                                                    )}
+                                                                </SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </ScrollArea>
+                                    <div className="border-t bg-muted/20 p-6">
+                                        <Button
+                                            onClick={clearFilters}
+                                            variant="outline"
+                                            className="w-full"
+                                        >
+                                            <Trash2 className="mr-2 h-4 w-4" />{' '}
+                                            {t('martyrs.filters.clear_all')}
+                                        </Button>
                                     </div>
-                                </ScrollArea>
-                                <div className="border-t bg-muted/20 p-6">
-                                    <Button
-                                        onClick={clearFilters}
-                                        variant="outline"
-                                        className="w-full"
-                                    >
-                                        <Trash2 className="mr-2 h-4 w-4" />{' '}
-                                        {t('martyrs.filters.clear_all')}
-                                    </Button>
-                                </div>
-                            </SheetContent>
-                        </Sheet>
+                                </SheetContent>
+                            </Sheet>
 
-                        {/* Columns Dialog */}
-                        <Dialog
-                            open={isColumnsDialogOpen}
-                            onOpenChange={setIsColumnsDialogOpen}
-                        >
-                            <DialogTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    title={t('martyrs.show_columns')}
-                                >
-                                    <Columns className="h-4 w-4" />
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-md">
-                                <DialogHeader>
-                                    <DialogTitle>
-                                        {t('martyrs.show_columns')}
-                                    </DialogTitle>
-                                    <DialogDescription>
-                                        {t('martyrs.show_columns_description')}
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <ScrollArea className="h-[300px] rounded-md border p-4">
-                                    <div className="space-y-4">
-                                        {availableColumns.map((col) => (
-                                            <div
-                                                key={col.key}
-                                                className="flex items-center space-x-2"
+                            {/* Columns Dialog */}
+                            <Dialog
+                                open={isColumnsDialogOpen}
+                                onOpenChange={setIsColumnsDialogOpen}
+                            >
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <DialogTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                title={t(
+                                                    'martyrs.show_columns',
+                                                )}
                                             >
-                                                <Checkbox
-                                                    id={`col-${col.key}`}
-                                                    checked={visibleColumns.includes(
-                                                        col.key,
-                                                    )}
-                                                    onCheckedChange={(
-                                                        checked,
-                                                    ) => {
-                                                        if (checked)
-                                                            setVisibleColumns([
-                                                                ...visibleColumns,
-                                                                col.key,
-                                                            ]);
-                                                        else if (!col.required)
-                                                            setVisibleColumns(
-                                                                visibleColumns.filter(
-                                                                    (c) =>
-                                                                        c !==
-                                                                        col.key,
-                                                                ),
-                                                            );
-                                                    }}
-                                                    disabled={col.required}
-                                                />
-                                                <Label
-                                                    htmlFor={`col-${col.key}`}
-                                                    className={cn(
-                                                        col.required &&
-                                                            'text-muted-foreground italic',
-                                                    )}
+                                                <Columns className="h-4 w-4" />
+                                            </Button>
+                                        </DialogTrigger>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{t('martyrs.show_columns')}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                                <DialogContent className="max-w-md">
+                                    <DialogHeader>
+                                        <DialogTitle>
+                                            {t('martyrs.show_columns')}
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            {t(
+                                                'martyrs.show_columns_description',
+                                            )}
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <ScrollArea className="h-[300px] rounded-md border p-4">
+                                        <div className="space-y-4">
+                                            {availableColumns.map((col) => (
+                                                <div
+                                                    key={col.key}
+                                                    className="flex items-center space-x-2"
                                                 >
-                                                    {col.label}{' '}
-                                                    {col.required && '*'}
-                                                </Label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </ScrollArea>
-                                <DialogFooter>
-                                    <Button
-                                        variant="ghost"
-                                        onClick={() =>
-                                            setVisibleColumns(
-                                                availableColumns.map(
-                                                    (c) => c.key,
-                                                ),
-                                            )
-                                        }
-                                    >
-                                        {t('martyrs.reset_columns')}
-                                    </Button>
-                                    <Button
-                                        onClick={() =>
-                                            setIsColumnsDialogOpen(false)
-                                        }
-                                    >
-                                        {t('martyrs.done')}
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
-
-                        <div className="mx-1 hidden h-6 w-px bg-border md:block" />
-
-                        {/* Export & Create */}
-                        {canExport && (
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline">
-                                        <Download className="mr-2 h-4 w-4" />
-                                        {t('martyrs.export')}
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={handleExport}>
-                                        <FileText className="mr-2 h-4 w-4" />{' '}
-                                        {t('martyrs.export_excel')}
-                                    </DropdownMenuItem>
-                                    {latestExportAvailable && (
-                                        <DropdownMenuItem
+                                                    <Checkbox
+                                                        id={`col-${col.key}`}
+                                                        checked={visibleColumns.includes(
+                                                            col.key,
+                                                        )}
+                                                        onCheckedChange={(
+                                                            checked,
+                                                        ) => {
+                                                            if (checked)
+                                                                setVisibleColumns(
+                                                                    [
+                                                                        ...visibleColumns,
+                                                                        col.key,
+                                                                    ],
+                                                                );
+                                                            else if (
+                                                                !col.required
+                                                            )
+                                                                setVisibleColumns(
+                                                                    visibleColumns.filter(
+                                                                        (c) =>
+                                                                            c !==
+                                                                            col.key,
+                                                                    ),
+                                                                );
+                                                        }}
+                                                        disabled={col.required}
+                                                    />
+                                                    <Label
+                                                        htmlFor={`col-${col.key}`}
+                                                        className={cn(
+                                                            col.required &&
+                                                                'text-muted-foreground italic',
+                                                        )}
+                                                    >
+                                                        {col.label}{' '}
+                                                        {col.required && '*'}
+                                                    </Label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </ScrollArea>
+                                    <DialogFooter>
+                                        <Button
+                                            variant="ghost"
                                             onClick={() =>
-                                                window.open(
-                                                    latestExportUrl || '',
-                                                    '_blank',
+                                                setVisibleColumns(
+                                                    availableColumns.map(
+                                                        (c) => c.key,
+                                                    ),
                                                 )
                                             }
                                         >
-                                            <Download className="mr-2 h-4 w-4" />{' '}
-                                            {t('martyrs.download_latest')}
-                                        </DropdownMenuItem>
-                                    )}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        )}
+                                            {t('martyrs.reset_columns')}
+                                        </Button>
+                                        <Button
+                                            onClick={() =>
+                                                setIsColumnsDialogOpen(false)
+                                            }
+                                        >
+                                            {t('martyrs.done')}
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
 
-                        {canCreate && (
-                            <Button asChild>
-                                <Link href="/martyrs/create">
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    {t('martyrs.create')}
-                                </Link>
-                            </Button>
-                        )}
+                            <div className="mx-1 hidden h-6 w-px bg-border md:block" />
+
+                            {/* Export & Create */}
+                            {canExport && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline">
+                                            <Download className="mr-2 h-4 w-4" />
+                                            {t('martyrs.export')}
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem
+                                            onClick={handleExport}
+                                        >
+                                            <FileText className="mr-2 h-4 w-4" />{' '}
+                                            {t('martyrs.export_excel')}
+                                        </DropdownMenuItem>
+                                        {latestExportAvailable && (
+                                            <DropdownMenuItem
+                                                onClick={() =>
+                                                    window.open(
+                                                        latestExportUrl || '',
+                                                        '_blank',
+                                                    )
+                                                }
+                                            >
+                                                <Download className="mr-2 h-4 w-4" />{' '}
+                                                {t('martyrs.download_latest')}
+                                            </DropdownMenuItem>
+                                        )}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
+                        </div>
                     </div>
+
+                    {/* Data Table Card */}
+                    <Card className="border-muted shadow-sm transition-all duration-200 hover:shadow-md">
+                        <CardContent className="p-0">
+                            <DataTable
+                                columns={filteredColumns}
+                                data={martyrs.data}
+                                columnVisibility={availableColumns.reduce(
+                                    (acc, col) => ({
+                                        ...acc,
+                                        [col.key]: visibleColumns.includes(
+                                            col.key,
+                                        ),
+                                    }),
+                                    {},
+                                )}
+                            />
+                        </CardContent>
+                    </Card>
+
+                    {/* Pagination */}
+                    {martyrs.last_page > 1 && (
+                        <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+                            <p className="text-sm text-muted-foreground">
+                                {t('martyrs.pagination.showing', {
+                                    from: martyrs.from,
+                                    to: martyrs.to,
+                                    total: martyrs.total,
+                                })}
+                            </p>
+                            <Pagination className="w-auto">
+                                <PaginationContent>
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            href={
+                                                martyrs.current_page > 1
+                                                    ? `/martyrs?page=${martyrs.current_page - 1}`
+                                                    : '#'
+                                            }
+                                            className={cn(
+                                                martyrs.current_page <= 1 &&
+                                                    'pointer-events-none opacity-50',
+                                            )}
+                                        />
+                                    </PaginationItem>
+                                    {/* Show first page */}
+                                    {martyrs.current_page > 3 && (
+                                        <>
+                                            <PaginationItem>
+                                                <PaginationLink href="/martyrs?page=1">
+                                                    1
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                            {martyrs.current_page > 4 && (
+                                                <PaginationItem>
+                                                    <PaginationEllipsis />
+                                                </PaginationItem>
+                                            )}
+                                        </>
+                                    )}
+                                    {/* Show pages around current */}
+                                    {Array.from(
+                                        {
+                                            length: Math.min(
+                                                5,
+                                                martyrs.last_page,
+                                            ),
+                                        },
+                                        (_, i) => {
+                                            const page = Math.max(
+                                                1,
+                                                Math.min(
+                                                    martyrs.last_page,
+                                                    martyrs.current_page -
+                                                        2 +
+                                                        i,
+                                                ),
+                                            );
+                                            return (
+                                                <PaginationItem key={page}>
+                                                    <PaginationLink
+                                                        href={`/martyrs?page=${page}`}
+                                                        isActive={
+                                                            page ===
+                                                            martyrs.current_page
+                                                        }
+                                                    >
+                                                        {page}
+                                                    </PaginationLink>
+                                                </PaginationItem>
+                                            );
+                                        },
+                                    )}
+                                    {/* Show last page */}
+                                    {martyrs.current_page <
+                                        martyrs.last_page - 2 && (
+                                        <>
+                                            {martyrs.current_page <
+                                                martyrs.last_page - 3 && (
+                                                <PaginationItem>
+                                                    <PaginationEllipsis />
+                                                </PaginationItem>
+                                            )}
+                                            <PaginationItem>
+                                                <PaginationLink
+                                                    href={`/martyrs?page=${martyrs.last_page}`}
+                                                >
+                                                    {martyrs.last_page}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        </>
+                                    )}
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            href={
+                                                martyrs.current_page <
+                                                martyrs.last_page
+                                                    ? `/martyrs?page=${martyrs.current_page + 1}`
+                                                    : '#'
+                                            }
+                                            className={cn(
+                                                martyrs.current_page >=
+                                                    martyrs.last_page &&
+                                                    'pointer-events-none opacity-50',
+                                            )}
+                                        />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
+                        </div>
+                    )}
                 </div>
 
-                {/* Data Table Card */}
-                <Card className="border-muted shadow-sm">
-                    <CardContent className="p-0">
-                        <DataTable
-                            columns={filteredColumns}
-                            data={martyrs.data}
-                            columnVisibility={availableColumns.reduce(
-                                (acc, col) => ({
-                                    ...acc,
-                                    [col.key]: visibleColumns.includes(col.key),
-                                }),
-                                {},
-                            )}
-                        />
-                    </CardContent>
-                </Card>
-
-                {/* Pagination */}
-                {martyrs.last_page > 1 && (
-                    <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-                        <p className="order-2 text-sm text-muted-foreground sm:order-1">
-                            {t('martyrs.pagination.showing', {
-                                from: martyrs.from,
-                                to: martyrs.to,
-                                total: martyrs.total,
-                            })}
-                        </p>
-                        <Pagination className="order-1 w-auto sm:order-2">
-                            <PaginationContent>
-                                <PaginationItem>
-                                    <PaginationPrevious
-                                        href={
-                                            martyrs.current_page > 1
-                                                ? `/martyrs?page=${martyrs.current_page - 1}`
-                                                : '#'
+                {/* Delete Alert Dialog */}
+                <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                {t('martyrs.confirm_delete')}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-destructive">
+                                {t('martyrs.delete_warning_message') ||
+                                    'This action cannot be undone. This will permanently delete the martyr record.'}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={async () => {
+                                    if (deletingId) {
+                                        setIsDeleting(true);
+                                        try {
+                                            await router.delete(
+                                                `/martyrs/${deletingId}`,
+                                                {
+                                                    onSuccess: () => {
+                                                        toast({
+                                                            title: t(
+                                                                'martyrs.deleted_successfully',
+                                                            ),
+                                                            variant: 'default',
+                                                        });
+                                                        setDeleteOpen(false);
+                                                        setDeletingId(null);
+                                                    },
+                                                },
+                                            );
+                                        } finally {
+                                            setIsDeleting(false);
                                         }
-                                        className={cn(
-                                            martyrs.current_page <= 1 &&
-                                                'pointer-events-none opacity-50',
-                                        )}
-                                    />
-                                </PaginationItem>
-                                {/* Simple Pagination Logic for brevity */}
-                                <PaginationItem>
-                                    <PaginationLink href="#" isActive>
-                                        {martyrs.current_page}
-                                    </PaginationLink>
-                                </PaginationItem>
-                                <PaginationItem>
-                                    <PaginationNext
-                                        href={
-                                            martyrs.current_page <
-                                            martyrs.last_page
-                                                ? `/martyrs?page=${martyrs.current_page + 1}`
-                                                : '#'
-                                        }
-                                        className={cn(
-                                            martyrs.current_page >=
-                                                martyrs.last_page &&
-                                                'pointer-events-none opacity-50',
-                                        )}
-                                    />
-                                </PaginationItem>
-                            </PaginationContent>
-                        </Pagination>
-                    </div>
-                )}
-            </div>
-
-            {/* Delete Alert Dialog */}
-            <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            {t('martyrs.confirm_delete')}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription className="text-destructive">
-                            {t('martyrs.delete_warning_message') ||
-                                'This action cannot be undone. This will permanently delete the martyr record.'}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={() => {
-                                if (deletingId) {
-                                    router.delete(`/martyrs/${deletingId}`, {
-                                        onSuccess: () => {
-                                            toast({
-                                                title: t(
-                                                    'martyrs.deleted_successfully',
-                                                ),
-                                                variant: 'default',
-                                            });
-                                            setDeleteOpen(false);
-                                        },
-                                    });
-                                }
-                            }}
-                            className="bg-destructive hover:bg-destructive/90"
-                        >
-                            {t('delete')}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </AppLayout>
+                                    }
+                                }}
+                                disabled={isDeleting}
+                                className="bg-destructive hover:bg-destructive/90"
+                            >
+                                {isDeleting ? t('deleting') : t('delete')}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </AppLayout>
+        </TooltipProvider>
     );
 }

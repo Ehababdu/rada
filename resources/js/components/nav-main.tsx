@@ -30,8 +30,8 @@ export const NavMain = memo(function NavMain({
                             isActive={urlIsActive(item.href)}
                             tooltip={{ children: item.title }}
                         >
-                            <Link 
-                                href={item.href} 
+                            <Link
+                                href={item.href}
                                 prefetch={item.href !== '/compensations'}
                             >
                                 {item.icon && <item.icon />}

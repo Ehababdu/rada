@@ -23,7 +23,7 @@ import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { StatsOverview } from './components/stats-overview';
@@ -135,8 +135,9 @@ export default function Index({
                     <h2 className="text-2xl font-bold text-muted-foreground">
                         {t('common.access_denied') || 'غير مسموح بالوصول'}
                     </h2>
-                    <p className="text-muted-foreground mt-2">
-                        {t('common.no_permission') || 'ليس لديك صلاحية لعرض هذه الصفحة'}
+                    <p className="mt-2 text-muted-foreground">
+                        {t('common.no_permission') ||
+                            'ليس لديك صلاحية لعرض هذه الصفحة'}
                     </p>
                 </div>
             </div>
