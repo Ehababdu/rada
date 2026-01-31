@@ -76,7 +76,6 @@ interface Martyr {
     previous_employer_location?: { id: number; name_ar: string; name_en?: string } | null;
 
     wife_status?: string | null;
-    wife_remarried?: boolean;
 
     military_rank_id?: number | null;
     bank_id?: number | null;

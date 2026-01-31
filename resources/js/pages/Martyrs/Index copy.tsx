@@ -66,7 +66,6 @@ interface Martyr {
 
     // Wife status fields
     wife_status?: string | null;
-    wife_remarried?: boolean;
 
     // Relation ids
     military_rank_id?: number | null;

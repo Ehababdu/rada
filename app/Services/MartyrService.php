@@ -174,7 +174,6 @@ class MartyrService
                 'marital_status_id' => $martyr->marital_status_id,
                 'children_count' => $martyr->children_count,
                 'wife_status' => $martyr->wife_status,
-                'wife_remarried' => $martyr->wife_remarried,
                 'employment_status' => $martyr->employmentStatus ? [
                     'id' => $martyr->employmentStatus->id,
                     'name' => $martyr->employmentStatus->name,
@@ -349,7 +348,7 @@ class MartyrService
                 ];
             });
         } catch (\Exception $e) {
-            \Log::info('Scout failed, falling back to database search: ' . $e->getMessage());
+            \Log::info('Scout failed, falling back to database search: '.$e->getMessage());
             // Fall back to regular database search if Scout fails
             $searchTerm = '%'.$query.'%';
             $results = Martyr::where('full_name', 'like', $searchTerm)

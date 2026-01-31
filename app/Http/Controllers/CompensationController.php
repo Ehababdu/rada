@@ -16,7 +16,7 @@ class CompensationController extends Controller
      */
     public function index(Request $request): Response
     {
-        if (!auth()->user()->can('compensations.view')) {
+        if (! auth()->user()->can('compensations.view')) {
             abort(403, 'Unauthorized');
         }
         $search = $request->get('search');
@@ -101,7 +101,7 @@ class CompensationController extends Controller
     public function create(Request $request): Response
     {
         $martyrs = Martyr::where('marital_status_id', 1) // 1 = married
-            ->select('id', 'full_name', 'national_id', 'military_rank_id', 'parents_status_id', 'marital_status_id', 'children_count', 'wife_remarried', 'wife_status')
+            ->select('id', 'full_name', 'national_id', 'military_rank_id', 'parents_status_id', 'marital_status_id', 'children_count', 'wife_status')
             ->with('militaryRank:id,name_ar,name_en')
             ->orderBy('full_name')
             ->get()
@@ -114,7 +114,6 @@ class CompensationController extends Controller
                     'parents_status_id' => $martyr->parents_status_id,
                     'marital_status_id' => $martyr->marital_status_id,
                     'children_count' => $martyr->children_count,
-                    'wife_remarried' => $martyr->wife_remarried,
                     'wife_status' => $martyr->wife_status,
                 ];
             });
@@ -149,7 +148,7 @@ class CompensationController extends Controller
         $martyr = Martyr::with(['parentsStatus', 'maritalStatus'])->findOrFail($validated['martyr_id']);
 
         // Calculate amount if not provided
-        if (!isset($validated['amount']) || $validated['amount'] === null) {
+        if (! isset($validated['amount']) || $validated['amount'] === null) {
             $baseAmount = $martyr->calculateCompensationAmount();
             $monthsCount = isset($validated['months']) ? count($validated['months']) : 1;
             $validated['amount'] = $baseAmount * $monthsCount;

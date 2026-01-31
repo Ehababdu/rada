@@ -18,7 +18,6 @@ class Martyr extends Model
         'parents_status_id',
         'marital_status_id',
         'children_count',
-        'wife_remarried',
         'wife_status',
         'employment_status_id',
         'job_grade_id',
@@ -37,7 +36,7 @@ class Martyr extends Model
         'agent_relationship',
         'profile_image',
         'agent_passport_number',
-        
+
         'death_date',
         'has_martyr_decision',
         'decision_number',
@@ -49,7 +48,6 @@ class Martyr extends Model
     {
         return [
             'children_count' => 'integer',
-            'wife_remarried' => 'boolean',
             'wife_status' => 'string',
             'death_date' => 'date',
             'has_martyr_decision' => 'boolean',
@@ -163,12 +161,12 @@ class Martyr extends Model
         }
 
         // Wife compensation: 500 if not remarried
-        if (!$wifeRemarried) {
+        if (! $wifeRemarried) {
             $amount += 500;
         }
 
         // Special case: if mother deceased, wife remarried, and no children = 0
-        if (!$motherAlive && $wifeRemarried && $childrenCount === 0) {
+        if (! $motherAlive && $wifeRemarried && $childrenCount === 0) {
             return 0;
         }
 

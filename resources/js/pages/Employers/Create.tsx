@@ -134,7 +134,6 @@ export default function Create({ locations }: Props) {
                                             <SelectValue placeholder={t('employers.select_location')} />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="">-- {t('employers.select_location')} --</SelectItem>
                                             {locations.map((location) => (
                                                 <SelectItem key={location.id} value={location.id.toString()}>
                                                     {isRTL ? location.name_ar : (location.name_en || location.name_ar)}

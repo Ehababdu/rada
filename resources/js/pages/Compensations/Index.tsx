@@ -81,9 +81,9 @@ export default function Index({ compensations, martyrs, parentsStatuses, employm
 
     // States
     const [search, setSearch] = useState(filters.search || '');
-    const [selectedMartyr, setSelectedMartyr] = useState(filters.martyr_id || 'all');
-    const [pStatus, setPStatus] = useState(filters.parents_status_id || 'all');
-    const [eStatus, setEStatus] = useState(filters.employment_status_id || 'all');
+    const [selectedMartyr, setSelectedMartyr] = useState(filters.martyr_id && filters.martyr_id !== '' ? filters.martyr_id : 'all');
+    const [pStatus, setPStatus] = useState(filters.parents_status_id && filters.parents_status_id !== '' ? filters.parents_status_id : 'all');
+    const [eStatus, setEStatus] = useState(filters.employment_status_id && filters.employment_status_id !== '' ? filters.employment_status_id : 'all');
     const [sorting, setSorting] = useState<SortingState>([]);
     const [deleteId, setDeleteId] = useState<number | null>(null);
 
@@ -213,7 +213,7 @@ export default function Index({ compensations, martyrs, parentsStatuses, employm
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">{t('all_martyrs')}</SelectItem>
-                                    {martyrs.map((m) => (
+                                    {martyrs.filter(m => m.id && m.id.toString().trim() !== '').map((m) => (
                                         <SelectItem key={m.id} value={m.id.toString()}>{m.full_name}</SelectItem>
                                     ))}
                                 </SelectContent>
@@ -231,7 +231,7 @@ export default function Index({ compensations, martyrs, parentsStatuses, employm
                                         <SelectTrigger><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="all">{t('all')}</SelectItem>
-                                            {parentsStatuses.map(s => <SelectItem key={s.id} value={s.id.toString()}>{isRTL ? s.name_ar : s.name_en}</SelectItem>)}
+                                            {parentsStatuses.filter(s => s.id && s.id.toString().trim() !== '').map(s => <SelectItem key={s.id} value={s.id.toString()}>{isRTL ? s.name_ar : s.name_en}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -241,7 +241,7 @@ export default function Index({ compensations, martyrs, parentsStatuses, employm
                                         <SelectTrigger><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="all">{t('all')}</SelectItem>
-                                            {employmentStatuses.map(s => <SelectItem key={s.id} value={s.id.toString()}>{s.name}</SelectItem>)}
+                                            {employmentStatuses.filter(s => s.id && s.id.toString().trim() !== '').map(s => <SelectItem key={s.id} value={s.id.toString()}>{s.name}</SelectItem>)}
                                         </SelectContent>
                                     </Select>
                                 </div>

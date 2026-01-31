@@ -4,6 +4,7 @@ node_modules
 .github
 storage/framework/cache/data
 storage/logs
+storage/framework/testing
 public/storage
 .env
 docker-compose.override.yml

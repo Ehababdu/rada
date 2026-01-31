@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEmployerRequest;
-use App\Http\Requests\UpdateLocationRequest;
 use App\Models\Employer;
+use App\Models\EmployerLocation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

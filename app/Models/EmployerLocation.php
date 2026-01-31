@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Scout\Searchable;
 
 class EmployerLocation extends Model
@@ -46,5 +45,13 @@ class EmployerLocation extends Model
             'name_ar' => $this->name_ar,
             'name_en' => $this->name_en,
         ];
+    }
+
+    /**
+     * Scope a query to only include active locations.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 }
