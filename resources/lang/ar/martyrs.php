@@ -7,6 +7,7 @@ return [
     'add_new' => 'إضافة شهيد جديد',
     'basic_info' => 'المعلومات الأساسية',
     'full_name' => 'الاسم الكامل',
+    'martyr_decision_info' => 'معلومات قرار الشهيد',
     'enter_full_name' => 'أدخل الاسم الكامل',
     'national_id' => 'رقم الهوية الوطنية',
     'enter_national_id' => 'أدخل رقم الهوية الوطنية',
