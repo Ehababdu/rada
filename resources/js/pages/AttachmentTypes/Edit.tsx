@@ -1,15 +1,17 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
+import {
+    edit as attachmentTypesEdit,
+    index as attachmentTypesIndex,
+} from '@/routes/attachment-types';
 import { BreadcrumbItem } from '@/types';
-import { index as attachmentTypesIndex, edit as attachmentTypesEdit, update as attachmentTypesUpdate } from '@/routes/attachment-types';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface AttachmentType {
     id: number;
@@ -75,7 +77,9 @@ export default function Edit({ attachmentType, flash }: Props) {
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-xl font-semibold">تعديل نوع المرفق</h1>
+                        <h1 className="text-xl font-semibold">
+                            تعديل نوع المرفق
+                        </h1>
                         <p className="text-muted-foreground">
                             تعديل معلومات نوع المرفق
                         </p>
@@ -94,12 +98,16 @@ export default function Edit({ attachmentType, flash }: Props) {
                                     id="label"
                                     type="text"
                                     value={data.label}
-                                    onChange={(e) => setData('label', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('label', e.target.value)
+                                    }
                                     placeholder="مثال: شهادة الميلاد"
                                     required
                                 />
                                 {errors.label && (
-                                    <p className="text-sm text-destructive">{errors.label}</p>
+                                    <p className="text-sm text-destructive">
+                                        {errors.label}
+                                    </p>
                                 )}
                                 <p className="text-sm text-muted-foreground">
                                     الاسم الذي سيظهر للمستخدمين
@@ -108,7 +116,9 @@ export default function Edit({ attachmentType, flash }: Props) {
 
                             <div className="flex gap-4">
                                 <Button type="submit" disabled={processing}>
-                                    {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                                    {processing && (
+                                        <LoaderCircle className="h-4 w-4 animate-spin" />
+                                    )}
                                     تحديث نوع المرفق
                                 </Button>
                             </div>

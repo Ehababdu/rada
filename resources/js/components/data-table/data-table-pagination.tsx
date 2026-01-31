@@ -1,10 +1,3 @@
-import { Table } from '@tanstack/react-table';
-import {
-    ChevronLeft,
-    ChevronRight,
-    ChevronsLeft,
-    ChevronsRight,
-} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Select,
@@ -13,13 +6,20 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Table } from '@tanstack/react-table';
+import {
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
+} from 'lucide-react';
 
 interface DataTablePaginationProps<TData> {
     table: Table<TData>;
     /**
      * Page sizes to show in dropdown
      */
-    pageSizeOptions?: number[];
+    pageSizeOptions?: (number | { value: number; label: string })[];
     /**
      * Total items count (server-side pagination)
      */
@@ -60,7 +60,7 @@ export function DataTablePagination<TData>({
     };
 
     const getPageCount = () => {
-        return isServerSide ? totalPages ?? 0 : table.getPageCount();
+        return isServerSide ? (totalPages ?? 0) : table.getPageCount();
     };
 
     const getPageSize = () => {
@@ -112,7 +112,10 @@ export function DataTablePagination<TData>({
     };
 
     const from = getPageIndex() * getPageSize() + 1;
-    const to = Math.min((getPageIndex() + 1) * getPageSize(), totalItems ?? table.getFilteredRowModel().rows.length);
+    const to = Math.min(
+        (getPageIndex() + 1) * getPageSize(),
+        totalItems ?? table.getFilteredRowModel().rows.length,
+    );
     const total = totalItems ?? table.getFilteredRowModel().rows.length;
 
     return (
@@ -121,7 +124,8 @@ export function DataTablePagination<TData>({
                 {table.getFilteredSelectedRowModel().rows.length > 0 && (
                     <span className="font-medium">
                         {table.getFilteredSelectedRowModel().rows.length} of{' '}
-                        {table.getFilteredRowModel().rows.length} row(s) selected
+                        {table.getFilteredRowModel().rows.length} row(s)
+                        selected
                     </span>
                 )}
             </div>
@@ -136,11 +140,21 @@ export function DataTablePagination<TData>({
                             <SelectValue placeholder={getPageSize()} />
                         </SelectTrigger>
                         <SelectContent side="top">
-                            {pageSizeOptions.map((pageSize) => (
-                                <SelectItem key={pageSize} value={`${pageSize}`}>
-                                    {pageSize}
-                                </SelectItem>
-                            ))}
+                            {pageSizeOptions.map((pageSize) => {
+                                const value =
+                                    typeof pageSize === 'number'
+                                        ? pageSize
+                                        : pageSize.value;
+                                const label =
+                                    typeof pageSize === 'number'
+                                        ? pageSize.toString()
+                                        : pageSize.label;
+                                return (
+                                    <SelectItem key={value} value={`${value}`}>
+                                        {label}
+                                    </SelectItem>
+                                );
+                            })}
                         </SelectContent>
                     </Select>
                 </div>
@@ -187,8 +201,8 @@ export function DataTablePagination<TData>({
                 </div>
                 {total > 0 && (
                     <div className="hidden text-sm text-muted-foreground sm:block">
-                        Showing {from.toLocaleString()} to {to.toLocaleString()} of{' '}
-                        {total.toLocaleString()} entries
+                        Showing {from.toLocaleString()} to {to.toLocaleString()}{' '}
+                        of {total.toLocaleString()} entries
                     </div>
                 )}
             </div>

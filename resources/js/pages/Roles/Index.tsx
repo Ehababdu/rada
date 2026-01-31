@@ -1,17 +1,3 @@
-import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type SharedData, type User, type PaginatedResponse } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { usePermissions } from '@/hooks/use-permissions';
-import { useTranslation } from 'react-i18next';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -21,8 +7,17 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import {
     Table,
     TableBody,
@@ -31,11 +26,33 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { index as rolesIndex, create as rolesCreate, show as rolesShow, edit as rolesEdit, destroy as rolesDestroy } from '@/routes/roles';
-import { Plus, Search, Eye, SquarePen, Trash2, RotateCcw, MoreHorizontal, Users } from 'lucide-react';
+import { usePermissions } from '@/hooks/use-permissions';
+import { useToast } from '@/hooks/use-toast';
+import AppLayout from '@/layouts/app-layout';
+import {
+    create as rolesCreate,
+    destroy as rolesDestroy,
+    edit as rolesEdit,
+    index as rolesIndex,
+    show as rolesShow,
+} from '@/routes/roles';
+import {
+    type BreadcrumbItem,
+    type PaginatedResponse,
+    type SharedData,
+} from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import {
+    Eye,
+    MoreHorizontal,
+    Plus,
+    Search,
+    SquarePen,
+    Trash2,
+    Users,
+} from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Role {
     id: number;
@@ -85,7 +102,7 @@ function debounce<T extends (...args: any[]) => any>(func: T, wait: number): T {
 export default function Index({
     paginatedRoles: roles,
     filters = { search: '' },
-    flash
+    flash,
 }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
@@ -101,7 +118,9 @@ export default function Index({
     ];
 
     // Server-side states
-    const [pageIndex, setPageIndex] = useState(Number(roles.current_page) - 1 || 0);
+    const [pageIndex, setPageIndex] = useState(
+        Number(roles.current_page) - 1 || 0,
+    );
     const [pageSize, setPageSize] = useState(roles.per_page);
 
     // Delete dialog state
@@ -109,17 +128,21 @@ export default function Index({
     const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
 
     // Search state
-    const [searchQuery, setSearchQuery] = useState(filters.search || "");
+    const [searchQuery, setSearchQuery] = useState(filters.search || '');
 
     // Debounced search
     const debouncedSearch = useCallback(
         debounce((query: string) => {
-            router.get(rolesIndex.url(), { search: query }, {
-                preserveState: true,
-                replace: true,
-            });
+            router.get(
+                rolesIndex.url(),
+                { search: query },
+                {
+                    preserveState: true,
+                    replace: true,
+                },
+            );
         }, 300),
-        []
+        [],
     );
 
     // Handle search input change
@@ -142,7 +165,10 @@ export default function Index({
             onSuccess: () => {
                 toast({
                     title: t('common.success'),
-                    description: t('roles.deleted_successfully', 'تم حذف الدور بنجاح'),
+                    description: t(
+                        'roles.deleted_successfully',
+                        'تم حذف الدور بنجاح',
+                    ),
                 });
                 setDeleteDialogOpen(false);
                 setRoleToDelete(null);
@@ -150,7 +176,9 @@ export default function Index({
             onError: (errors) => {
                 toast({
                     title: t('common.error'),
-                    description: errors.error || t('roles.delete_failed', 'فشل في حذف الدور'),
+                    description:
+                        errors.error ||
+                        t('roles.delete_failed', 'فشل في حذف الدور'),
                     variant: 'destructive',
                 });
             },
@@ -181,9 +209,14 @@ export default function Index({
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-xl font-semibold">{t('roles.title', 'الأدوار')}</h1>
+                        <h1 className="text-xl font-semibold">
+                            {t('roles.title', 'الأدوار')}
+                        </h1>
                         <p className="text-muted-foreground">
-                            {t('roles.description', 'إدارة الأدوار والصلاحيات في النظام')}
+                            {t(
+                                'roles.description',
+                                'إدارة الأدوار والصلاحيات في النظام',
+                            )}
                         </p>
                     </div>
                     {can('canCreate') && (
@@ -198,13 +231,15 @@ export default function Index({
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>{t('roles.list', 'قائمة الأدوار')}</CardTitle>
+                        <CardTitle>
+                            {t('roles.list', 'قائمة الأدوار')}
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
                         {/* Search */}
                         <div className="mb-4 flex items-center gap-2">
-                            <div className="relative flex-1 max-w-sm">
-                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <div className="relative max-w-sm flex-1">
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     placeholder={t('common.search', 'البحث...')}
                                     value={searchQuery}
@@ -219,73 +254,151 @@ export default function Index({
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>{t('roles.name', 'الاسم')}</TableHead>
-                                        <TableHead>{t('roles.display_name', 'الاسم المعروض')}</TableHead>
-                                        <TableHead>{t('roles.permissions_count', 'عدد الصلاحيات')}</TableHead>
-                                        <TableHead>{t('roles.users_count', 'عدد المستخدمين')}</TableHead>
-                                        <TableHead>{t('common.created_at', 'تاريخ الإنشاء')}</TableHead>
-                                        <TableHead className="w-[70px]">{t('common.actions', 'الإجراءات')}</TableHead>
+                                        <TableHead>
+                                            {t('roles.name', 'الاسم')}
+                                        </TableHead>
+                                        <TableHead>
+                                            {t(
+                                                'roles.display_name',
+                                                'الاسم المعروض',
+                                            )}
+                                        </TableHead>
+                                        <TableHead>
+                                            {t(
+                                                'roles.permissions_count',
+                                                'عدد الصلاحيات',
+                                            )}
+                                        </TableHead>
+                                        <TableHead>
+                                            {t(
+                                                'roles.users_count',
+                                                'عدد المستخدمين',
+                                            )}
+                                        </TableHead>
+                                        <TableHead>
+                                            {t(
+                                                'common.created_at',
+                                                'تاريخ الإنشاء',
+                                            )}
+                                        </TableHead>
+                                        <TableHead className="w-[70px]">
+                                            {t('common.actions', 'الإجراءات')}
+                                        </TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {roles.data.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={6} className="h-24 text-center">
-                                                {t('roles.no_roles', 'لا توجد أدوار')}
+                                            <TableCell
+                                                colSpan={6}
+                                                className="h-24 text-center"
+                                            >
+                                                {t(
+                                                    'roles.no_roles',
+                                                    'لا توجد أدوار',
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     ) : (
                                         roles.data.map((role) => (
                                             <TableRow key={role.id}>
                                                 <TableCell className="font-medium">
-                                                    <Badge variant="outline">{role.name}</Badge>
+                                                    <Badge variant="outline">
+                                                        {role.name}
+                                                    </Badge>
                                                 </TableCell>
-                                                <TableCell>{role.display_name || '-'}</TableCell>
+                                                <TableCell>
+                                                    {role.display_name || '-'}
+                                                </TableCell>
                                                 <TableCell>
                                                     <div className="flex items-center gap-1">
-                                                        <span>{role.permissions_count || 0}</span>
+                                                        <span>
+                                                            {role.permissions_count ||
+                                                                0}
+                                                        </span>
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex items-center gap-1">
                                                         <Users className="h-4 w-4" />
-                                                        <span>{role.users_count || 0}</span>
+                                                        <span>
+                                                            {role.users_count ||
+                                                                0}
+                                                        </span>
                                                     </div>
                                                 </TableCell>
-                                                <TableCell>{formatDate(role.created_at)}</TableCell>
+                                                <TableCell>
+                                                    {formatDate(
+                                                        role.created_at,
+                                                    )}
+                                                </TableCell>
                                                 <TableCell>
                                                     <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                                        <DropdownMenuTrigger
+                                                            asChild
+                                                        >
+                                                            <Button
+                                                                variant="ghost"
+                                                                className="h-8 w-8 p-0"
+                                                            >
                                                                 <MoreHorizontal className="h-4 w-4" />
                                                             </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent align="end">
                                                             {can('canRead') && (
-                                                                <DropdownMenuItem asChild>
-                                                                    <Link href={rolesShow.url(role.id)}>
-                                                                        <Eye className="h-4 w-4" />
-                                                                        {t('common.view', 'عرض')}
-                                                                    </Link>
-                                                                </DropdownMenuItem>
-                                                            )}
-                                                            {can('canUpdate') && (
-                                                                <DropdownMenuItem asChild>
-                                                                    <Link href={rolesEdit.url(role.id)}>
-                                                                        <SquarePen className="h-4 w-4" />
-                                                                        {t('common.edit', 'تعديل')}
-                                                                    </Link>
-                                                                </DropdownMenuItem>
-                                                            )}
-                                                            {can('canDelete') && role.users_count === 0 && (
                                                                 <DropdownMenuItem
-                                                                    onClick={() => handleDelete(role)}
-                                                                    className="text-destructive"
+                                                                    asChild
                                                                 >
-                                                                    <Trash2 className="h-4 w-4" />
-                                                                    {t('common.delete', 'حذف')}
+                                                                    <Link
+                                                                        href={rolesShow.url(
+                                                                            role.id,
+                                                                        )}
+                                                                    >
+                                                                        <Eye className="h-4 w-4" />
+                                                                        {t(
+                                                                            'common.view',
+                                                                            'عرض',
+                                                                        )}
+                                                                    </Link>
                                                                 </DropdownMenuItem>
                                                             )}
+                                                            {can(
+                                                                'canUpdate',
+                                                            ) && (
+                                                                <DropdownMenuItem
+                                                                    asChild
+                                                                >
+                                                                    <Link
+                                                                        href={rolesEdit.url(
+                                                                            role.id,
+                                                                        )}
+                                                                    >
+                                                                        <SquarePen className="h-4 w-4" />
+                                                                        {t(
+                                                                            'common.edit',
+                                                                            'تعديل',
+                                                                        )}
+                                                                    </Link>
+                                                                </DropdownMenuItem>
+                                                            )}
+                                                            {can('canDelete') &&
+                                                                role.users_count ===
+                                                                    0 && (
+                                                                    <DropdownMenuItem
+                                                                        onClick={() =>
+                                                                            handleDelete(
+                                                                                role,
+                                                                            )
+                                                                        }
+                                                                        className="text-destructive"
+                                                                    >
+                                                                        <Trash2 className="h-4 w-4" />
+                                                                        {t(
+                                                                            'common.delete',
+                                                                            'حذف',
+                                                                        )}
+                                                                    </DropdownMenuItem>
+                                                                )}
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
                                                 </TableCell>
@@ -302,17 +415,30 @@ export default function Index({
             </div>
 
             {/* Delete Confirmation Dialog */}
-            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+            <AlertDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+            >
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>{t('roles.confirm_delete', 'تأكيد الحذف')}</AlertDialogTitle>
+                        <AlertDialogTitle>
+                            {t('roles.confirm_delete', 'تأكيد الحذف')}
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
-                            {t('roles.delete_confirmation', 'هل أنت متأكد من حذف هذا الدور؟ هذا الإجراء لا يمكن التراجع عنه.')}
+                            {t(
+                                'roles.delete_confirmation',
+                                'هل أنت متأكد من حذف هذا الدور؟ هذا الإجراء لا يمكن التراجع عنه.',
+                            )}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>{t('common.cancel', 'إلغاء')}</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        <AlertDialogCancel>
+                            {t('common.cancel', 'إلغاء')}
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={confirmDelete}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
                             {t('common.delete', 'حذف')}
                         </AlertDialogAction>
                     </AlertDialogFooter>

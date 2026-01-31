@@ -1,15 +1,15 @@
-import React from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertTriangle, ArrowLeft, Award, Save } from 'lucide-react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Award, Save, AlertTriangle } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
 
 interface Props {}
 
@@ -44,16 +44,18 @@ export default function Create({}: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={t('job_grades.create')} />
 
-            <div className="flex items-center gap-4 mb-8">
+            <div className="mb-8 flex items-center gap-4">
                 <Link href="/job-grades">
                     <Button variant="outline" size="sm">
-                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        <ArrowLeft className="mr-2 h-4 w-4" />
                         {t('back')}
                     </Button>
                 </Link>
                 <div className="flex items-center gap-2">
                     <Award className="h-5 w-5" />
-                    <h1 className="text-2xl font-bold">{t('job_grades.create')}</h1>
+                    <h1 className="text-2xl font-bold">
+                        {t('job_grades.create')}
+                    </h1>
                 </div>
             </div>
 
@@ -66,46 +68,62 @@ export default function Create({}: Props) {
                 </CardHeader>
                 <CardContent className="pt-0">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             <div className="space-y-2">
-                                <Label htmlFor="name_ar">{t('job_grades.name_ar')} *</Label>
+                                <Label htmlFor="name_ar">
+                                    {t('job_grades.name_ar')} *
+                                </Label>
                                 <Input
                                     id="name_ar"
                                     value={data.name_ar}
-                                    onChange={(e) => setData('name_ar', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('name_ar', e.target.value)
+                                    }
                                     placeholder={t('job_grades.enter_name_ar')}
                                 />
                                 {errors.name_ar && (
                                     <Alert variant="destructive">
                                         <AlertTriangle className="h-4 w-4" />
-                                        <AlertDescription>{errors.name_ar}</AlertDescription>
+                                        <AlertDescription>
+                                            {errors.name_ar}
+                                        </AlertDescription>
                                     </Alert>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="name_en">{t('job_grades.name_en')} *</Label>
+                                <Label htmlFor="name_en">
+                                    {t('job_grades.name_en')} *
+                                </Label>
                                 <Input
                                     id="name_en"
                                     value={data.name_en}
-                                    onChange={(e) => setData('name_en', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('name_en', e.target.value)
+                                    }
                                     placeholder={t('job_grades.enter_name_en')}
                                 />
                                 {errors.name_en && (
                                     <Alert variant="destructive">
                                         <AlertTriangle className="h-4 w-4" />
-                                        <AlertDescription>{errors.name_en}</AlertDescription>
+                                        <AlertDescription>
+                                            {errors.name_en}
+                                        </AlertDescription>
                                     </Alert>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="order">{t('job_grades.order')}</Label>
+                                <Label htmlFor="order">
+                                    {t('job_grades.order')}
+                                </Label>
                                 <Input
                                     id="order"
                                     type="number"
                                     value={data.order}
-                                    onChange={(e) => setData('order', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('order', e.target.value)
+                                    }
                                     placeholder={t('job_grades.enter_order')}
                                     min="0"
                                 />
@@ -115,7 +133,9 @@ export default function Create({}: Props) {
                                 {errors.order && (
                                     <Alert variant="destructive">
                                         <AlertTriangle className="h-4 w-4" />
-                                        <AlertDescription>{errors.order}</AlertDescription>
+                                        <AlertDescription>
+                                            {errors.order}
+                                        </AlertDescription>
                                     </Alert>
                                 )}
                             </div>
@@ -125,9 +145,14 @@ export default function Create({}: Props) {
                                     <Checkbox
                                         id="is_active"
                                         checked={data.is_active}
-                                        onCheckedChange={(checked) => setData('is_active', !!checked)}
+                                        onCheckedChange={(checked) =>
+                                            setData('is_active', !!checked)
+                                        }
                                     />
-                                    <Label htmlFor="is_active" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    <Label
+                                        htmlFor="is_active"
+                                        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
                                         {t('job_grades.is_active')}
                                     </Label>
                                 </div>
@@ -137,18 +162,22 @@ export default function Create({}: Props) {
                             </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                             <div className="text-sm text-muted-foreground">
                                 {t('required_fields_note')}
                             </div>
 
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <Button variant="outline" type="button" onClick={() => reset()}>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    type="button"
+                                    onClick={() => reset()}
+                                >
                                     {t('reset')}
                                 </Button>
 
                                 <Button type="submit" disabled={processing}>
-                                    <Save className="h-4 w-4 mr-2" />
+                                    <Save className="mr-2 h-4 w-4" />
                                     {processing ? t('saving') : t('save')}
                                 </Button>
                             </div>

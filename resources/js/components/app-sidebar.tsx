@@ -10,27 +10,39 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { isUserSuperAdmin } from '@/lib/permissions';
 import { dashboard } from '@/routes';
-import { index as martyrsIndex } from '@/routes/martyrs';
-import { index as promotionsIndex } from '@/routes/promotions';
+import { index as attachmentTypesIndex } from '@/routes/attachment-types';
 import { index as banksIndex } from '@/routes/banks';
-import { index as militaryRanksIndex } from '@/routes/military-ranks';
 import { index as compensationsIndex } from '@/routes/compensations';
+import { index as employersIndex } from '@/routes/employers';
 import { index as employmentStatusesIndex } from '@/routes/employment-statuses';
 import { index as jobGradesIndex } from '@/routes/job-grades';
-import { index as usersIndex } from '@/routes/users';
+import { index as martyrsIndex } from '@/routes/martyrs';
+import { index as militaryRanksIndex } from '@/routes/military-ranks';
 import { index as permissionsIndex } from '@/routes/permissions';
+import { index as promotionsIndex } from '@/routes/promotions';
 import { index as rolesIndex } from '@/routes/roles';
-import { index as attachmentTypesIndex } from '@/routes/attachment-types';
-import { index as employersIndex } from '@/routes/employers';
+import { index as usersIndex } from '@/routes/users';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { LayoutGrid, Users, Award, Building2, Shield, DollarSign, Briefcase, UserCheck, Lock, GraduationCap, FileText, Building } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import {
+    Award,
+    Briefcase,
+    Building,
+    Building2,
+    DollarSign,
+    FileText,
+    GraduationCap,
+    LayoutGrid,
+    Lock,
+    Shield,
+    UserCheck,
+    Users,
+} from 'lucide-react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import AppLogo from './app-logo';
-import { memo } from 'react';
-import { usePage } from '@inertiajs/react';
-import { isUserSuperAdmin } from '@/lib/permissions';
 
 const footerNavItems: NavItem[] = [
     //
@@ -91,7 +103,9 @@ export const AppSidebar = memo(function AppSidebar() {
         },
         {
             title: t('navigation.employment_statuses'),
-            href: employmentStatusesIndex.definition?.url ?? employmentStatusesIndex(),
+            href:
+                employmentStatusesIndex.definition?.url ??
+                employmentStatusesIndex(),
             icon: Briefcase,
             resource: 'employment-statuses',
         },
@@ -103,7 +117,8 @@ export const AppSidebar = memo(function AppSidebar() {
         },
         {
             title: 'أنواع المرفقات',
-            href: attachmentTypesIndex.definition?.url ?? attachmentTypesIndex(),
+            href:
+                attachmentTypesIndex.definition?.url ?? attachmentTypesIndex(),
             icon: FileText,
             resource: 'attachment-types',
         },
@@ -129,17 +144,17 @@ export const AppSidebar = memo(function AppSidebar() {
 
     // Filter items based on permissions
     const mainNavItems: NavItem[] = allNavItems
-        .filter(item => {
+        .filter((item) => {
             // Dashboard is always visible
             if (item.resource === null) {
                 return true;
             }
-            
+
             // Super admin sees everything
             if (isSuperAdmin) {
                 return true;
             }
-            
+
             // Check navAccess for the resource
             return navAccess[item.resource] === true;
         })

@@ -28,7 +28,10 @@ export const DEFAULT_PERMISSIONS: UserPermissions = {
 /**
  * Check if user has permission for a specific action
  */
-export function hasPermission(permissions: UserPermissions, action: keyof UserPermissions): boolean {
+export function hasPermission(
+    permissions: UserPermissions,
+    action: keyof UserPermissions,
+): boolean {
     return permissions[action] ?? false;
 }
 
@@ -44,7 +47,8 @@ export function hasAnyPermission(permissions: UserPermissions): boolean {
  */
 export function isUserSuperAdmin(auth: any): boolean {
     if (!auth?.user) return false;
-    const userRoles: string[] = auth.roles || auth.user?.roles?.map((r: any) => r.name) || [];
+    const userRoles: string[] =
+        auth.roles || auth.user?.roles?.map((r: any) => r.name) || [];
     return userRoles.includes('Super Admin');
 }
 
@@ -52,24 +56,38 @@ export function isUserSuperAdmin(auth: any): boolean {
  * Get permissions from user roles/abilities
  * This should be implemented based on your authentication system
  */
-export function getUserPermissions(auth: any, resource: string): UserPermissions {
+export function getUserPermissions(
+    auth: any,
+    resource: string,
+): UserPermissions {
     if (!auth?.user) return DEFAULT_PERMISSIONS;
 
     // Collect permission names from shared props or embedded user relations
-    const userPermissions: string[] = auth.permissions || auth.user?.permissions?.map((p: any) => p.name) || [];
+    const userPermissions: string[] =
+        auth.permissions ||
+        auth.user?.permissions?.map((p: any) => p.name) ||
+        [];
 
     // Collect role names from shared props or embedded user relations
-    const userRoles: string[] = auth.roles || auth.user?.roles?.map((r: any) => r.name) || [];
+    const userRoles: string[] =
+        auth.roles || auth.user?.roles?.map((r: any) => r.name) || [];
 
     // Super Admin gets everything by default
     const isSuperAdmin = userRoles.includes('Super Admin');
 
     // Check if user has specific permissions for this resource
-    const canCreate = isSuperAdmin || userPermissions.includes(`${resource}.create`);
-    const canRead = isSuperAdmin || userPermissions.includes(`${resource}.view`);
-    const canUpdate = isSuperAdmin || userPermissions.includes(`${resource}.edit`);
-    const canDelete = isSuperAdmin || userPermissions.includes(`${resource}.delete`);
-    const canExport = isSuperAdmin || userPermissions.includes(`${resource}.export`) || userPermissions.includes(`${resource}.view`);
+    const canCreate =
+        isSuperAdmin || userPermissions.includes(`${resource}.create`);
+    const canRead =
+        isSuperAdmin || userPermissions.includes(`${resource}.view`);
+    const canUpdate =
+        isSuperAdmin || userPermissions.includes(`${resource}.edit`);
+    const canDelete =
+        isSuperAdmin || userPermissions.includes(`${resource}.delete`);
+    const canExport =
+        isSuperAdmin ||
+        userPermissions.includes(`${resource}.export`) ||
+        userPermissions.includes(`${resource}.view`);
     const canBulkDelete = canDelete;
     const canViewDetails = canRead;
 
@@ -90,7 +108,7 @@ export function getUserPermissions(auth: any, resource: string): UserPermissions
 export function getVisibleActions<TData>(
     item: TData,
     permissions: UserPermissions,
-    customActions?: ((item: TData) => boolean)[]
+    customActions?: ((item: TData) => boolean)[],
 ): string[] {
     const actions: string[] = [];
 
@@ -109,6 +127,12 @@ export function getVisibleActions<TData>(
 /**
  * Check if bulk actions should be shown
  */
-export function canShowBulkActions(permissions: UserPermissions, selectedCount: number): boolean {
-    return (permissions.canBulkDelete || permissions.canExport) && selectedCount > 0;
+export function canShowBulkActions(
+    permissions: UserPermissions,
+    selectedCount: number,
+): boolean {
+    return (
+        (permissions.canBulkDelete || permissions.canExport) &&
+        selectedCount > 0
+    );
 }

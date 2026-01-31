@@ -1,6 +1,6 @@
-import AppLogoIcon from './app-logo-icon';
-import { usePage } from '@inertiajs/react';
 import { type SharedData } from '@/types';
+import { usePage } from '@inertiajs/react';
+import AppLogoIcon from './app-logo-icon';
 
 export default function AppLogo() {
     const { name } = usePage<SharedData>().props;
@@ -17,10 +17,12 @@ export default function AppLogo() {
                 <AppLogoIcon className="relative size-7 fill-current text-white drop-shadow-lg transition-transform duration-300 group-hover:rotate-12" />
             </div>
             <div className="ml-2 grid flex-1 text-left">
-                <span className="truncate text-sm font-bold leading-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">
+                <span className="truncate bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-sm leading-tight font-bold text-transparent dark:from-blue-400 dark:to-purple-400">
                     {name}
                 </span>
-                <span className="text-xs text-muted-foreground/70">نظام الإدارة</span>
+                <span className="text-xs text-muted-foreground/70">
+                    نظام الإدارة
+                </span>
             </div>
         </>
     );

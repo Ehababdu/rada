@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -13,9 +12,8 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
+import * as React from 'react';
 
-import { DataTablePagination } from './data-table-pagination';
-import { DataTableToolbar } from './data-table-toolbar';
 import {
     Table,
     TableBody,
@@ -25,6 +23,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { DataTableEmptyState } from './data-table-empty-state';
+import { DataTablePagination } from './data-table-pagination';
+import { DataTableToolbar } from './data-table-toolbar';
 import { DataTableViewOptions } from './data-table-view-options';
 
 interface DataTableProps<TData, TValue> {
@@ -64,6 +64,13 @@ interface DataTableProps<TData, TValue> {
     enableRowSelection?: boolean;
     enableColumnVisibility?: boolean;
     enablePagination?: boolean;
+    // Server-side pagination props
+    totalItems?: number;
+    currentPage?: number;
+    totalPages?: number;
+    onPageChange?: (page: number) => void;
+    onPageSizeChange?: (pageSize: number) => void;
+    pageSizeOptions?: (number | { value: number; label: string })[];
     className?: string;
 }
 
@@ -81,11 +88,20 @@ export function DataTable<TData, TValue>({
     enableRowSelection = false,
     enableColumnVisibility = true,
     enablePagination = true,
+    // Server-side pagination props
+    totalItems,
+    currentPage,
+    totalPages,
+    onPageChange,
+    onPageSizeChange,
+    pageSizeOptions,
     className,
 }: DataTableProps<TData, TValue>) {
     const [rowSelection, setRowSelection] = React.useState({});
-    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+    const [columnVisibility, setColumnVisibility] =
+        React.useState<VisibilityState>({});
+    const [columnFilters, setColumnFilters] =
+        React.useState<ColumnFiltersState>([]);
     const [sorting, setSorting] = React.useState<SortingState>([]);
 
     const table = useReactTable({
@@ -115,7 +131,9 @@ export function DataTable<TData, TValue>({
         },
     });
 
-    const selectedRows = table.getFilteredSelectedRowModel().rows.map(row => row.original);
+    const selectedRows = table
+        .getFilteredSelectedRowModel()
+        .rows.map((row) => row.original);
 
     return (
         <div className={`w-full space-y-4 ${className}`}>
@@ -141,8 +159,9 @@ export function DataTable<TData, TValue>({
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
-                                                      header.column.columnDef.header,
-                                                      header.getContext()
+                                                      header.column.columnDef
+                                                          .header,
+                                                      header.getContext(),
                                                   )}
                                         </TableHead>
                                     );
@@ -159,7 +178,9 @@ export function DataTable<TData, TValue>({
                                 >
                                     <div className="flex items-center justify-center">
                                         <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                                        <span className="ml-2">جاري التحميل...</span>
+                                        <span className="ml-2">
+                                            جاري التحميل...
+                                        </span>
                                     </div>
                                 </TableCell>
                             </TableRow>
@@ -167,13 +188,15 @@ export function DataTable<TData, TValue>({
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
-                                    data-state={row.getIsSelected() && 'selected'}
+                                    data-state={
+                                        row.getIsSelected() && 'selected'
+                                    }
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
                                             {flexRender(
                                                 cell.column.columnDef.cell,
-                                                cell.getContext()
+                                                cell.getContext(),
                                             )}
                                         </TableCell>
                                     ))}
@@ -187,8 +210,13 @@ export function DataTable<TData, TValue>({
                                 >
                                     <DataTableEmptyState
                                         table={table}
-                                        searchQuery={table.getState().globalFilter}
-                                        isFiltered={table.getState().columnFilters.length > 0}
+                                        searchQuery={
+                                            table.getState().globalFilter
+                                        }
+                                        isFiltered={
+                                            table.getState().columnFilters
+                                                .length > 0
+                                        }
                                         {...emptyState}
                                     />
                                 </TableCell>
@@ -199,8 +227,20 @@ export function DataTable<TData, TValue>({
             </div>
 
             <div className="flex items-center justify-between">
-                {enablePagination && <DataTablePagination table={table} />}
-                {enableColumnVisibility && <DataTableViewOptions table={table} />}
+                {enablePagination && (
+                    <DataTablePagination
+                        table={table}
+                        totalItems={totalItems}
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={onPageChange}
+                        onPageSizeChange={onPageSizeChange}
+                        pageSizeOptions={pageSizeOptions}
+                    />
+                )}
+                {enableColumnVisibility && (
+                    <DataTableViewOptions table={table} />
+                )}
             </div>
         </div>
     );

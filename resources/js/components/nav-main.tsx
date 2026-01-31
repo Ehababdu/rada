@@ -8,10 +8,14 @@ import {
 import { useActiveUrl } from '@/hooks/use-active-url';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { useTranslation } from 'react-i18next';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-export const NavMain = memo(function NavMain({ items = [] }: { items: NavItem[] }) {
+export const NavMain = memo(function NavMain({
+    items = [],
+}: {
+    items: NavItem[];
+}) {
     const { t } = useTranslation();
     const { urlIsActive } = useActiveUrl();
 
@@ -26,7 +30,10 @@ export const NavMain = memo(function NavMain({ items = [] }: { items: NavItem[] 
                             isActive={urlIsActive(item.href)}
                             tooltip={{ children: item.title }}
                         >
-                            <Link href={item.href} prefetch>
+                            <Link 
+                                href={item.href} 
+                                prefetch={item.href !== '/compensations'}
+                            >
                                 {item.icon && <item.icon />}
                                 <span>{item.title}</span>
                             </Link>

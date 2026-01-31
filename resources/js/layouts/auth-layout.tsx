@@ -13,7 +13,11 @@ export default function AuthLayout({
 }) {
     return (
         <BaseLayout>
-            <AuthLayoutTemplate title={title} description={description} {...props}>
+            <AuthLayoutTemplate
+                title={title}
+                description={description}
+                {...props}
+            >
                 {children}
             </AuthLayoutTemplate>
         </BaseLayout>

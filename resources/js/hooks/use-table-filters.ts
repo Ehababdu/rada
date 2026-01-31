@@ -1,6 +1,6 @@
-import { useState, useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { FilterConfig } from '@/components/data-table/filters/filter-panel';
+import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface TableFilters {
     [key: string]: any;
@@ -40,42 +40,54 @@ export interface UseTableFiltersReturn extends TableFilterConfig {
 export function useTableFilters(
     config: TableFilterConfig = {},
     initialFilters: TableFilters = {},
-    onFiltersChange?: (filters: TableFilters) => void
+    onFiltersChange?: (filters: TableFilters) => void,
 ): UseTableFiltersReturn {
     const [filters, setFiltersState] = useState<TableFilters>(initialFilters);
 
-    const setFilter = useCallback((key: string, value: any) => {
-        setFiltersState(prev => {
-            const newFilters = { ...prev };
+    const setFilter = useCallback(
+        (key: string, value: any) => {
+            setFiltersState((prev) => {
+                const newFilters = { ...prev };
 
-            if (value === undefined || value === null || value === '') {
-                delete newFilters[key];
-            } else {
-                newFilters[key] = value;
-            }
+                if (value === undefined || value === null || value === '') {
+                    delete newFilters[key];
+                } else {
+                    newFilters[key] = value;
+                }
 
-            onFiltersChange?.(newFilters);
-            return newFilters;
-        });
-    }, [onFiltersChange]);
+                onFiltersChange?.(newFilters);
+                return newFilters;
+            });
+        },
+        [onFiltersChange],
+    );
 
-    const clearFilter = useCallback((key: string) => {
-        setFilter(key, undefined);
-    }, [setFilter]);
+    const clearFilter = useCallback(
+        (key: string) => {
+            setFilter(key, undefined);
+        },
+        [setFilter],
+    );
 
     const clearAllFilters = useCallback(() => {
         setFiltersState({});
         onFiltersChange?.({});
     }, [onFiltersChange]);
 
-    const getFilterValue = useCallback((key: string) => {
-        return filters[key];
-    }, [filters]);
+    const getFilterValue = useCallback(
+        (key: string) => {
+            return filters[key];
+        },
+        [filters],
+    );
 
-    const applySavedFilters = useCallback((savedFilters: TableFilters) => {
-        setFiltersState(savedFilters);
-        onFiltersChange?.(savedFilters);
-    }, [onFiltersChange]);
+    const applySavedFilters = useCallback(
+        (savedFilters: TableFilters) => {
+            setFiltersState(savedFilters);
+            onFiltersChange?.(savedFilters);
+        },
+        [onFiltersChange],
+    );
 
     const hasActiveFilters = useMemo(() => {
         return Object.keys(filters).length > 0;
@@ -124,10 +136,22 @@ export function useTableFilterConfigs(resource: string): FilterConfig[] {
                         type: 'faceted',
                         title: t('martyrs.maritalStatus'),
                         options: [
-                            { label: t('martyrs.maritalStatuses.single'), value: '1' },
-                            { label: t('martyrs.maritalStatuses.married'), value: '2' },
-                            { label: t('martyrs.maritalStatuses.divorced'), value: '3' },
-                            { label: t('martyrs.maritalStatuses.widowed'), value: '4' },
+                            {
+                                label: t('martyrs.maritalStatuses.single'),
+                                value: '1',
+                            },
+                            {
+                                label: t('martyrs.maritalStatuses.married'),
+                                value: '2',
+                            },
+                            {
+                                label: t('martyrs.maritalStatuses.divorced'),
+                                value: '3',
+                            },
+                            {
+                                label: t('martyrs.maritalStatuses.widowed'),
+                                value: '4',
+                            },
                         ],
                     },
                     {

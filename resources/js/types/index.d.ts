@@ -95,7 +95,7 @@ export interface Martyr {
     agent_relationship?: string;
     agent_passport_number?: string;
     profile_image?: string | null;
-    
+
     status?: 'draft' | 'pending' | 'approved' | 'rejected';
     deleted_at?: string | null;
     military_rank_id?: number | null;

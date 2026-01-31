@@ -1,21 +1,34 @@
-import React from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 // Shadcn UI Components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 
 // Icons
-import { ArrowLeft, ArrowRight, Building2, Save, Loader2, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+    ArrowLeft,
+    ArrowRight,
+    Building2,
+    Loader2,
+    MapPin,
+    Save,
+} from 'lucide-react';
 
 interface Location {
     id: number;
@@ -55,95 +68,178 @@ export default function Create({ locations }: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={t('employers.add_employer')} />
 
-            <div className="flex flex-col gap-6 p-6 max-w-2xl mx-auto w-full" dir={isRTL ? 'rtl' : 'ltr'}>
-                
+            <div
+                className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-6"
+                dir={isRTL ? 'rtl' : 'ltr'}
+            >
                 {/* Header */}
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild className="rounded-full">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        asChild
+                        className="rounded-full"
+                    >
                         <Link href="/employers">
-                            {isRTL ? <ArrowRight className="h-5 w-5" /> : <ArrowLeft className="h-5 w-5" />}
+                            {isRTL ? (
+                                <ArrowRight className="h-5 w-5" />
+                            ) : (
+                                <ArrowLeft className="h-5 w-5" />
+                            )}
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">{t('employers.add_employer')}</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">
+                            {t('employers.add_employer')}
+                        </h1>
                     </div>
                 </div>
 
                 <Card className="border-none shadow-md">
                     <CardHeader className="border-b bg-muted/20">
-                        <CardTitle className="text-lg flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-lg">
                             <Building2 className="h-5 w-5 text-primary" />
                             {t('employers.employer_information')}
                         </CardTitle>
                     </CardHeader>
-                    
+
                     <CardContent className="pt-6">
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            
                             {/* حقل الاسم بالعربية فقط */}
                             <div className="space-y-2">
-                                <Label htmlFor="name_ar" className="text-sm font-semibold">
-                                    {t('employers.name_ar')} <span className="text-destructive">*</span>
+                                <Label
+                                    htmlFor="name_ar"
+                                    className="text-sm font-semibold"
+                                >
+                                    {t('employers.name_ar')}{' '}
+                                    <span className="text-destructive">*</span>
                                 </Label>
                                 <div className="relative">
-                                    <Building2 className={cn("absolute top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4", isRTL ? "right-3" : "left-3")} />
+                                    <Building2
+                                        className={cn(
+                                            'absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground',
+                                            isRTL ? 'right-3' : 'left-3',
+                                        )}
+                                    />
                                     <Input
                                         id="name_ar"
                                         value={data.name_ar}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('name_ar', e.target.value)}
-                                        className={cn(isRTL ? "pr-10" : "pl-10", errors.name_ar && "border-destructive")}
-                                        placeholder={t('employers.enter_name_ar')}
+                                        onChange={(
+                                            e: React.ChangeEvent<HTMLInputElement>,
+                                        ) => setData('name_ar', e.target.value)}
+                                        className={cn(
+                                            isRTL ? 'pr-10' : 'pl-10',
+                                            errors.name_ar &&
+                                                'border-destructive',
+                                        )}
+                                        placeholder={t(
+                                            'employers.enter_name_ar',
+                                        )}
                                         required
                                         autoFocus
                                     />
                                 </div>
                                 {errors.name_ar && (
-                                    <p className="text-xs text-destructive font-medium">{errors.name_ar}</p>
+                                    <p className="text-xs font-medium text-destructive">
+                                        {errors.name_ar}
+                                    </p>
                                 )}
                             </div>
 
                             {/* حقل الاسم بالإنجليزية */}
                             <div className="space-y-2">
-                                <Label htmlFor="name_en" className="text-sm font-semibold">
+                                <Label
+                                    htmlFor="name_en"
+                                    className="text-sm font-semibold"
+                                >
                                     {t('employers.name_en')}
                                 </Label>
                                 <div className="relative">
-                                    <Building2 className={cn("absolute top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4", isRTL ? "right-3" : "left-3")} />
+                                    <Building2
+                                        className={cn(
+                                            'absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground',
+                                            isRTL ? 'right-3' : 'left-3',
+                                        )}
+                                    />
                                     <Input
                                         id="name_en"
                                         value={data.name_en}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('name_en', e.target.value)}
-                                        className={cn(isRTL ? "pr-10" : "pl-10", errors.name_en && "border-destructive")}
-                                        placeholder={t('employers.enter_name_en')}
+                                        onChange={(
+                                            e: React.ChangeEvent<HTMLInputElement>,
+                                        ) => setData('name_en', e.target.value)}
+                                        className={cn(
+                                            isRTL ? 'pr-10' : 'pl-10',
+                                            errors.name_en &&
+                                                'border-destructive',
+                                        )}
+                                        placeholder={t(
+                                            'employers.enter_name_en',
+                                        )}
                                     />
                                 </div>
                                 {errors.name_en && (
-                                    <p className="text-xs text-destructive font-medium">{errors.name_en}</p>
+                                    <p className="text-xs font-medium text-destructive">
+                                        {errors.name_en}
+                                    </p>
                                 )}
                             </div>
 
                             {/* حقل الموقع */}
                             <div className="space-y-2">
-                                <Label htmlFor="employer_location_id" className="text-sm font-semibold">
+                                <Label
+                                    htmlFor="employer_location_id"
+                                    className="text-sm font-semibold"
+                                >
                                     {t('employers.location_ar')}
                                 </Label>
                                 <div className="relative">
-                                    <MapPin className={cn("absolute top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4", isRTL ? "right-3" : "left-3")} />
-                                    <Select value={data.employer_location_id} onValueChange={(value) => setData('employer_location_id', value)}>
-                                        <SelectTrigger className={cn(isRTL ? "pr-10" : "pl-10", errors.employer_location_id && "border-destructive")}>
-                                            <SelectValue placeholder={t('employers.select_location')} />
+                                    <MapPin
+                                        className={cn(
+                                            'absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground',
+                                            isRTL ? 'right-3' : 'left-3',
+                                        )}
+                                    />
+                                    <Select
+                                        value={data.employer_location_id}
+                                        onValueChange={(value) =>
+                                            setData(
+                                                'employer_location_id',
+                                                value,
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger
+                                            className={cn(
+                                                isRTL ? 'pr-10' : 'pl-10',
+                                                errors.employer_location_id &&
+                                                    'border-destructive',
+                                            )}
+                                        >
+                                            <SelectValue
+                                                placeholder={t(
+                                                    'employers.select_location',
+                                                )}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {locations.map((location) => (
-                                                <SelectItem key={location.id} value={location.id.toString()}>
-                                                    {isRTL ? location.name_ar : (location.name_en || location.name_ar)}
+                                                <SelectItem
+                                                    key={location.id}
+                                                    value={location.id.toString()}
+                                                >
+                                                    {isRTL
+                                                        ? location.name_ar
+                                                        : location.name_en ||
+                                                          location.name_ar}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                                 {errors.employer_location_id && (
-                                    <p className="text-xs text-destructive font-medium">{errors.employer_location_id}</p>
+                                    <p className="text-xs font-medium text-destructive">
+                                        {errors.employer_location_id}
+                                    </p>
                                 )}
                             </div>
 
@@ -152,27 +248,46 @@ export default function Create({ locations }: Props) {
                                 <Checkbox
                                     id="is_active"
                                     checked={data.is_active}
-                                    onCheckedChange={(checked: boolean) => setData('is_active', !!checked)}
+                                    onCheckedChange={(checked: boolean) =>
+                                        setData('is_active', !!checked)
+                                    }
                                 />
-                                <Label htmlFor="is_active" className="text-sm font-semibold">
+                                <Label
+                                    htmlFor="is_active"
+                                    className="text-sm font-semibold"
+                                >
                                     {t('employers.is_active')}
                                 </Label>
                             </div>
 
                             {/* أزرار التحكم */}
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t mt-6">
+                            <div className="mt-6 flex items-center justify-end gap-3 border-t pt-4">
                                 <Button variant="outline" asChild type="button">
                                     <Link href="/employers">{t('cancel')}</Link>
                                 </Button>
-                                <Button type="submit" disabled={processing} className="min-w-[120px]">
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="min-w-[120px]"
+                                >
                                     {processing ? (
                                         <>
-                                            <Loader2 className={cn("h-4 w-4 animate-spin", isRTL ? "ml-2" : "mr-2")} />
+                                            <Loader2
+                                                className={cn(
+                                                    'h-4 w-4 animate-spin',
+                                                    isRTL ? 'ml-2' : 'mr-2',
+                                                )}
+                                            />
                                             {t('saving')}
                                         </>
                                     ) : (
                                         <>
-                                            <Save className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
+                                            <Save
+                                                className={cn(
+                                                    'h-4 w-4',
+                                                    isRTL ? 'ml-2' : 'mr-2',
+                                                )}
+                                            />
                                             {t('employers.create_employer')}
                                         </>
                                     )}

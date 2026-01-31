@@ -1,31 +1,37 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useTranslation } from 'react-i18next';
-import AppLayout from '@/layouts/app-layout';
 import {
-    User,
-    IdCard,
-    MapPin,
-    Users,
-    Heart,
-    Briefcase,
-    Shield,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, useForm } from '@inertiajs/react';
+import {
     Banknote,
-    Phone,
-    FileText,
-    Upload,
-    Save,
-    LucideIcon,
-    Search,
+    Briefcase,
+    Calendar,
     Check,
-    Calendar
+    FileText,
+    Heart,
+    IdCard,
+    LucideIcon,
+    MapPin,
+    Phone,
+    Save,
+    Search,
+    Shield,
+    Upload,
+    User,
+    Users,
 } from 'lucide-react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 interface SearchableSelectProps {
     value: string | number | null;
@@ -46,23 +52,31 @@ function SearchableSelect({
     error,
     loading = false,
     disabled = false,
-    required = false
+    required = false,
 }: SearchableSelectProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useTranslation();
     const triggerRef = useRef<HTMLDivElement | null>(null);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
-    const [pos, setPos] = useState<{ top: number; left: number; width: number }>({ top: 0, left: 0, width: 0 });
+    const [pos, setPos] = useState<{
+        top: number;
+        left: number;
+        width: number;
+    }>({ top: 0, left: 0, width: 0 });
 
     const [localOptions, setLocalOptions] = useState(options);
     const [fetching, setFetching] = useState(false);
-    const filteredOptions = localOptions.filter(option =>
-        option.name_ar.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (option.name_en && option.name_en.toLowerCase().includes(searchTerm.toLowerCase()))
+    const filteredOptions = localOptions.filter(
+        (option) =>
+            option.name_ar.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (option.name_en &&
+                option.name_en
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())),
     );
 
-    const selectedOption = options.find(option => option.id === value);
+    const selectedOption = options.find((option) => option.id === value);
 
     // compute dropdown position relative to viewport when opened
     useLayoutEffect(() => {
@@ -89,8 +103,10 @@ function SearchableSelect({
     useEffect(() => {
         function handleDown(e: MouseEvent) {
             const target = e.target as Node | null;
-            if (triggerRef.current && triggerRef.current.contains(target)) return;
-            if (dropdownRef.current && dropdownRef.current.contains(target)) return;
+            if (triggerRef.current && triggerRef.current.contains(target))
+                return;
+            if (dropdownRef.current && dropdownRef.current.contains(target))
+                return;
             setIsOpen(false);
         }
 
@@ -103,52 +119,68 @@ function SearchableSelect({
         setLocalOptions(options);
     }, [options]);
 
-    const dropdown = isOpen && !disabled ? (
-        <div
-            ref={dropdownRef}
-            style={{ position: 'fixed', top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px', zIndex: 9999 }}
-            className="mt-1 bg-white border border-gray-300 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600"
-            onClick={(e) => e.stopPropagation()}
-        >
-            <div className="p-2">
-                <input
-                    type="text"
-                    placeholder={t('search_placeholder')}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                />
-            </div>
-            <div className="max-h-60 overflow-y-auto">
-                {(loading) ? (
-                    <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{t('loading')}</div>
-                ) : filteredOptions.length === 0 ? (
-                    <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{t('no_search_results')}</div>
-                ) : (
-                    filteredOptions.map((option) => (
-                        <div
-                            key={option.id}
-                            className="flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                            onClick={() => {
-                                onChange(option.id);
-                                setIsOpen(false);
-                                setSearchTerm('');
-                            }}
-                        >
-                            <span>{option.name_ar}</span>
-                            {value === option.id && <Check size={16} className="text-blue-500" />}
+    const dropdown =
+        isOpen && !disabled ? (
+            <div
+                ref={dropdownRef}
+                style={{
+                    position: 'fixed',
+                    top: pos.top + 'px',
+                    left: pos.left + 'px',
+                    width: pos.width + 'px',
+                    zIndex: 9999,
+                }}
+                className="mt-1 rounded-md border border-gray-300 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-800"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="p-2">
+                    <input
+                        type="text"
+                        placeholder={t('search_placeholder')}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
+                </div>
+                <div className="max-h-60 overflow-y-auto">
+                    {loading ? (
+                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                            {t('loading')}
                         </div>
-                    ))
-                )}
+                    ) : filteredOptions.length === 0 ? (
+                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                            {t('no_search_results')}
+                        </div>
+                    ) : (
+                        filteredOptions.map((option) => (
+                            <div
+                                key={option.id}
+                                className="flex cursor-pointer items-center justify-between px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                                onClick={() => {
+                                    onChange(option.id);
+                                    setIsOpen(false);
+                                    setSearchTerm('');
+                                }}
+                            >
+                                <span>{option.name_ar}</span>
+                                {value === option.id && (
+                                    <Check
+                                        size={16}
+                                        className="text-blue-500"
+                                    />
+                                )}
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
-        </div>
-    ) : null;
+        ) : null;
 
     return (
         <div>
             <div
                 ref={triggerRef}
-                className={`flex items-center justify-between w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${error ? 'border-red-500' : ''}`}
+                className={`flex w-full cursor-pointer items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white ${disabled ? 'cursor-not-allowed opacity-50' : ''} ${error ? 'border-red-500' : ''}`}
                 onClick={() => !disabled && setIsOpen(!isOpen)}
             >
                 <span className={selectedOption ? '' : 'text-gray-500'}>
@@ -159,7 +191,11 @@ function SearchableSelect({
 
             {createPortal(dropdown, document.body)}
 
-            {error && <p className="mt-1 text-sm text-red-500 dark:text-red-400">{error}</p>}
+            {error && (
+                <p className="mt-1 text-sm text-red-500 dark:text-red-400">
+                    {error}
+                </p>
+            )}
         </div>
     );
 }
@@ -168,7 +204,7 @@ const FormField = ({
     icon: Icon,
     label,
     children,
-    error
+    error,
 }: {
     icon: LucideIcon;
     label: string;
@@ -182,36 +218,46 @@ const FormField = ({
             {label}
         </Label>
         {children}
-        {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
+        {error && (
+            <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
+        )}
     </div>
 );
 
 const FormSection = ({
     title,
-    children
+    children,
 }: {
     title: string;
     children: React.ReactNode;
 }) => (
-    <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2 mb-6">
+    <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 p-6 shadow-sm dark:border-sidebar-border">
+        <h3 className="mb-6 border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900 dark:border-gray-700 dark:text-gray-100">
             {title}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {children}
         </div>
     </div>
 );
 
 interface Props {
-    employmentStatuses: { id: number; name_ar: string; name_en: string | null }[];
+    employmentStatuses: {
+        id: number;
+        name_ar: string;
+        name_en: string | null;
+    }[];
     militaryRanks: { id: number; name_ar: string; name_en: string | null }[];
     banks: { id: number; name_ar: string; name_en: string | null }[];
     parentsStatuses: { id: number; name_ar: string; name_en: string | null }[];
     maritalStatuses: { id: number; name_ar: string; name_en: string | null }[];
     jobGrades: { id: number; name_ar: string; name_en: string | null }[];
     employers: { id: number; name_ar: string; name_en: string | null }[];
-    employerLocations: { id: number; name_ar: string; name_en: string | null }[];
+    employerLocations: {
+        id: number;
+        name_ar: string;
+        name_en: string | null;
+    }[];
 }
 
 export default function Create({
@@ -222,7 +268,7 @@ export default function Create({
     maritalStatuses,
     jobGrades,
     employers,
-    employerLocations
+    employerLocations,
 }: Props) {
     const { t } = useTranslation();
 
@@ -255,7 +301,7 @@ export default function Create({
         has_previous_workplace: boolean;
         previous_employer_id: number | null;
         previous_employer_location_id: number | null;
-        
+
         military_number: string | null;
         military_rank_id: number | null;
         bank_id: number | null;
@@ -285,7 +331,7 @@ export default function Create({
         has_previous_workplace: false,
         previous_employer_id: null,
         previous_employer_location_id: null,
-        
+
         military_number: '',
         military_rank_id: null,
         bank_id: null,
@@ -305,11 +351,15 @@ export default function Create({
     const [banksState, setBanksState] = useState(banks);
     const [loadingBanks, setLoadingBanks] = useState(false);
 
-    const [branches, setBranches] = useState<{ id: number; name_ar: string; name_en: string | null }[]>([]);
+    const [branches, setBranches] = useState<
+        { id: number; name_ar: string; name_en: string | null }[]
+    >([]);
     const [loadingBranches, setLoadingBranches] = useState(false);
 
-    const [employmentStatusesState, setEmploymentStatusesState] = useState(employmentStatuses);
-    const [loadingEmploymentStatuses, setLoadingEmploymentStatuses] = useState(false);
+    const [employmentStatusesState, setEmploymentStatusesState] =
+        useState(employmentStatuses);
+    const [loadingEmploymentStatuses, setLoadingEmploymentStatuses] =
+        useState(false);
 
     const [jobGradesState, setJobGradesState] = useState(jobGrades);
     const [loadingJobGrades, setLoadingJobGrades] = useState(false);
@@ -317,23 +367,35 @@ export default function Create({
     const [employersState, setEmployersState] = useState(employers);
     const [loadingEmployers, setLoadingEmployers] = useState(false);
 
-    const [employerLocationsState, setEmployerLocationsState] = useState(employerLocations);
-    const [loadingEmployerLocations, setLoadingEmployerLocations] = useState(false);
+    const [employerLocationsState, setEmployerLocationsState] =
+        useState(employerLocations);
+    const [loadingEmployerLocations, setLoadingEmployerLocations] =
+        useState(false);
 
-    const jobGradeOptions = jobGradesState.reduce((acc, grade) => {
-        acc[grade.id] = grade.name_ar;
-        return acc;
-    }, {} as Record<number, string>);
+    const jobGradeOptions = jobGradesState.reduce(
+        (acc, grade) => {
+            acc[grade.id] = grade.name_ar;
+            return acc;
+        },
+        {} as Record<number, string>,
+    );
 
-    const [parentsStatusesState, setParentsStatusesState] = useState(parentsStatuses);
+    const [parentsStatusesState, setParentsStatusesState] =
+        useState(parentsStatuses);
     const [loadingParentsStatuses, setLoadingParentsStatuses] = useState(false);
 
-    const [maritalStatusesState, setMaritalStatusesState] = useState(maritalStatuses);
+    const [maritalStatusesState, setMaritalStatusesState] =
+        useState(maritalStatuses);
     const [loadingMaritalStatuses, setLoadingMaritalStatuses] = useState(false);
 
     useEffect(() => {
-        const selectedStatus = employmentStatusesState.find(status => status.id === data.employment_status_id);
-        if (selectedStatus && selectedStatus.name_ar.toLowerCase().includes('عسكري')) {
+        const selectedStatus = employmentStatusesState.find(
+            (status) => status.id === data.employment_status_id,
+        );
+        if (
+            selectedStatus &&
+            selectedStatus.name_ar.toLowerCase().includes('عسكري')
+        ) {
             setLoadingRanks(true);
             // Filter military ranks locally instead of fetching from API
             setMilitaryRanksState(militaryRanks);
@@ -345,8 +407,8 @@ export default function Create({
         if (data.bank_id) {
             setLoadingBranches(true);
             fetch(`/api/banks/${data.bank_id}/branches`)
-                .then(response => response.json())
-                .then(data => {
+                .then((response) => response.json())
+                .then((data) => {
                     setBranches(data);
                     setLoadingBranches(false);
                 })
@@ -362,8 +424,8 @@ export default function Create({
         if (data.employer_id) {
             setLoadingEmployerLocations(true);
             fetch(`/api/employers/${data.employer_id}/locations`)
-                .then(response => response.json())
-                .then(data => {
+                .then((response) => response.json())
+                .then((data) => {
                     setEmployerLocationsState(data);
                     setLoadingEmployerLocations(false);
                     // Reset employer_location_id when employer changes
@@ -399,12 +461,12 @@ export default function Create({
             <Head title={t('martyrs.create_martyr')} />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 {/* Header */}
-                <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border shadow-sm p-6">
+                <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 p-6 shadow-sm dark:border-sidebar-border">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                             {t('martyrs.create_martyr')}
                         </h1>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">
+                        <p className="mt-1 text-gray-600 dark:text-gray-400">
                             {t('martyrs.add_new')}
                         </p>
                     </div>
@@ -423,7 +485,9 @@ export default function Create({
                             <Input
                                 id="full_name"
                                 value={data.full_name}
-                                onChange={(e) => setData('full_name', e.target.value)}
+                                onChange={(e) =>
+                                    setData('full_name', e.target.value)
+                                }
                                 placeholder={t('martyrs.enter_full_name')}
                                 className="w-full"
                             />
@@ -438,7 +502,9 @@ export default function Create({
                             <Input
                                 id="national_id"
                                 value={data.national_id}
-                                onChange={(e) => setData('national_id', e.target.value)}
+                                onChange={(e) =>
+                                    setData('national_id', e.target.value)
+                                }
                                 placeholder={t('martyrs.enter_national_id')}
                                 className="w-full"
                             />
@@ -453,7 +519,9 @@ export default function Create({
                             <Input
                                 id="address"
                                 value={data.address}
-                                onChange={(e) => setData('address', e.target.value)}
+                                onChange={(e) =>
+                                    setData('address', e.target.value)
+                                }
                                 placeholder={t('martyrs.enter_address')}
                                 className="w-full"
                             />
@@ -469,7 +537,9 @@ export default function Create({
                                 id="death_date"
                                 type="date"
                                 value={data.death_date}
-                                onChange={(e) => setData('death_date', e.target.value)}
+                                onChange={(e) =>
+                                    setData('death_date', e.target.value)
+                                }
                                 className="w-full"
                             />
                         </FormField>
@@ -487,10 +557,18 @@ export default function Create({
                                     type="checkbox"
                                     id="has_martyr_decision"
                                     checked={data.has_martyr_decision}
-                                    onChange={(e) => setData('has_martyr_decision', e.target.checked)}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    onChange={(e) =>
+                                        setData(
+                                            'has_martyr_decision',
+                                            e.target.checked,
+                                        )
+                                    }
+                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                 />
-                                <label htmlFor="has_martyr_decision" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label
+                                    htmlFor="has_martyr_decision"
+                                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
                                     {t('martyrs.has_martyr_decision')}
                                 </label>
                             </div>
@@ -501,14 +579,23 @@ export default function Create({
                                 <FormField
                                     icon={FileText}
                                     label={t('martyrs.decision_number')}
-                                    placeholder={t('martyrs.enter_decision_number')}
+                                    placeholder={t(
+                                        'martyrs.enter_decision_number',
+                                    )}
                                     error={errors.decision_number}
                                 >
                                     <Input
                                         id="decision_number"
                                         value={data.decision_number}
-                                        onChange={(e) => setData('decision_number', e.target.value)}
-                                        placeholder={t('martyrs.enter_decision_number')}
+                                        onChange={(e) =>
+                                            setData(
+                                                'decision_number',
+                                                e.target.value,
+                                            )
+                                        }
+                                        placeholder={t(
+                                            'martyrs.enter_decision_number',
+                                        )}
                                         className="w-full"
                                     />
                                 </FormField>
@@ -516,14 +603,21 @@ export default function Create({
                                 <FormField
                                     icon={Calendar}
                                     label={t('martyrs.decision_date')}
-                                    placeholder={t('martyrs.enter_decision_date')}
+                                    placeholder={t(
+                                        'martyrs.enter_decision_date',
+                                    )}
                                     error={errors.decision_date}
                                 >
                                     <Input
                                         id="decision_date"
                                         type="date"
                                         value={data.decision_date}
-                                        onChange={(e) => setData('decision_date', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'decision_date',
+                                                e.target.value,
+                                            )
+                                        }
                                         className="w-full"
                                     />
                                 </FormField>
@@ -538,16 +632,32 @@ export default function Create({
                             label={t('martyrs.parents_status')}
                             error={errors.parents_status_id}
                         >
-                            <Select onValueChange={(value) => setData('parents_status_id', value ? Number(value) : null)}>
+                            <Select
+                                onValueChange={(value) =>
+                                    setData(
+                                        'parents_status_id',
+                                        value ? Number(value) : null,
+                                    )
+                                }
+                            >
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder={t('martyrs.select_parents_status')} />
+                                    <SelectValue
+                                        placeholder={t(
+                                            'martyrs.select_parents_status',
+                                        )}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {loadingParentsStatuses ? (
-                                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{t('loading')}</div>
+                                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                                            {t('loading')}
+                                        </div>
                                     ) : (
                                         parentsStatusesState.map((status) => (
-                                            <SelectItem key={status.id} value={status.id.toString()}>
+                                            <SelectItem
+                                                key={status.id}
+                                                value={status.id.toString()}
+                                            >
                                                 {status.name_ar}
                                             </SelectItem>
                                         ))
@@ -561,16 +671,32 @@ export default function Create({
                             label={t('martyrs.marital_status')}
                             error={errors.marital_status_id}
                         >
-                            <Select onValueChange={(value) => setData('marital_status_id', value ? Number(value) : null)}>
+                            <Select
+                                onValueChange={(value) =>
+                                    setData(
+                                        'marital_status_id',
+                                        value ? Number(value) : null,
+                                    )
+                                }
+                            >
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder={t('martyrs.select_marital_status')} />
+                                    <SelectValue
+                                        placeholder={t(
+                                            'martyrs.select_marital_status',
+                                        )}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {loadingMaritalStatuses ? (
-                                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{t('loading')}</div>
+                                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                                            {t('loading')}
+                                        </div>
                                     ) : (
                                         maritalStatusesState.map((status) => (
-                                            <SelectItem key={status.id} value={status.id.toString()}>
+                                            <SelectItem
+                                                key={status.id}
+                                                value={status.id.toString()}
+                                            >
                                                 {status.name_ar}
                                             </SelectItem>
                                         ))
@@ -579,7 +705,9 @@ export default function Create({
                             </Select>
                         </FormField>
 
-                        {maritalStatusesState.find(status => status.id === data.marital_status_id)?.name_ar === 'متزوج' && (
+                        {maritalStatusesState.find(
+                            (status) => status.id === data.marital_status_id,
+                        )?.name_ar === 'متزوج' && (
                             <FormField
                                 icon={Users}
                                 label={t('martyrs.children_count')}
@@ -590,27 +718,48 @@ export default function Create({
                                     id="children_count"
                                     type="number"
                                     min="0"
-                                    value={data.children_count?.toString() || ''}
-                                    onChange={(e) => setData('children_count', e.target.value ? parseInt(e.target.value) : null)}
-                                    placeholder={t('martyrs.enter_children_count')}
+                                    value={
+                                        data.children_count?.toString() || ''
+                                    }
+                                    onChange={(e) =>
+                                        setData(
+                                            'children_count',
+                                            e.target.value
+                                                ? parseInt(e.target.value)
+                                                : null,
+                                        )
+                                    }
+                                    placeholder={t(
+                                        'martyrs.enter_children_count',
+                                    )}
                                     className="w-full"
                                 />
                             </FormField>
                         )}
 
-                        {maritalStatusesState.find(status => status.id === data.marital_status_id)?.name_ar === 'متزوج' && (
+                        {maritalStatusesState.find(
+                            (status) => status.id === data.marital_status_id,
+                        )?.name_ar === 'متزوج' && (
                             <FormField
                                 icon={Heart}
                                 label="حالة الزوجة"
                                 error={errors.wife_status}
                             >
-                                <Select onValueChange={(value) => setData('wife_status', value)}>
+                                <Select
+                                    onValueChange={(value) =>
+                                        setData('wife_status', value)
+                                    }
+                                >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="اختر حالة الزوجة" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="ارملة">ارملة</SelectItem>
-                                        <SelectItem value="متزوجة">متزوجة</SelectItem>
+                                        <SelectItem value="ارملة">
+                                            ارملة
+                                        </SelectItem>
+                                        <SelectItem value="متزوجة">
+                                            متزوجة
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </FormField>
@@ -623,9 +772,16 @@ export default function Create({
                         >
                             <SearchableSelect
                                 value={data.employment_status_id}
-                                onChange={(value) => setData('employment_status_id', value ? Number(value) : null)}
+                                onChange={(value) =>
+                                    setData(
+                                        'employment_status_id',
+                                        value ? Number(value) : null,
+                                    )
+                                }
                                 options={employmentStatusesState}
-                                placeholder={t('martyrs.select_employment_status')}
+                                placeholder={t(
+                                    'martyrs.select_employment_status',
+                                )}
                                 loading={loadingEmploymentStatuses}
                             />
                         </FormField>
@@ -638,7 +794,12 @@ export default function Create({
                             >
                                 <SearchableSelect
                                     value={data.employer_id}
-                                    onChange={(value) => setData('employer_id', value ? Number(value) : null)}
+                                    onChange={(value) =>
+                                        setData(
+                                            'employer_id',
+                                            value ? Number(value) : null,
+                                        )
+                                    }
                                     options={employersState}
                                     placeholder="اختر جهة العمل"
                                     loading={loadingEmployers}
@@ -654,7 +815,12 @@ export default function Create({
                             >
                                 <SearchableSelect
                                     value={data.employer_location_id}
-                                    onChange={(value) => setData('employer_location_id', value ? Number(value) : null)}
+                                    onChange={(value) =>
+                                        setData(
+                                            'employer_location_id',
+                                            value ? Number(value) : null,
+                                        )
+                                    }
                                     options={employerLocationsState}
                                     placeholder="اختر موقع العمل"
                                     loading={loadingEmployerLocations}
@@ -667,11 +833,15 @@ export default function Create({
                             <></>
                         )}
 
-                        
-
                         {(() => {
-                            const selectedStatus = employmentStatusesState.find(status => status.id === data.employment_status_id);
-                            return selectedStatus && selectedStatus.name_ar === 'موظف';
+                            const selectedStatus = employmentStatusesState.find(
+                                (status) =>
+                                    status.id === data.employment_status_id,
+                            );
+                            return (
+                                selectedStatus &&
+                                selectedStatus.name_ar === 'موظف'
+                            );
                         })() && (
                             <FormField
                                 icon={Briefcase}
@@ -680,8 +850,17 @@ export default function Create({
                             >
                                 <SearchableSelect
                                     value={data.job_grade_id}
-                                    onChange={(value) => setData('job_grade_id', value ? Number(value) : null)}
-                                    options={jobGradesState.map(grade => ({ id: grade.id, name_ar: grade.name_ar, name_en: grade.name_en }))}
+                                    onChange={(value) =>
+                                        setData(
+                                            'job_grade_id',
+                                            value ? Number(value) : null,
+                                        )
+                                    }
+                                    options={jobGradesState.map((grade) => ({
+                                        id: grade.id,
+                                        name_ar: grade.name_ar,
+                                        name_en: grade.name_en,
+                                    }))}
                                     placeholder={t('martyrs.select_job_grade')}
                                     loading={loadingJobGrades}
                                 />
@@ -698,10 +877,18 @@ export default function Create({
                                     type="checkbox"
                                     id="has_previous_workplace"
                                     checked={data.has_previous_workplace}
-                                    onChange={(e) => setData('has_previous_workplace', e.target.checked)}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    onChange={(e) =>
+                                        setData(
+                                            'has_previous_workplace',
+                                            e.target.checked,
+                                        )
+                                    }
+                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                 />
-                                <label htmlFor="has_previous_workplace" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label
+                                    htmlFor="has_previous_workplace"
+                                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
                                     نعم، لديه مكان عمل سابق
                                 </label>
                             </div>
@@ -715,7 +902,12 @@ export default function Create({
                             >
                                 <SearchableSelect
                                     value={data.previous_employer_id}
-                                    onChange={(value) => setData('previous_employer_id', value ? Number(value) : null)}
+                                    onChange={(value) =>
+                                        setData(
+                                            'previous_employer_id',
+                                            value ? Number(value) : null,
+                                        )
+                                    }
                                     options={employersState}
                                     placeholder="اختر جهة العمل السابقة"
                                     loading={loadingEmployers}
@@ -731,7 +923,12 @@ export default function Create({
                             >
                                 <SearchableSelect
                                     value={data.previous_employer_location_id}
-                                    onChange={(value) => setData('previous_employer_location_id', value ? Number(value) : null)}
+                                    onChange={(value) =>
+                                        setData(
+                                            'previous_employer_location_id',
+                                            value ? Number(value) : null,
+                                        )
+                                    }
                                     options={employerLocationsState}
                                     placeholder="اختر موقع العمل السابق"
                                     loading={loadingEmployerLocations}
@@ -742,8 +939,15 @@ export default function Create({
 
                     {/* Military Information */}
                     {(() => {
-                        const selectedStatus = employmentStatusesState.find(status => status.id === data.employment_status_id);
-                        return selectedStatus && selectedStatus.name_ar.toLowerCase().includes('عسكري');
+                        const selectedStatus = employmentStatusesState.find(
+                            (status) => status.id === data.employment_status_id,
+                        );
+                        return (
+                            selectedStatus &&
+                            selectedStatus.name_ar
+                                .toLowerCase()
+                                .includes('عسكري')
+                        );
                     })() && (
                         <FormSection title={t('martyrs.military_info')}>
                             <FormField
@@ -755,8 +959,15 @@ export default function Create({
                                 <Input
                                     id="military_number"
                                     value={data.military_number || ''}
-                                    onChange={(e) => setData('military_number', e.target.value)}
-                                    placeholder={t('martyrs.enter_military_number')}
+                                    onChange={(e) =>
+                                        setData(
+                                            'military_number',
+                                            e.target.value,
+                                        )
+                                    }
+                                    placeholder={t(
+                                        'martyrs.enter_military_number',
+                                    )}
                                     className="w-full"
                                 />
                             </FormField>
@@ -768,9 +979,16 @@ export default function Create({
                             >
                                 <SearchableSelect
                                     value={data.military_rank_id}
-                                    onChange={(value) => setData('military_rank_id', value ? Number(value) : null)}
+                                    onChange={(value) =>
+                                        setData(
+                                            'military_rank_id',
+                                            value ? Number(value) : null,
+                                        )
+                                    }
                                     options={militaryRanksState}
-                                    placeholder={t('martyrs.select_military_rank')}
+                                    placeholder={t(
+                                        'martyrs.select_military_rank',
+                                    )}
                                     loading={loadingRanks}
                                 />
                             </FormField>
@@ -787,7 +1005,10 @@ export default function Create({
                             <SearchableSelect
                                 value={data.bank_id}
                                 onChange={(value) => {
-                                    setData('bank_id', value ? Number(value) : null);
+                                    setData(
+                                        'bank_id',
+                                        value ? Number(value) : null,
+                                    );
                                     setData('branch_id', null); // Reset branch when bank changes
                                 }}
                                 options={banksState}
@@ -804,7 +1025,12 @@ export default function Create({
                         >
                             <SearchableSelect
                                 value={data.branch_id}
-                                onChange={(value) => setData('branch_id', value ? Number(value) : null)}
+                                onChange={(value) =>
+                                    setData(
+                                        'branch_id',
+                                        value ? Number(value) : null,
+                                    )
+                                }
                                 options={branches}
                                 placeholder={t('martyrs.select_branch')}
                                 loading={loadingBranches}
@@ -822,7 +1048,12 @@ export default function Create({
                             <Input
                                 id="bank_account_number"
                                 value={data.bank_account_number || ''}
-                                onChange={(e) => setData('bank_account_number', e.target.value)}
+                                onChange={(e) =>
+                                    setData(
+                                        'bank_account_number',
+                                        e.target.value,
+                                    )
+                                }
                                 placeholder={t('martyrs.enter_bank_account')}
                                 className="w-full"
                             />
@@ -840,7 +1071,9 @@ export default function Create({
                             <Input
                                 id="agent_name"
                                 value={data.agent_name || ''}
-                                onChange={(e) => setData('agent_name', e.target.value)}
+                                onChange={(e) =>
+                                    setData('agent_name', e.target.value)
+                                }
                                 placeholder={t('martyrs.enter_agent_name')}
                                 className="w-full"
                             />
@@ -855,7 +1088,9 @@ export default function Create({
                             <Input
                                 id="agent_phone"
                                 value={data.agent_phone || ''}
-                                onChange={(e) => setData('agent_phone', e.target.value)}
+                                onChange={(e) =>
+                                    setData('agent_phone', e.target.value)
+                                }
                                 placeholder={t('martyrs.enter_agent_phone')}
                                 className="w-full"
                             />
@@ -870,8 +1105,15 @@ export default function Create({
                             <Input
                                 id="agent_relationship"
                                 value={data.agent_relationship || ''}
-                                onChange={(e) => setData('agent_relationship', e.target.value)}
-                                placeholder={t('martyrs.enter_agent_relationship')}
+                                onChange={(e) =>
+                                    setData(
+                                        'agent_relationship',
+                                        e.target.value,
+                                    )
+                                }
+                                placeholder={t(
+                                    'martyrs.enter_agent_relationship',
+                                )}
                                 className="w-full"
                             />
                         </FormField>
@@ -885,7 +1127,12 @@ export default function Create({
                             <Input
                                 id="agent_passport_number"
                                 value={data.agent_passport_number || ''}
-                                onChange={(e) => setData('agent_passport_number', e.target.value)}
+                                onChange={(e) =>
+                                    setData(
+                                        'agent_passport_number',
+                                        e.target.value,
+                                    )
+                                }
                                 placeholder={t('martyrs.enter_agent_passport')}
                                 className="w-full"
                             />
@@ -903,22 +1150,29 @@ export default function Create({
                                 id="profile_image"
                                 type="file"
                                 accept="image/*"
-                                onChange={(e) => setData('profile_image', e.target.files?.[0] || null)}
-                                className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300"
+                                onChange={(e) =>
+                                    setData(
+                                        'profile_image',
+                                        e.target.files?.[0] || null,
+                                    )
+                                }
+                                className="w-full file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300"
                             />
                         </FormField>
                         {/* --- IGNORE ---  */}
                     </FormSection>
 
                     {/* Submit Button */}
-                    <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700 p-6 rounded-lg">
+                    <div className="flex justify-end rounded-lg border-t border-gray-200 p-6 pt-6 dark:border-gray-700">
                         <Button
                             type="submit"
                             disabled={processing}
-                            className="flex items-center gap-2 px-8 py-3 text-lg font-semibold bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                            className="flex items-center gap-2 bg-blue-600 px-8 py-3 text-lg font-semibold text-white transition-colors duration-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-700 dark:hover:bg-blue-800"
                         >
                             <Save size={20} />
-                            {processing ? t('loading') : t('martyrs.create_martyr')}
+                            {processing
+                                ? t('loading')
+                                : t('martyrs.create_martyr')}
                         </Button>
                     </div>
                 </form>

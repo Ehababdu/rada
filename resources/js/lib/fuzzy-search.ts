@@ -40,7 +40,7 @@ export interface FuzzySearchOptions {
  */
 export function createFuzzySearcher<T>(
     items: T[],
-    options: FuzzySearchOptions
+    options: FuzzySearchOptions,
 ) {
     const fuseOptions: IFuseOptions<T> = {
         keys: options.keys,
@@ -63,7 +63,7 @@ export function fuzzySearch<T>(
     items: T[],
     query: string,
     keys: string[],
-    options?: Partial<FuzzySearchOptions>
+    options?: Partial<FuzzySearchOptions>,
 ): T[] {
     if (!query || query.trim().length === 0) {
         return items;
@@ -83,7 +83,7 @@ export function fuzzySearch<T>(
  */
 export function highlightMatches(
     text: string,
-    query: string
+    query: string,
 ): { text: string; isMatch: boolean }[] {
     if (!query) return [{ text, isMatch: false }];
 

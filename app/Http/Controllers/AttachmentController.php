@@ -28,6 +28,48 @@ class AttachmentController extends Controller
         $attachments = $this->attachmentService->getAttachments($martyr, $request);
         $attachmentTypes = AttachmentType::orderBy('label')->get(['id', 'label'])->pluck('label', 'id');
 
+        // Calculate attachment statistics
+        $allAttachments = $martyr->attachments()->with('attachmentType')->get();
+        $uploadedCount = 0;
+        $notUploadedTypes = [];
+
+        foreach ($attachmentTypes as $typeId => $typeLabel) {
+            $hasAttachment = $allAttachments->contains(function ($attachment) use ($typeId) {
+                return $attachment->attachment_type == $typeId &&
+                       $attachment->file_path &&
+                       trim($attachment->file_path) !== '';
+            });
+
+            if ($hasAttachment) {
+                $uploadedCount++;
+            } else {
+                $notUploadedTypes[] = [
+                    'id' => null,
+                    'attachment_type' => [
+                        'id' => (int) $typeId,
+                        'label' => $typeLabel
+                    ],
+                    'file_path' => null,
+                    'original_filename' => null,
+                    'mime_type' => null,
+                    'file_size' => null,
+                    'description' => null,
+                    'created_at' => null,
+                    'updated_at' => null,
+                ];
+            }
+        }
+
+        $attachmentStats = [
+            'uploaded' => $allAttachments->filter(function ($attachment) {
+                return $attachment->file_path && trim($attachment->file_path) !== '';
+            })->values(),
+            'notUploaded' => $notUploadedTypes,
+            'uploadedCount' => $uploadedCount,
+            'notUploadedCount' => count($notUploadedTypes),
+            'total' => count($attachmentTypes)
+        ];
+
         // Add attachment_type_label to each attachment
         $attachments->getCollection()->transform(function ($attachment) use ($attachmentTypes) {
             $attachment->attachment_type_label = $attachmentTypes[$attachment->attachment_type] ?? $attachment->attachment_type;
@@ -38,7 +80,8 @@ class AttachmentController extends Controller
             'martyr' => $martyr,
             'attachments' => $attachments,
             'attachmentTypes' => $attachmentTypes,
-            'filters' => $request->only(['search', 'type']),
+            'attachmentStats' => $attachmentStats,
+            'filters' => $request->only(['search', 'type', 'per_page']),
         ]);
     }
 

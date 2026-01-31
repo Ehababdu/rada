@@ -1,14 +1,14 @@
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 import * as React from 'react';
-import { Trash2, MoreHorizontal } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useTranslation } from 'react-i18next';
 
 interface BulkAction {
@@ -88,11 +88,7 @@ export function BulkActions<TData>({
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onClearSelection}
-                >
+                <Button variant="ghost" size="sm" onClick={onClearSelection}>
                     {t('dataTable.clearSelection')}
                 </Button>
             </div>
@@ -105,9 +101,16 @@ export function BulkActions<TData>({
                     }}
                     onConfirm={handleConfirm}
                     title={t('confirm.title')}
-                    description={confirmAction.action.confirmMessage || t('confirm.defaultMessage')}
+                    description={
+                        confirmAction.action.confirmMessage ||
+                        t('confirm.defaultMessage')
+                    }
                     confirmText={confirmAction.action.label}
-                    type={confirmAction.action.variant === 'destructive' ? 'danger' : 'warning'}
+                    type={
+                        confirmAction.action.variant === 'destructive'
+                            ? 'danger'
+                            : 'warning'
+                    }
                 />
             )}
         </>

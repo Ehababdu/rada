@@ -34,14 +34,16 @@ export function DataTableViewOptions<TData>({
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[150px]">
-                <DropdownMenuLabel>{t('dataTable.toggleColumns')}</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                    {t('dataTable.toggleColumns')}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {table
                     .getAllColumns()
                     .filter(
                         (column) =>
                             typeof column.accessorFn !== 'undefined' &&
-                            column.getCanHide()
+                            column.getCanHide(),
                     )
                     .map((column) => {
                         return (

@@ -1,5 +1,3 @@
-import { Row } from '@tanstack/react-table';
-import { MoreHorizontal, Edit, Trash2, Eye, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -8,6 +6,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Row } from '@tanstack/react-table';
+import { Copy, Edit, Eye, MoreHorizontal, Trash2 } from 'lucide-react';
 
 interface DataTableRowActionsProps<TData> {
     row: Row<TData>;
@@ -77,7 +77,9 @@ export function DataTableRowActions<TData>({
                                         : ''
                                 }
                             >
-                                {action.icon && <span className="mr-2">{action.icon}</span>}
+                                {action.icon && (
+                                    <span className="mr-2">{action.icon}</span>
+                                )}
                                 {action.label}
                             </DropdownMenuItem>
                         ))}

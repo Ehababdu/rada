@@ -1,16 +1,28 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
+import {
+    destroy as rolesDestroy,
+    edit as rolesEdit,
+    index as rolesIndex,
+} from '@/routes/roles';
 import { BreadcrumbItem } from '@/types';
-import { index as rolesIndex, edit as rolesEdit, destroy as rolesDestroy } from '@/routes/roles';
-import { ArrowLeft, SquarePen, Trash2, Shield, Calendar, Users, User } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import {
+    ArrowLeft,
+    Calendar,
+    Shield,
+    SquarePen,
+    Trash2,
+    User,
+    Users,
+} from 'lucide-react';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Permission {
     id: number;
@@ -89,18 +101,23 @@ export default function Show({ role, flash }: Props) {
     }, [flash, toast, t]);
 
     // Group permissions by resource
-    const groupedPermissions = role.permissions.reduce((acc, permission) => {
-        const resource = permission.name.split('.')[0];
-        if (!acc[resource]) {
-            acc[resource] = [];
-        }
-        acc[resource].push(permission);
-        return acc;
-    }, {} as Record<string, Permission[]>);
+    const groupedPermissions = role.permissions.reduce(
+        (acc, permission) => {
+            const resource = permission.name.split('.')[0];
+            if (!acc[resource]) {
+                acc[resource] = [];
+            }
+            acc[resource].push(permission);
+            return acc;
+        },
+        {} as Record<string, Permission[]>,
+    );
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`${role.display_name || role.name} - ${t('roles.title', 'الأدوار')}`} />
+            <Head
+                title={`${role.display_name || role.name} - ${t('roles.title', 'الأدوار')}`}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -112,9 +129,14 @@ export default function Show({ role, flash }: Props) {
                             </Link>
                         </Button>
                         <div>
-                            <h1 className="text-2xl font-bold">{role.display_name || role.name}</h1>
+                            <h1 className="text-2xl font-bold">
+                                {role.display_name || role.name}
+                            </h1>
                             <p className="text-muted-foreground">
-                                {t('roles.role_details', 'تفاصيل الدور وصلاحياته')}
+                                {t(
+                                    'roles.role_details',
+                                    'تفاصيل الدور وصلاحياته',
+                                )}
                             </p>
                         </div>
                     </div>
@@ -130,8 +152,17 @@ export default function Show({ role, flash }: Props) {
                             <Button
                                 variant="destructive"
                                 onClick={() => {
-                                    if (confirm(t('roles.confirm_delete', 'هل أنت متأكد من حذف هذا الدور؟'))) {
-                                        router.delete(rolesDestroy.url(role.id));
+                                    if (
+                                        confirm(
+                                            t(
+                                                'roles.confirm_delete',
+                                                'هل أنت متأكد من حذف هذا الدور؟',
+                                            ),
+                                        )
+                                    ) {
+                                        router.delete(
+                                            rolesDestroy.url(role.id),
+                                        );
                                     }
                                 }}
                             >
@@ -142,7 +173,7 @@ export default function Show({ role, flash }: Props) {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     {/* Basic Information */}
                     <Card className="lg:col-span-1">
                         <CardHeader>
@@ -164,7 +195,10 @@ export default function Show({ role, flash }: Props) {
                             {role.display_name && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('roles.display_name', 'الاسم المعروض')}
+                                        {t(
+                                            'roles.display_name',
+                                            'الاسم المعروض',
+                                        )}
                                     </Label>
                                     <p>{role.display_name}</p>
                                 </div>
@@ -192,9 +226,14 @@ export default function Show({ role, flash }: Props) {
                                 <Calendar className="h-4 w-4 text-muted-foreground" />
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('common.created_at', 'تاريخ الإنشاء')}
+                                        {t(
+                                            'common.created_at',
+                                            'تاريخ الإنشاء',
+                                        )}
                                     </Label>
-                                    <p className="text-sm">{formatDate(role.created_at)}</p>
+                                    <p className="text-sm">
+                                        {formatDate(role.created_at)}
+                                    </p>
                                 </div>
                             </div>
 
@@ -202,9 +241,14 @@ export default function Show({ role, flash }: Props) {
                                 <Users className="h-4 w-4 text-muted-foreground" />
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('roles.users_count', 'عدد المستخدمين')}
+                                        {t(
+                                            'roles.users_count',
+                                            'عدد المستخدمين',
+                                        )}
                                     </Label>
-                                    <p className="text-sm">{role.users.length}</p>
+                                    <p className="text-sm">
+                                        {role.users.length}
+                                    </p>
                                 </div>
                             </div>
                         </CardContent>
@@ -215,30 +259,52 @@ export default function Show({ role, flash }: Props) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Shield className="h-5 w-5" />
-                                {t('roles.permissions', 'الصلاحيات')} ({role.permissions.length})
+                                {t('roles.permissions', 'الصلاحيات')} (
+                                {role.permissions.length})
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
                             {role.permissions.length === 0 ? (
-                                <p className="text-muted-foreground text-center py-8">
-                                    {t('roles.no_permissions', 'لا توجد صلاحيات مرتبطة بهذا الدور')}
+                                <p className="py-8 text-center text-muted-foreground">
+                                    {t(
+                                        'roles.no_permissions',
+                                        'لا توجد صلاحيات مرتبطة بهذا الدور',
+                                    )}
                                 </p>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {Object.entries(groupedPermissions).map(([resource, permissions]) => (
-                                        <div key={resource} className="space-y-2">
-                                            <h4 className="font-medium text-sm text-muted-foreground uppercase border-b pb-1">
-                                                {t(`navigation.${resource}`) || resource}
-                                            </h4>
-                                            <div className="flex flex-wrap gap-1">
-                                                {permissions.map((permission) => (
-                                                    <Badge key={permission.id} variant="secondary" className="text-xs">
-                                                        {t(`permissions_names.${permission.name}`) || permission.name}
-                                                    </Badge>
-                                                ))}
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    {Object.entries(groupedPermissions).map(
+                                        ([resource, permissions]) => (
+                                            <div
+                                                key={resource}
+                                                className="space-y-2"
+                                            >
+                                                <h4 className="border-b pb-1 text-sm font-medium text-muted-foreground uppercase">
+                                                    {t(
+                                                        `navigation.${resource}`,
+                                                    ) || resource}
+                                                </h4>
+                                                <div className="flex flex-wrap gap-1">
+                                                    {permissions.map(
+                                                        (permission) => (
+                                                            <Badge
+                                                                key={
+                                                                    permission.id
+                                                                }
+                                                                variant="secondary"
+                                                                className="text-xs"
+                                                            >
+                                                                {t(
+                                                                    `permissions_names.${permission.name}`,
+                                                                ) ||
+                                                                    permission.name}
+                                                            </Badge>
+                                                        ),
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ),
+                                    )}
                                 </div>
                             )}
                         </CardContent>
@@ -250,19 +316,30 @@ export default function Show({ role, flash }: Props) {
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <User className="h-5 w-5" />
-                                    {t('roles.users_with_role', 'المستخدمون المرتبطون بهذا الدور')} ({role.users.length})
+                                    {t(
+                                        'roles.users_with_role',
+                                        'المستخدمون المرتبطون بهذا الدور',
+                                    )}{' '}
+                                    ({role.users.length})
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                                     {role.users.map((user) => (
-                                        <div key={user.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                                            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                                        <div
+                                            key={user.id}
+                                            className="flex items-center gap-3 rounded-lg border p-3"
+                                        >
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
                                                 <User className="h-4 w-4" />
                                             </div>
                                             <div>
-                                                <p className="font-medium text-sm">{user.name}</p>
-                                                <p className="text-xs text-muted-foreground">{user.email}</p>
+                                                <p className="text-sm font-medium">
+                                                    {user.name}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {user.email}
+                                                </p>
                                             </div>
                                         </div>
                                     ))}

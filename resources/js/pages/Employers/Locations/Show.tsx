@@ -1,14 +1,14 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, MapPin, Edit, Users } from 'lucide-react';
+import { ArrowLeft, Edit, MapPin, Users } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem } from '@/types';
-import { index, show, edit } from '@/routes/employers/locations';
 import { index as employersIndex } from '@/routes/employers';
+import { edit, index, show } from '@/routes/employers/locations';
+import { BreadcrumbItem } from '@/types';
 
 interface Location {
     id: number;
@@ -37,7 +37,10 @@ export default function Show({ employer, location }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Employers', href: employersIndex().url },
         { title: employer.name_ar, href: index(employer.id).url },
-        { title: location.name_ar, href: show({ employer: employer.id, location: location.id }).url },
+        {
+            title: location.name_ar,
+            href: show({ employer: employer.id, location: location.id }).url,
+        },
     ];
 
     return (
@@ -70,13 +73,17 @@ export default function Show({ employer, location }: Props) {
                                         <label className="text-sm font-medium text-muted-foreground">
                                             Name (Arabic)
                                         </label>
-                                        <p className="text-lg font-medium">{location.name_ar}</p>
+                                        <p className="text-lg font-medium">
+                                            {location.name_ar}
+                                        </p>
                                     </div>
                                     <div>
                                         <label className="text-sm font-medium text-muted-foreground">
                                             Name (English)
                                         </label>
-                                        <p className="text-lg font-medium">{location.name_en || '-'}</p>
+                                        <p className="text-lg font-medium">
+                                            {location.name_en || '-'}
+                                        </p>
                                     </div>
                                 </div>
 
@@ -86,8 +93,12 @@ export default function Show({ employer, location }: Props) {
                                     </label>
                                     <p className="text-lg font-medium">
                                         {location.employer ? (
-                                            <Link href={`/employers/${location.employer.id}`} className="text-blue-600 hover:text-blue-800 hover:underline">
-                                                {location.employer.name_ar} / {location.employer.name_en}
+                                            <Link
+                                                href={`/employers/${location.employer.id}`}
+                                                className="text-blue-600 hover:text-blue-800 hover:underline"
+                                            >
+                                                {location.employer.name_ar} /{' '}
+                                                {location.employer.name_en}
                                             </Link>
                                         ) : (
                                             '-'
@@ -103,8 +114,16 @@ export default function Show({ employer, location }: Props) {
                                             Status
                                         </label>
                                         <div className="mt-1">
-                                            <Badge variant={location.is_active ? 'default' : 'secondary'}>
-                                                {location.is_active ? 'Active' : 'Inactive'}
+                                            <Badge
+                                                variant={
+                                                    location.is_active
+                                                        ? 'default'
+                                                        : 'secondary'
+                                                }
+                                            >
+                                                {location.is_active
+                                                    ? 'Active'
+                                                    : 'Inactive'}
                                             </Badge>
                                         </div>
                                     </div>
@@ -117,13 +136,17 @@ export default function Show({ employer, location }: Props) {
                                         <label className="text-sm font-medium text-muted-foreground">
                                             Created At
                                         </label>
-                                        <p className="text-sm">{location.created_at}</p>
+                                        <p className="text-sm">
+                                            {location.created_at}
+                                        </p>
                                     </div>
                                     <div>
                                         <label className="text-sm font-medium text-muted-foreground">
                                             Updated At
                                         </label>
-                                        <p className="text-sm">{location.updated_at}</p>
+                                        <p className="text-sm">
+                                            {location.updated_at}
+                                        </p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -138,15 +161,26 @@ export default function Show({ employer, location }: Props) {
                             </CardHeader>
                             <CardContent className="space-y-3">
                                 <Button asChild className="w-full">
-                                    <Link href={edit({ employer: employer.id, location: location.id }).url}>
-                                        <Edit className="h-4 w-4 mr-2" />
+                                    <Link
+                                        href={
+                                            edit({
+                                                employer: employer.id,
+                                                location: location.id,
+                                            }).url
+                                        }
+                                    >
+                                        <Edit className="mr-2 h-4 w-4" />
                                         Edit Location
                                     </Link>
                                 </Button>
 
-                                <Button variant="outline" className="w-full" asChild>
+                                <Button
+                                    variant="outline"
+                                    className="w-full"
+                                    asChild
+                                >
                                     <Link href={employersIndex().url}>
-                                        <Users className="h-4 w-4 mr-2" />
+                                        <Users className="mr-2 h-4 w-4" />
                                         View Employers
                                     </Link>
                                 </Button>

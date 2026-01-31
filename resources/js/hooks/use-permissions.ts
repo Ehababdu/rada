@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
-import { usePage } from '@inertiajs/react';
 import { UserPermissions, getUserPermissions } from '@/lib/permissions';
+import { usePage } from '@inertiajs/react';
+import { useMemo } from 'react';
 
 export interface UsePermissionsReturn {
     permissions: UserPermissions;

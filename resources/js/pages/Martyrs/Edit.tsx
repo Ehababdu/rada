@@ -1,31 +1,37 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, useForm, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useTranslation } from 'react-i18next';
 import {
-    User,
-    IdCard,
-    MapPin,
-    Users,
-    Heart,
-    Briefcase,
-    Shield,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, router, useForm } from '@inertiajs/react';
+import {
     Banknote,
-    Phone,
-    FileText,
-    Upload,
-    Save,
-    LucideIcon,
+    Briefcase,
+    Calendar,
     Check,
+    FileText,
+    Heart,
+    IdCard,
+    LucideIcon,
+    MapPin,
+    Phone,
+    Save,
     Search,
-    Calendar
+    Shield,
+    Upload,
+    User,
+    Users,
 } from 'lucide-react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 interface SearchableSelectProps {
     value: string | number | null;
@@ -48,23 +54,31 @@ const SearchableSelect = ({
     loading = false,
     disabled = false,
     required = false,
-    apiEndpoint
+    apiEndpoint,
 }: SearchableSelectProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const { t } = useTranslation();
     const triggerRef = useRef<HTMLDivElement | null>(null);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
-    const [pos, setPos] = useState<{ top: number; left: number; width: number }>({ top: 0, left: 0, width: 0 });
+    const [pos, setPos] = useState<{
+        top: number;
+        left: number;
+        width: number;
+    }>({ top: 0, left: 0, width: 0 });
 
     const [localOptions, setLocalOptions] = useState(options);
     const [fetching, setFetching] = useState(false);
-    const filteredOptions = localOptions.filter(option =>
-        option.name_ar.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (option.name_en && option.name_en.toLowerCase().includes(searchTerm.toLowerCase()))
+    const filteredOptions = localOptions.filter(
+        (option) =>
+            option.name_ar.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (option.name_en &&
+                option.name_en
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())),
     );
 
-    const selectedOption = options.find(option => option.id === value);
+    const selectedOption = options.find((option) => option.id === value);
 
     // compute dropdown position relative to viewport when opened
     useLayoutEffect(() => {
@@ -91,8 +105,10 @@ const SearchableSelect = ({
     useEffect(() => {
         function handleDown(e: MouseEvent) {
             const target = e.target as Node | null;
-            if (triggerRef.current && triggerRef.current.contains(target)) return;
-            if (dropdownRef.current && dropdownRef.current.contains(target)) return;
+            if (triggerRef.current && triggerRef.current.contains(target))
+                return;
+            if (dropdownRef.current && dropdownRef.current.contains(target))
+                return;
             setIsOpen(false);
         }
 
@@ -115,8 +131,8 @@ const SearchableSelect = ({
         const doFetch = () => {
             setFetching(true);
             fetch(`${apiEndpoint}?search=${encodeURIComponent(searchTerm)}`)
-                .then(r => r.json())
-                .then(data => {
+                .then((r) => r.json())
+                .then((data) => {
                     if (!mounted) return;
                     setLocalOptions(data || []);
                 })
@@ -139,52 +155,68 @@ const SearchableSelect = ({
         };
     }, [searchTerm, apiEndpoint, isOpen]);
 
-    const dropdown = isOpen && !disabled ? (
-        <div
-            ref={dropdownRef}
-            style={{ position: 'fixed', top: pos.top + 'px', left: pos.left + 'px', width: pos.width + 'px', zIndex: 9999 }}
-            className="mt-1 bg-white border border-gray-300 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600"
-            onClick={(e) => e.stopPropagation()}
-        >
-            <div className="p-2">
-                <input
-                    type="text"
-                    placeholder={t('search_placeholder')}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                />
-            </div>
-            <div className="max-h-60 overflow-y-auto">
-                {(loading || fetching) ? (
-                    <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{t('loading')}</div>
-                ) : filteredOptions.length === 0 ? (
-                    <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{t('no_search_results')}</div>
-                ) : (
-                    filteredOptions.map((option) => (
-                        <div
-                            key={option.id}
-                            className="flex items-center justify-between px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                            onClick={() => {
-                                onChange(option.id);
-                                setIsOpen(false);
-                                setSearchTerm('');
-                            }}
-                        >
-                            <span>{option.name_ar}</span>
-                            {value === option.id && <Check size={16} className="text-blue-500" />}
+    const dropdown =
+        isOpen && !disabled ? (
+            <div
+                ref={dropdownRef}
+                style={{
+                    position: 'fixed',
+                    top: pos.top + 'px',
+                    left: pos.left + 'px',
+                    width: pos.width + 'px',
+                    zIndex: 9999,
+                }}
+                className="mt-1 rounded-md border border-gray-300 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-800"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="p-2">
+                    <input
+                        type="text"
+                        placeholder={t('search_placeholder')}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
+                </div>
+                <div className="max-h-60 overflow-y-auto">
+                    {loading || fetching ? (
+                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                            {t('loading')}
                         </div>
-                    ))
-                )}
+                    ) : filteredOptions.length === 0 ? (
+                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                            {t('no_search_results')}
+                        </div>
+                    ) : (
+                        filteredOptions.map((option) => (
+                            <div
+                                key={option.id}
+                                className="flex cursor-pointer items-center justify-between px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                                onClick={() => {
+                                    onChange(option.id);
+                                    setIsOpen(false);
+                                    setSearchTerm('');
+                                }}
+                            >
+                                <span>{option.name_ar}</span>
+                                {value === option.id && (
+                                    <Check
+                                        size={16}
+                                        className="text-blue-500"
+                                    />
+                                )}
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
-        </div>
-    ) : null;
+        ) : null;
 
     return (
         <div>
             <div
                 ref={triggerRef}
-                className={`flex items-center justify-between w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${error ? 'border-red-500' : ''}`}
+                className={`flex w-full cursor-pointer items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white ${disabled ? 'cursor-not-allowed opacity-50' : ''} ${error ? 'border-red-500' : ''}`}
                 onClick={() => !disabled && setIsOpen(!isOpen)}
             >
                 <span className={selectedOption ? '' : 'text-gray-500'}>
@@ -195,7 +227,11 @@ const SearchableSelect = ({
 
             {createPortal(dropdown, document.body)}
 
-            {error && <p className="mt-1 text-sm text-red-500 dark:text-red-400">{error}</p>}
+            {error && (
+                <p className="mt-1 text-sm text-red-500 dark:text-red-400">
+                    {error}
+                </p>
+            )}
         </div>
     );
 };
@@ -204,7 +240,7 @@ const FormField = ({
     icon: Icon,
     label,
     children,
-    error
+    error,
 }: {
     icon: LucideIcon;
     label: string;
@@ -218,22 +254,24 @@ const FormField = ({
             {label}
         </Label>
         {children}
-        {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
+        {error && (
+            <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
+        )}
     </div>
 );
 
 const FormSection = ({
     title,
-    children
+    children,
 }: {
     title: string;
     children: React.ReactNode;
 }) => (
-    <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2 mb-6">
+    <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 p-6 shadow-sm dark:border-sidebar-border">
+        <h3 className="mb-6 border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900 dark:border-gray-700 dark:text-gray-100">
             {title}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {children}
         </div>
     </div>
@@ -271,22 +309,39 @@ interface Martyr {
     agent_relationship: string | null;
     profile_image: string | null;
     agent_passport_number: string | null;
-    
 }
 
 interface Props {
     martyr: Martyr;
-    employmentStatuses: { id: number; name_ar: string; name_en: string | null }[];
+    employmentStatuses: {
+        id: number;
+        name_ar: string;
+        name_en: string | null;
+    }[];
     militaryRanks: { id: number; name_ar: string; name_en: string | null }[];
     banks: { id: number; name_ar: string; name_en: string | null }[];
     parentsStatuses: { id: number; name_ar: string; name_en: string | null }[];
     maritalStatuses: { id: number; name_ar: string; name_en: string | null }[];
     jobGrades: { id: number; name_ar: string; name_en: string | null }[];
     employers: { id: number; name_ar: string; name_en: string | null }[];
-    employerLocations: { id: number; name_ar: string; name_en: string | null }[];
+    employerLocations: {
+        id: number;
+        name_ar: string;
+        name_en: string | null;
+    }[];
 }
 
-export default function Edit({ martyr, employmentStatuses, militaryRanks, banks, parentsStatuses, maritalStatuses, jobGrades, employers, employerLocations }: Props) {
+export default function Edit({
+    martyr,
+    employmentStatuses,
+    militaryRanks,
+    banks,
+    parentsStatuses,
+    maritalStatuses,
+    jobGrades,
+    employers,
+    employerLocations,
+}: Props) {
     const { t } = useTranslation();
 
     const formatDateForInput = (d: any): string => {
@@ -346,7 +401,6 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
         agent_relationship: string | null;
         profile_image: File | undefined;
         agent_passport_number: string | null;
-        
     }>({
         full_name: martyr.full_name,
         national_id: martyr.national_id,
@@ -363,11 +417,21 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
         job_grade_id: martyr.job_grade_id,
         workplace: martyr.workplace,
         previous_workplace: martyr.previous_workplace,
-        employer_id: (martyr as any).employer_id ?? ((martyr as any).employer?.id ?? null),
-        employer_location_id: (martyr as any).employer_location_id ?? ((martyr as any).employer_location?.id ?? null),
+        employer_id:
+            (martyr as any).employer_id ?? (martyr as any).employer?.id ?? null,
+        employer_location_id:
+            (martyr as any).employer_location_id ??
+            (martyr as any).employer_location?.id ??
+            null,
         has_previous_workplace: (martyr as any).has_previous_workplace ?? false,
-        previous_employer_id: (martyr as any).previous_employer_id ?? ((martyr as any).previous_employer?.id ?? null),
-        previous_employer_location_id: (martyr as any).previous_employer_location_id ?? ((martyr as any).previous_employer_location?.id ?? null),
+        previous_employer_id:
+            (martyr as any).previous_employer_id ??
+            (martyr as any).previous_employer?.id ??
+            null,
+        previous_employer_location_id:
+            (martyr as any).previous_employer_location_id ??
+            (martyr as any).previous_employer_location?.id ??
+            null,
         military_number: martyr.military_number,
         military_rank_id: martyr.military_rank_id,
         bank_id: martyr.bank_id,
@@ -378,77 +442,154 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
         agent_relationship: martyr.agent_relationship,
         profile_image: undefined,
         agent_passport_number: martyr.agent_passport_number,
-        
     });
 
-    const [currentMilitaryRanks, setCurrentMilitaryRanks] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(militaryRanks);
+    const [currentMilitaryRanks, setCurrentMilitaryRanks] =
+        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+            militaryRanks,
+        );
 
-    const [currentBanks, setCurrentBanks] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(banks);
+    const [currentBanks, setCurrentBanks] =
+        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+            banks,
+        );
 
-    const [branches, setBranches] = useState<{ id: number; name_ar: string; name_en: string | null }[]>([]);
+    const [branches, setBranches] = useState<
+        { id: number; name_ar: string; name_en: string | null }[]
+    >([]);
     const [loadingBranches, setLoadingBranches] = useState(false);
 
-    const [employersState, setEmployersState] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(employers);
+    const [employersState, setEmployersState] =
+        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+            employers,
+        );
     const [loadingEmployers, setLoadingEmployers] = useState(false);
-    const [employerLocationsState, setEmployerLocationsState] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(employerLocations);
-    const [loadingEmployerLocations, setLoadingEmployerLocations] = useState(false);
-    const [previousEmployerLocationsState, setPreviousEmployerLocationsState] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(employerLocations);
-    const [loadingPreviousEmployerLocations, setLoadingPreviousEmployerLocations] = useState(false);
-    const prevEmployerIdRef = useRef<number | null>((martyr as any).employer_id ?? ((martyr as any).employer?.id ?? null));
-    const prevPreviousEmployerIdRef = useRef<number | null>((martyr as any).previous_employer_id ?? ((martyr as any).previous_employer?.id ?? null));
+    const [employerLocationsState, setEmployerLocationsState] =
+        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+            employerLocations,
+        );
+    const [loadingEmployerLocations, setLoadingEmployerLocations] =
+        useState(false);
+    const [previousEmployerLocationsState, setPreviousEmployerLocationsState] =
+        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+            employerLocations,
+        );
+    const [
+        loadingPreviousEmployerLocations,
+        setLoadingPreviousEmployerLocations,
+    ] = useState(false);
+    const prevEmployerIdRef = useRef<number | null>(
+        (martyr as any).employer_id ?? (martyr as any).employer?.id ?? null,
+    );
+    const prevPreviousEmployerIdRef = useRef<number | null>(
+        (martyr as any).previous_employer_id ??
+            (martyr as any).previous_employer?.id ??
+            null,
+    );
 
-    const [currentEmploymentStatuses, setCurrentEmploymentStatuses] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(employmentStatuses);
+    const [currentEmploymentStatuses, setCurrentEmploymentStatuses] =
+        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+            employmentStatuses,
+        );
 
-    const [currentParentsStatuses, setCurrentParentsStatuses] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(parentsStatuses);
+    const [currentParentsStatuses, setCurrentParentsStatuses] =
+        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+            parentsStatuses,
+        );
 
-    const [currentMaritalStatuses, setCurrentMaritalStatuses] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(maritalStatuses);
+    const [currentMaritalStatuses, setCurrentMaritalStatuses] =
+        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+            maritalStatuses,
+        );
 
     const jobGradeOptions = {
-        'أولى': 'أولى',
-        'ثانية': 'ثانية',
-        'ثالثة': 'ثالثة',
-        'رابعة': 'رابعة',
-        'خامسة': 'خامسة',
-        'سادسة': 'سادسة',
-        'سابعة': 'سابعة',
-        'ثامنة': 'ثامنة',
-        'تاسعة': 'تاسعة',
-        'عاشرة': 'عاشرة',
+        أولى: 'أولى',
+        ثانية: 'ثانية',
+        ثالثة: 'ثالثة',
+        رابعة: 'رابعة',
+        خامسة: 'خامسة',
+        سادسة: 'سادسة',
+        سابعة: 'سابعة',
+        ثامنة: 'ثامنة',
+        تاسعة: 'تاسعة',
+        عاشرة: 'عاشرة',
     };
 
     const [loadingParentsStatuses, setLoadingParentsStatuses] = useState(false);
     const [loadingMaritalStatuses, setLoadingMaritalStatuses] = useState(false);
-    const [loadingEmploymentStatuses, setLoadingEmploymentStatuses] = useState(false);
+    const [loadingEmploymentStatuses, setLoadingEmploymentStatuses] =
+        useState(false);
     const [loadingRanks, setLoadingRanks] = useState(false);
     const [loadingBanks, setLoadingBanks] = useState(false);
 
     // image preview: show existing saved image or newly selected file preview
-    const [previewUrl, setPreviewUrl] = useState<string | null>((martyr as any).profile_image ?? null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(
+        (martyr as any).profile_image ?? null,
+    );
     const previewObjectUrlRef = useRef<string | null>(null);
 
     // ensure form data contains normalized values for custom selects (fixes cases where UI shows value but form is empty)
     useEffect(() => {
-        setData('parents_status_id', martyr.parents_status_id ?? (data.parents_status_id ?? null));
-        setData('marital_status_id', martyr.marital_status_id ?? (data.marital_status_id ?? null));
-        setData('employment_status_id', martyr.employment_status_id ?? (data.employment_status_id ?? null));
-        setData('employer_id', (martyr as any).employer_id ?? ((martyr as any).employer?.id ?? (data.employer_id ?? null)));
-        setData('employer_location_id', (martyr as any).employer_location_id ?? ((martyr as any).employer_location?.id ?? (data.employer_location_id ?? null)));
-        setData('previous_employer_id', (martyr as any).previous_employer_id ?? ((martyr as any).previous_employer?.id ?? (data.previous_employer_id ?? null)));
-        setData('previous_employer_location_id', (martyr as any).previous_employer_location_id ?? ((martyr as any).previous_employer_location?.id ?? (data.previous_employer_location_id ?? null)));
-        setData('bank_id', martyr.bank_id ?? (data.bank_id ?? null));
-        setData('branch_id', martyr.branch_id ?? (data.branch_id ?? null));
-        setData('job_grade_id', martyr.job_grade_id ?? (data.job_grade_id ?? null));
-        setData('military_rank_id', martyr.military_rank_id ?? (data.military_rank_id ?? null));
-    // run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        setData(
+            'parents_status_id',
+            martyr.parents_status_id ?? data.parents_status_id ?? null,
+        );
+        setData(
+            'marital_status_id',
+            martyr.marital_status_id ?? data.marital_status_id ?? null,
+        );
+        setData(
+            'employment_status_id',
+            martyr.employment_status_id ?? data.employment_status_id ?? null,
+        );
+        setData(
+            'employer_id',
+            (martyr as any).employer_id ??
+                (martyr as any).employer?.id ??
+                data.employer_id ??
+                null,
+        );
+        setData(
+            'employer_location_id',
+            (martyr as any).employer_location_id ??
+                (martyr as any).employer_location?.id ??
+                data.employer_location_id ??
+                null,
+        );
+        setData(
+            'previous_employer_id',
+            (martyr as any).previous_employer_id ??
+                (martyr as any).previous_employer?.id ??
+                data.previous_employer_id ??
+                null,
+        );
+        setData(
+            'previous_employer_location_id',
+            (martyr as any).previous_employer_location_id ??
+                (martyr as any).previous_employer_location?.id ??
+                data.previous_employer_location_id ??
+                null,
+        );
+        setData('bank_id', martyr.bank_id ?? data.bank_id ?? null);
+        setData('branch_id', martyr.branch_id ?? data.branch_id ?? null);
+        setData(
+            'job_grade_id',
+            martyr.job_grade_id ?? data.job_grade_id ?? null,
+        );
+        setData(
+            'military_rank_id',
+            martyr.military_rank_id ?? data.military_rank_id ?? null,
+        );
+        // run once on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (data.bank_id) {
             setLoadingBranches(true);
             fetch(`/api/banks/${data.bank_id}/branches`)
-                .then(response => response.json())
-                .then(data => {
+                .then((response) => response.json())
+                .then((data) => {
                     setBranches(data);
                     setLoadingBranches(false);
                 })
@@ -466,8 +607,8 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
         if (data.employer_id) {
             setLoadingEmployerLocations(true);
             fetch(`/api/employers/${data.employer_id}/locations`)
-                .then(r => r.json())
-                .then(d => {
+                .then((r) => r.json())
+                .then((d) => {
                     if (!mounted) return;
                     setEmployerLocationsState(d || []);
                 })
@@ -487,7 +628,9 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
 
         prevEmployerIdRef.current = data.employer_id ?? null;
 
-        return () => { mounted = false; };
+        return () => {
+            mounted = false;
+        };
     }, [data.employer_id]);
 
     // load previous employer locations when previous_employer changes
@@ -495,9 +638,11 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
         let mounted = true;
         if ((data as any).previous_employer_id) {
             setLoadingPreviousEmployerLocations(true);
-            fetch(`/api/employers/${(data as any).previous_employer_id}/locations`)
-                .then(r => r.json())
-                .then(d => {
+            fetch(
+                `/api/employers/${(data as any).previous_employer_id}/locations`,
+            )
+                .then((r) => r.json())
+                .then((d) => {
                     if (!mounted) return;
                     setPreviousEmployerLocationsState(d || []);
                 })
@@ -505,8 +650,13 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                     if (!mounted) return;
                     setPreviousEmployerLocationsState([]);
                 })
-                .finally(() => mounted && setLoadingPreviousEmployerLocations(false));
-            if (prevPreviousEmployerIdRef.current !== (data as any).previous_employer_id) {
+                .finally(
+                    () => mounted && setLoadingPreviousEmployerLocations(false),
+                );
+            if (
+                prevPreviousEmployerIdRef.current !==
+                (data as any).previous_employer_id
+            ) {
                 setData('previous_employer_location_id', null);
             }
         } else {
@@ -514,9 +664,12 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
             setData('previous_employer_location_id', null);
         }
 
-        prevPreviousEmployerIdRef.current = (data as any).previous_employer_id ?? null;
+        prevPreviousEmployerIdRef.current =
+            (data as any).previous_employer_id ?? null;
 
-        return () => { mounted = false; };
+        return () => {
+            mounted = false;
+        };
     }, [(data as any).previous_employer_id]);
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -560,12 +713,12 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
             <Head title={t('martyrs.edit_martyr')} />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 {/* Header */}
-                <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border shadow-sm p-6">
+                <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 p-6 shadow-sm dark:border-sidebar-border">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                             {t('martyrs.edit_martyr')}
                         </h1>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">
+                        <p className="mt-1 text-gray-600 dark:text-gray-400">
                             {t('martyrs.edit_martyr_description')}
                         </p>
                     </div>
@@ -584,7 +737,9 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             <Input
                                 id="full_name"
                                 value={data.full_name}
-                                onChange={(e) => setData('full_name', e.target.value)}
+                                onChange={(e) =>
+                                    setData('full_name', e.target.value)
+                                }
                                 placeholder={t('martyrs.enter_full_name')}
                                 className="w-full"
                                 required
@@ -600,7 +755,9 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             <Input
                                 id="national_id"
                                 value={data.national_id}
-                                onChange={(e) => setData('national_id', e.target.value)}
+                                onChange={(e) =>
+                                    setData('national_id', e.target.value)
+                                }
                                 placeholder={t('martyrs.enter_national_id')}
                                 className="w-full"
                                 required
@@ -616,7 +773,9 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             <Input
                                 id="address"
                                 value={data.address}
-                                onChange={(e) => setData('address', e.target.value)}
+                                onChange={(e) =>
+                                    setData('address', e.target.value)
+                                }
                                 placeholder={t('martyrs.enter_address')}
                                 className="w-full"
                                 required
@@ -633,7 +792,9 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                                 id="death_date"
                                 type="date"
                                 value={data.death_date}
-                                onChange={(e) => setData('death_date', e.target.value)}
+                                onChange={(e) =>
+                                    setData('death_date', e.target.value)
+                                }
                                 className="w-full"
                                 required
                             />
@@ -652,10 +813,18 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                                     type="checkbox"
                                     id="has_martyr_decision"
                                     checked={data.has_martyr_decision}
-                                    onChange={(e) => setData('has_martyr_decision', e.target.checked)}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    onChange={(e) =>
+                                        setData(
+                                            'has_martyr_decision',
+                                            e.target.checked,
+                                        )
+                                    }
+                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                 />
-                                <label htmlFor="has_martyr_decision" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label
+                                    htmlFor="has_martyr_decision"
+                                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
                                     {t('martyrs.has_martyr_decision')}
                                 </label>
                             </div>
@@ -666,14 +835,23 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                                 <FormField
                                     icon={FileText}
                                     label={t('martyrs.decision_number')}
-                                    placeholder={t('martyrs.enter_decision_number')}
+                                    placeholder={t(
+                                        'martyrs.enter_decision_number',
+                                    )}
                                     error={errors.decision_number}
                                 >
                                     <Input
                                         id="decision_number"
                                         value={data.decision_number}
-                                        onChange={(e) => setData('decision_number', e.target.value)}
-                                        placeholder={t('martyrs.enter_decision_number')}
+                                        onChange={(e) =>
+                                            setData(
+                                                'decision_number',
+                                                e.target.value,
+                                            )
+                                        }
+                                        placeholder={t(
+                                            'martyrs.enter_decision_number',
+                                        )}
                                         className="w-full"
                                     />
                                 </FormField>
@@ -681,14 +859,21 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                                 <FormField
                                     icon={Calendar}
                                     label={t('martyrs.decision_date')}
-                                    placeholder={t('martyrs.enter_decision_date')}
+                                    placeholder={t(
+                                        'martyrs.enter_decision_date',
+                                    )}
                                     error={errors.decision_date}
                                 >
                                     <Input
                                         id="decision_date"
                                         type="date"
                                         value={data.decision_date}
-                                        onChange={(e) => setData('decision_date', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'decision_date',
+                                                e.target.value,
+                                            )
+                                        }
                                         className="w-full"
                                     />
                                 </FormField>
@@ -703,16 +888,37 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             label={t('martyrs.parents_status')}
                             error={errors.parents_status_id}
                         >
-                            <Select value={data.parents_status_id ? String(data.parents_status_id) : ''} onValueChange={(value) => setData('parents_status_id', value ? Number(value) : null)}>
+                            <Select
+                                value={
+                                    data.parents_status_id
+                                        ? String(data.parents_status_id)
+                                        : ''
+                                }
+                                onValueChange={(value) =>
+                                    setData(
+                                        'parents_status_id',
+                                        value ? Number(value) : null,
+                                    )
+                                }
+                            >
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder={t('martyrs.select_parents_status')} />
+                                    <SelectValue
+                                        placeholder={t(
+                                            'martyrs.select_parents_status',
+                                        )}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {loadingParentsStatuses ? (
-                                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{t('loading')}</div>
+                                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                                            {t('loading')}
+                                        </div>
                                     ) : (
                                         currentParentsStatuses.map((status) => (
-                                            <SelectItem key={status.id} value={status.id.toString()}>
+                                            <SelectItem
+                                                key={status.id}
+                                                value={status.id.toString()}
+                                            >
                                                 {status.name_ar}
                                             </SelectItem>
                                         ))
@@ -726,16 +932,37 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             label={t('martyrs.marital_status')}
                             error={errors.marital_status_id}
                         >
-                            <Select value={data.marital_status_id ? String(data.marital_status_id) : ''} onValueChange={(value) => setData('marital_status_id', value ? Number(value) : null)}>
+                            <Select
+                                value={
+                                    data.marital_status_id
+                                        ? String(data.marital_status_id)
+                                        : ''
+                                }
+                                onValueChange={(value) =>
+                                    setData(
+                                        'marital_status_id',
+                                        value ? Number(value) : null,
+                                    )
+                                }
+                            >
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder={t('martyrs.select_marital_status')} />
+                                    <SelectValue
+                                        placeholder={t(
+                                            'martyrs.select_marital_status',
+                                        )}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {loadingMaritalStatuses ? (
-                                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{t('loading')}</div>
+                                        <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+                                            {t('loading')}
+                                        </div>
                                     ) : (
                                         currentMaritalStatuses.map((status) => (
-                                            <SelectItem key={status.id} value={status.id.toString()}>
+                                            <SelectItem
+                                                key={status.id}
+                                                value={status.id.toString()}
+                                            >
                                                 {status.name_ar}
                                             </SelectItem>
                                         ))
@@ -744,7 +971,9 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             </Select>
                         </FormField>
 
-                        {currentMaritalStatuses.find(status => status.id === data.marital_status_id)?.name_ar === 'متزوج' && (
+                        {currentMaritalStatuses.find(
+                            (status) => status.id === data.marital_status_id,
+                        )?.name_ar === 'متزوج' && (
                             <FormField
                                 icon={Users}
                                 label={t('martyrs.children_count')}
@@ -755,27 +984,49 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                                     id="children_count"
                                     type="number"
                                     min="0"
-                                    value={data.children_count?.toString() || ''}
-                                    onChange={(e) => setData('children_count', e.target.value ? parseInt(e.target.value) : null)}
-                                    placeholder={t('martyrs.enter_children_count')}
+                                    value={
+                                        data.children_count?.toString() || ''
+                                    }
+                                    onChange={(e) =>
+                                        setData(
+                                            'children_count',
+                                            e.target.value
+                                                ? parseInt(e.target.value)
+                                                : null,
+                                        )
+                                    }
+                                    placeholder={t(
+                                        'martyrs.enter_children_count',
+                                    )}
                                     className="w-full"
                                 />
                             </FormField>
                         )}
 
-                        {currentMaritalStatuses.find(status => status.id === data.marital_status_id)?.name_ar === 'متزوج' && (
+                        {currentMaritalStatuses.find(
+                            (status) => status.id === data.marital_status_id,
+                        )?.name_ar === 'متزوج' && (
                             <FormField
                                 icon={Heart}
                                 label="حالة الزوجة"
                                 error={errors.wife_status}
                             >
-                                <Select value={data.wife_status || ''} onValueChange={(value) => setData('wife_status', value)}>
+                                <Select
+                                    value={data.wife_status || ''}
+                                    onValueChange={(value) =>
+                                        setData('wife_status', value)
+                                    }
+                                >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="اختر حالة الزوجة" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="ارملة">ارملة</SelectItem>
-                                        <SelectItem value="متزوجة">متزوجة</SelectItem>
+                                        <SelectItem value="ارملة">
+                                            ارملة
+                                        </SelectItem>
+                                        <SelectItem value="متزوجة">
+                                            متزوجة
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </FormField>
@@ -788,9 +1039,16 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                         >
                             <SearchableSelect
                                 value={data.employment_status_id}
-                                onChange={(value) => setData('employment_status_id', value ? Number(value) : null)}
+                                onChange={(value) =>
+                                    setData(
+                                        'employment_status_id',
+                                        value ? Number(value) : null,
+                                    )
+                                }
                                 options={currentEmploymentStatuses}
-                                placeholder={t('martyrs.select_employment_status')}
+                                placeholder={t(
+                                    'martyrs.select_employment_status',
+                                )}
                                 loading={loadingEmploymentStatuses}
                                 apiEndpoint="/api/employment-statuses"
                             />
@@ -805,9 +1063,17 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                                 >
                                     <SearchableSelect
                                         value={(data as any).employer_id}
-                                        onChange={(value) => setData('employer_id', value ? Number(value) : null)}
+                                        onChange={(value) =>
+                                            setData(
+                                                'employer_id',
+                                                value ? Number(value) : null,
+                                            )
+                                        }
                                         options={employersState}
-                                        placeholder={t('martyrs.select_employer') || 'اختر جهة العمل'}
+                                        placeholder={
+                                            t('martyrs.select_employer') ||
+                                            'اختر جهة العمل'
+                                        }
                                         loading={loadingEmployers}
                                     />
                                 </FormField>
@@ -818,10 +1084,21 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                                     error={errors.employer_location_id}
                                 >
                                     <SearchableSelect
-                                        value={(data as any).employer_location_id}
-                                        onChange={(value) => setData('employer_location_id', value ? Number(value) : null)}
+                                        value={
+                                            (data as any).employer_location_id
+                                        }
+                                        onChange={(value) =>
+                                            setData(
+                                                'employer_location_id',
+                                                value ? Number(value) : null,
+                                            )
+                                        }
                                         options={employerLocationsState}
-                                        placeholder={t('martyrs.select_employer_location') || 'اختر موقع العمل'}
+                                        placeholder={
+                                            t(
+                                                'martyrs.select_employer_location',
+                                            ) || 'اختر موقع العمل'
+                                        }
                                         loading={loadingEmployerLocations}
                                     />
                                 </FormField>
@@ -829,8 +1106,18 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                         )}
 
                         {(() => {
-                            const selectedStatus = currentEmploymentStatuses.find(status => status.id === data.employment_status_id);
-                            return selectedStatus && (selectedStatus.name_ar.toLowerCase().includes('employee') || selectedStatus.name_ar === 'موظف');
+                            const selectedStatus =
+                                currentEmploymentStatuses.find(
+                                    (status) =>
+                                        status.id === data.employment_status_id,
+                                );
+                            return (
+                                selectedStatus &&
+                                (selectedStatus.name_ar
+                                    .toLowerCase()
+                                    .includes('employee') ||
+                                    selectedStatus.name_ar === 'موظف')
+                            );
                         })() && (
                             <FormField
                                 icon={Briefcase}
@@ -839,7 +1126,12 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             >
                                 <SearchableSelect
                                     value={data.job_grade_id}
-                                                                onChange={(value) => setData('job_grade_id', value ? Number(value) : null)}
+                                    onChange={(value) =>
+                                        setData(
+                                            'job_grade_id',
+                                            value ? Number(value) : null,
+                                        )
+                                    }
                                     options={jobGrades}
                                     placeholder={t('martyrs.select_job_grade')}
                                 />
@@ -855,12 +1147,23 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                                 <input
                                     type="checkbox"
                                     id="has_previous_workplace"
-                                    checked={Boolean((data as any).has_previous_workplace)}
-                                    onChange={(e) => setData('has_previous_workplace', e.target.checked)}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    checked={Boolean(
+                                        (data as any).has_previous_workplace,
+                                    )}
+                                    onChange={(e) =>
+                                        setData(
+                                            'has_previous_workplace',
+                                            e.target.checked,
+                                        )
+                                    }
+                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                 />
-                                <label htmlFor="has_previous_workplace" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    {t('martyrs.has_previous_workplace') || 'نعم، لديه مكان عمل سابق'}
+                                <label
+                                    htmlFor="has_previous_workplace"
+                                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                                >
+                                    {t('martyrs.has_previous_workplace') ||
+                                        'نعم، لديه مكان عمل سابق'}
                                 </label>
                             </div>
                         </FormField>
@@ -868,14 +1171,25 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                         {(data as any).has_previous_workplace && (
                             <FormField
                                 icon={Briefcase}
-                                label={t('martyrs.previous_employer') || 'جهة العمل السابقة'}
+                                label={
+                                    t('martyrs.previous_employer') ||
+                                    'جهة العمل السابقة'
+                                }
                                 error={errors.previous_employer_id}
                             >
                                 <SearchableSelect
                                     value={(data as any).previous_employer_id}
-                                    onChange={(value) => setData('previous_employer_id', value ? Number(value) : null)}
+                                    onChange={(value) =>
+                                        setData(
+                                            'previous_employer_id',
+                                            value ? Number(value) : null,
+                                        )
+                                    }
                                     options={employersState}
-                                    placeholder={t('martyrs.select_previous_employer') || 'اختر جهة العمل السابقة'}
+                                    placeholder={
+                                        t('martyrs.select_previous_employer') ||
+                                        'اختر جهة العمل السابقة'
+                                    }
                                     loading={loadingEmployers}
                                 />
                             </FormField>
@@ -884,14 +1198,29 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                         {(data as any).has_previous_workplace && (
                             <FormField
                                 icon={MapPin}
-                                label={t('martyrs.previous_employer_location') || 'موقع العمل السابق'}
+                                label={
+                                    t('martyrs.previous_employer_location') ||
+                                    'موقع العمل السابق'
+                                }
                                 error={errors.previous_employer_location_id}
                             >
                                 <SearchableSelect
-                                    value={(data as any).previous_employer_location_id}
-                                    onChange={(value) => setData('previous_employer_location_id', value ? Number(value) : null)}
+                                    value={
+                                        (data as any)
+                                            .previous_employer_location_id
+                                    }
+                                    onChange={(value) =>
+                                        setData(
+                                            'previous_employer_location_id',
+                                            value ? Number(value) : null,
+                                        )
+                                    }
                                     options={previousEmployerLocationsState}
-                                    placeholder={t('martyrs.select_previous_employer_location') || 'اختر موقع العمل السابق'}
+                                    placeholder={
+                                        t(
+                                            'martyrs.select_previous_employer_location',
+                                        ) || 'اختر موقع العمل السابق'
+                                    }
                                     loading={loadingPreviousEmployerLocations}
                                 />
                             </FormField>
@@ -900,8 +1229,15 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
 
                     {/* Military Information */}
                     {(() => {
-                        const selectedStatus = currentEmploymentStatuses.find(status => status.id === data.employment_status_id);
-                        return selectedStatus && selectedStatus.name_ar.toLowerCase().includes('عسكري');
+                        const selectedStatus = currentEmploymentStatuses.find(
+                            (status) => status.id === data.employment_status_id,
+                        );
+                        return (
+                            selectedStatus &&
+                            selectedStatus.name_ar
+                                .toLowerCase()
+                                .includes('عسكري')
+                        );
                     })() && (
                         <FormSection title={t('martyrs.military_info')}>
                             <FormField
@@ -913,8 +1249,15 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                                 <Input
                                     id="military_number"
                                     value={data.military_number || ''}
-                                    onChange={(e) => setData('military_number', e.target.value)}
-                                    placeholder={t('martyrs.enter_military_number')}
+                                    onChange={(e) =>
+                                        setData(
+                                            'military_number',
+                                            e.target.value,
+                                        )
+                                    }
+                                    placeholder={t(
+                                        'martyrs.enter_military_number',
+                                    )}
                                     className="w-full"
                                 />
                             </FormField>
@@ -926,9 +1269,16 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             >
                                 <SearchableSelect
                                     value={data.military_rank_id}
-                                    onChange={(value) => setData('military_rank_id', value ? Number(value) : null)}
+                                    onChange={(value) =>
+                                        setData(
+                                            'military_rank_id',
+                                            value ? Number(value) : null,
+                                        )
+                                    }
                                     options={currentMilitaryRanks}
-                                    placeholder={t('martyrs.select_military_rank')}
+                                    placeholder={t(
+                                        'martyrs.select_military_rank',
+                                    )}
                                     loading={loadingRanks}
                                     apiEndpoint="/api/military-ranks"
                                 />
@@ -946,7 +1296,10 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             <SearchableSelect
                                 value={data.bank_id}
                                 onChange={(value) => {
-                                    setData('bank_id', value ? Number(value) : null);
+                                    setData(
+                                        'bank_id',
+                                        value ? Number(value) : null,
+                                    );
                                     setData('branch_id', null); // Reset branch when bank changes
                                 }}
                                 options={currentBanks}
@@ -964,13 +1317,22 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                         >
                             <SearchableSelect
                                 value={data.branch_id}
-                                onChange={(value) => setData('branch_id', value ? Number(value) : null)}
+                                onChange={(value) =>
+                                    setData(
+                                        'branch_id',
+                                        value ? Number(value) : null,
+                                    )
+                                }
                                 options={branches}
                                 placeholder={t('martyrs.select_branch')}
                                 loading={loadingBranches}
                                 disabled={!data.bank_id}
                                 error={errors.branch_id}
-                                apiEndpoint={data.bank_id ? `/api/banks/${data.bank_id}/branches` : undefined}
+                                apiEndpoint={
+                                    data.bank_id
+                                        ? `/api/banks/${data.bank_id}/branches`
+                                        : undefined
+                                }
                             />
                         </FormField>
 
@@ -983,7 +1345,12 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             <Input
                                 id="bank_account_number"
                                 value={data.bank_account_number || ''}
-                                onChange={(e) => setData('bank_account_number', e.target.value)}
+                                onChange={(e) =>
+                                    setData(
+                                        'bank_account_number',
+                                        e.target.value,
+                                    )
+                                }
                                 placeholder={t('martyrs.enter_bank_account')}
                                 className="w-full"
                             />
@@ -1001,7 +1368,9 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             <Input
                                 id="agent_name"
                                 value={data.agent_name || ''}
-                                onChange={(e) => setData('agent_name', e.target.value)}
+                                onChange={(e) =>
+                                    setData('agent_name', e.target.value)
+                                }
                                 placeholder={t('martyrs.enter_agent_name')}
                                 className="w-full"
                             />
@@ -1016,7 +1385,9 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             <Input
                                 id="agent_phone"
                                 value={data.agent_phone || ''}
-                                onChange={(e) => setData('agent_phone', e.target.value)}
+                                onChange={(e) =>
+                                    setData('agent_phone', e.target.value)
+                                }
                                 placeholder={t('martyrs.enter_agent_phone')}
                                 className="w-full"
                             />
@@ -1031,8 +1402,15 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             <Input
                                 id="agent_relationship"
                                 value={data.agent_relationship || ''}
-                                onChange={(e) => setData('agent_relationship', e.target.value)}
-                                placeholder={t('martyrs.select_agent_relationship')}
+                                onChange={(e) =>
+                                    setData(
+                                        'agent_relationship',
+                                        e.target.value,
+                                    )
+                                }
+                                placeholder={t(
+                                    'martyrs.select_agent_relationship',
+                                )}
                                 className="w-full"
                             />
                         </FormField>
@@ -1046,7 +1424,12 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
                             <Input
                                 id="agent_passport_number"
                                 value={data.agent_passport_number || ''}
-                                onChange={(e) => setData('agent_passport_number', e.target.value)}
+                                onChange={(e) =>
+                                    setData(
+                                        'agent_passport_number',
+                                        e.target.value,
+                                    )
+                                }
                                 placeholder={t('martyrs.enter_agent_passport')}
                                 className="w-full"
                             />
@@ -1055,53 +1438,63 @@ export default function Edit({ martyr, employmentStatuses, militaryRanks, banks,
 
                     {/* Attachments */}
                     <FormSection title={t('martyrs.attachments')}>
-                            <FormField
-                                icon={Upload}
-                                label={t('martyrs.profile_image')}
-                                error={errors.profile_image}
-                            >
-                                {previewUrl && (
-                                    <div className="mb-3">
-                                        <img src={`/storage/${previewUrl}`} alt="profile" className="h-28 w-28 object-cover rounded-md border" />
-                                    </div>
-                                )}
+                        <FormField
+                            icon={Upload}
+                            label={t('martyrs.profile_image')}
+                            error={errors.profile_image}
+                        >
+                            {previewUrl && (
+                                <div className="mb-3">
+                                    <img
+                                        src={`/storage/${previewUrl}`}
+                                        alt="profile"
+                                        className="h-28 w-28 rounded-md border object-cover"
+                                    />
+                                </div>
+                            )}
 
-                                <Input
-                                    id="profile_image"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                        const file = e.target.files?.[0] || undefined;
-                                        setData('profile_image', file as any);
-                                        // revoke previous object URL
-                                        if (previewObjectUrlRef.current) {
-                                            URL.revokeObjectURL(previewObjectUrlRef.current);
-                                            previewObjectUrlRef.current = null;
-                                        }
-                                        if (file) {
-                                            const obj = URL.createObjectURL(file);
-                                            previewObjectUrlRef.current = obj;
-                                            setPreviewUrl(obj);
-                                        } else {
-                                            setPreviewUrl((martyr as any).profile_image ?? null);
-                                        }
-                                    }}
-                                    className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900 dark:file:text-green-300"
-                                />
-                            </FormField>
-
-                        
+                            <Input
+                                id="profile_image"
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    const file =
+                                        e.target.files?.[0] || undefined;
+                                    setData('profile_image', file as any);
+                                    // revoke previous object URL
+                                    if (previewObjectUrlRef.current) {
+                                        URL.revokeObjectURL(
+                                            previewObjectUrlRef.current,
+                                        );
+                                        previewObjectUrlRef.current = null;
+                                    }
+                                    if (file) {
+                                        const obj = URL.createObjectURL(file);
+                                        previewObjectUrlRef.current = obj;
+                                        setPreviewUrl(obj);
+                                    } else {
+                                        setPreviewUrl(
+                                            (martyr as any).profile_image ??
+                                                null,
+                                        );
+                                    }
+                                }}
+                                className="w-full file:mr-4 file:rounded-full file:border-0 file:bg-green-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900 dark:file:text-green-300"
+                            />
+                        </FormField>
                     </FormSection>
 
                     {/* Submit Button */}
-                    <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700 p-6 rounded-lg">
+                    <div className="flex justify-end rounded-lg border-t border-gray-200 p-6 pt-6 dark:border-gray-700">
                         <Button
                             type="submit"
                             disabled={processing}
-                            className="flex items-center gap-2 px-8 py-3 text-lg font-semibold bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                            className="flex items-center gap-2 bg-blue-600 px-8 py-3 text-lg font-semibold text-white transition-colors duration-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-700 dark:hover:bg-blue-800"
                         >
                             <Save size={20} />
-                            {processing ? t('loading') : t('martyrs.update_martyr')}
+                            {processing
+                                ? t('loading')
+                                : t('martyrs.update_martyr')}
                         </Button>
                     </div>
                 </form>

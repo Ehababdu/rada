@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     Pagination,
     PaginationContent,
@@ -8,6 +7,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
+import React from 'react';
 
 interface PaginationProps {
     currentPage: number;
@@ -15,7 +15,11 @@ interface PaginationProps {
     onPageChange: (page: number) => void;
 }
 
-const CustomPagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
+const CustomPagination: React.FC<PaginationProps> = ({
+    currentPage,
+    totalPages,
+    onPageChange,
+}) => {
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages) {
             onPageChange(page);
@@ -30,28 +34,38 @@ const CustomPagination: React.FC<PaginationProps> = ({ currentPage, totalPages, 
         if (1 < currentPage - delta) {
             pages.push(
                 <PaginationItem key={1}>
-                    <PaginationLink onClick={() => handlePageChange(1)} isActive={currentPage === 1}>
+                    <PaginationLink
+                        onClick={() => handlePageChange(1)}
+                        isActive={currentPage === 1}
+                    >
                         1
                     </PaginationLink>
-                </PaginationItem>
+                </PaginationItem>,
             );
             if (2 < currentPage - delta) {
                 pages.push(
                     <PaginationItem key="ellipsis-start">
                         <PaginationEllipsis />
-                    </PaginationItem>
+                    </PaginationItem>,
                 );
             }
         }
 
         // Show pages around current page
-        for (let i = Math.max(1, currentPage - delta); i <= Math.min(totalPages, currentPage + delta); i++) {
+        for (
+            let i = Math.max(1, currentPage - delta);
+            i <= Math.min(totalPages, currentPage + delta);
+            i++
+        ) {
             pages.push(
                 <PaginationItem key={i}>
-                    <PaginationLink onClick={() => handlePageChange(i)} isActive={currentPage === i}>
+                    <PaginationLink
+                        onClick={() => handlePageChange(i)}
+                        isActive={currentPage === i}
+                    >
                         {i}
                     </PaginationLink>
-                </PaginationItem>
+                </PaginationItem>,
             );
         }
 
@@ -61,15 +75,18 @@ const CustomPagination: React.FC<PaginationProps> = ({ currentPage, totalPages, 
                 pages.push(
                     <PaginationItem key="ellipsis-end">
                         <PaginationEllipsis />
-                    </PaginationItem>
+                    </PaginationItem>,
                 );
             }
             pages.push(
                 <PaginationItem key={totalPages}>
-                    <PaginationLink onClick={() => handlePageChange(totalPages)} isActive={currentPage === totalPages}>
+                    <PaginationLink
+                        onClick={() => handlePageChange(totalPages)}
+                        isActive={currentPage === totalPages}
+                    >
                         {totalPages}
                     </PaginationLink>
-                </PaginationItem>
+                </PaginationItem>,
             );
         }
 
@@ -82,14 +99,22 @@ const CustomPagination: React.FC<PaginationProps> = ({ currentPage, totalPages, 
                 <PaginationItem>
                     <PaginationPrevious
                         onClick={() => handlePageChange(currentPage - 1)}
-                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        className={
+                            currentPage === 1
+                                ? 'pointer-events-none opacity-50'
+                                : 'cursor-pointer'
+                        }
                     />
                 </PaginationItem>
                 {renderPageNumbers()}
                 <PaginationItem>
                     <PaginationNext
                         onClick={() => handlePageChange(currentPage + 1)}
-                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                        className={
+                            currentPage === totalPages
+                                ? 'pointer-events-none opacity-50'
+                                : 'cursor-pointer'
+                        }
                     />
                 </PaginationItem>
             </PaginationContent>

@@ -1,7 +1,7 @@
-import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ColumnDef } from '@tanstack/react-table';
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import React from 'react';
 
 /**
@@ -14,8 +14,13 @@ import React from 'react';
 export function createSortableColumn<TData, TValue>(
     id: string,
     header: string,
-    cell: (props: { getValue: () => TValue; row: any; column: any; table: any }) => React.ReactNode,
-    accessorFn: (row: TData) => TValue
+    cell: (props: {
+        getValue: () => TValue;
+        row: any;
+        column: any;
+        table: any;
+    }) => React.ReactNode,
+    accessorFn: (row: TData) => TValue,
 ): ColumnDef<TData, TValue> {
     return {
         id,
@@ -25,13 +30,22 @@ export function createSortableColumn<TData, TValue>(
             return (
                 <Button
                     variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                    className={cn("-ml-4 h-8 data-[state=open]:bg-accent", isSorted && "text-foreground")}
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === 'asc')
+                    }
+                    className={cn(
+                        '-ml-4 h-8 data-[state=open]:bg-accent',
+                        isSorted && 'text-foreground',
+                    )}
                 >
                     <span>{header}</span>
                     {isSorted === 'asc' && <ArrowUp className="ml-2 h-4 w-4" />}
-                    {isSorted === 'desc' && <ArrowDown className="ml-2 h-4 w-4" />}
-                    {!isSorted && <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />}
+                    {isSorted === 'desc' && (
+                        <ArrowDown className="ml-2 h-4 w-4" />
+                    )}
+                    {!isSorted && (
+                        <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+                    )}
                 </Button>
             );
         },
@@ -46,8 +60,13 @@ export function createSortableColumn<TData, TValue>(
 export function createCustomColumn<TData, TValue>(
     id: string,
     header: string,
-    cell: (props: { getValue: () => TValue; row: any; column: any; table: any }) => React.ReactNode,
-    accessorFn: (row: TData) => TValue
+    cell: (props: {
+        getValue: () => TValue;
+        row: any;
+        column: any;
+        table: any;
+    }) => React.ReactNode,
+    accessorFn: (row: TData) => TValue,
 ): ColumnDef<TData, TValue> {
     return {
         id,
@@ -71,7 +90,10 @@ export function formatCurrency(value: number, currency = 'EGP'): string {
 /**
  * Format dates
  */
-export function formatDate(date: string | Date | null | undefined, locale = 'ar-EG'): string {
+export function formatDate(
+    date: string | Date | null | undefined,
+    locale = 'ar-EG',
+): string {
     if (!date) return '-';
     try {
         return new Intl.DateTimeFormat(locale, {
@@ -113,7 +135,9 @@ export function truncateText(text: string, maxLength: number): string {
 /**
  * Create status badge variants
  */
-export function getStatusVariant(status: string): 'default' | 'secondary' | 'destructive' | 'outline' {
+export function getStatusVariant(
+    status: string,
+): 'default' | 'secondary' | 'destructive' | 'outline' {
     const s = status ? status.toLowerCase() : '';
     switch (s) {
         case 'active':
@@ -141,7 +165,7 @@ export function getStatusVariant(status: string): 'default' | 'secondary' | 'des
  */
 export function debounce<T extends (...args: any[]) => any>(
     func: T,
-    wait: number
+    wait: number,
 ): (...args: Parameters<T>) => void {
     let timeout: NodeJS.Timeout;
     return (...args: Parameters<T>) => {
@@ -178,23 +202,25 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
 export function generateExportData<TData>(
     data: TData[],
     columns: ColumnDef<TData, any>[],
-    filename: string
+    filename: string,
 ): void {
     const headers = columns
-        .filter(col => col.id && col.header)
-        .map(col => String(col.header));
+        .filter((col) => col.id && col.header)
+        .map((col) => String(col.header));
 
-    const rows = data.map(item =>
+    const rows = data.map((item) =>
         columns
-            .filter(col => col.id)
-            .map(col => {
+            .filter((col) => col.id)
+            .map((col) => {
                 const value = (item as any)[col.id!];
                 return String(value || '');
-            })
+            }),
     );
 
     const csvContent = [headers, ...rows]
-        .map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
+        .map((row) =>
+            row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(','),
+        )
         .join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -207,7 +233,11 @@ export function generateExportData<TData>(
 /**
  * Export data to Excel format
  */
-export function exportToExcel<TData>(data: TData[], tableName: string, t: (key: string) => string): void {
+export function exportToExcel<TData>(
+    data: TData[],
+    tableName: string,
+    t: (key: string) => string,
+): void {
     // TODO: Implement Excel export
     console.log('Exporting to Excel:', data.length, 'records from', tableName);
 }
@@ -215,7 +245,11 @@ export function exportToExcel<TData>(data: TData[], tableName: string, t: (key: 
 /**
  * Export data to PDF format
  */
-export function exportToPDF<TData>(data: TData[], tableName: string, t: (key: string) => string): void {
+export function exportToPDF<TData>(
+    data: TData[],
+    tableName: string,
+    t: (key: string) => string,
+): void {
     // TODO: Implement PDF export
     console.log('Exporting to PDF:', data.length, 'records from', tableName);
 }

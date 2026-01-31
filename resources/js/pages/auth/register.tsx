@@ -63,7 +63,9 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">{t('password')}</Label>
+                                <Label htmlFor="password">
+                                    {t('password')}
+                                </Label>
                                 <Input
                                     id="password"
                                     type="password"

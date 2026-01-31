@@ -1,15 +1,19 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
+import {
+    create as permissionsCreate,
+    index as permissionsIndex,
+    store as permissionsStore,
+} from '@/routes/permissions';
 import { BreadcrumbItem } from '@/types';
-import { index as permissionsIndex, create as permissionsCreate, store as permissionsStore } from '@/routes/permissions';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     flash: {
@@ -66,7 +70,9 @@ export default function Create({ flash }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`${t('permissions.create')} - ${t('permissions.title')}`} />
+            <Head
+                title={`${t('permissions.create')} - ${t('permissions.title')}`}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="flex items-center gap-4">
@@ -77,7 +83,9 @@ export default function Create({ flash }: Props) {
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold">{t('permissions.create')}</h1>
+                        <h1 className="text-2xl font-bold">
+                            {t('permissions.create')}
+                        </h1>
                         <p className="text-muted-foreground">
                             {t('permissions.create_description')}
                         </p>
@@ -87,25 +95,36 @@ export default function Create({ flash }: Props) {
                 <div className="max-w-2xl">
                     <Card>
                         <CardHeader>
-                            <CardTitle>{t('permissions.create_form')}</CardTitle>
+                            <CardTitle>
+                                {t('permissions.create_form')}
+                            </CardTitle>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={submit} className="space-y-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">
-                                        {t('permissions.name')} <span className="text-red-500">*</span>
+                                        {t('permissions.name')}{' '}
+                                        <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
                                         id="name"
                                         type="text"
                                         value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        placeholder={t('permissions.name_placeholder')}
-                                        className={errors.name ? 'border-red-500' : ''}
+                                        onChange={(e) =>
+                                            setData('name', e.target.value)
+                                        }
+                                        placeholder={t(
+                                            'permissions.name_placeholder',
+                                        )}
+                                        className={
+                                            errors.name ? 'border-red-500' : ''
+                                        }
                                         required
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-red-500">{errors.name}</p>
+                                        <p className="text-sm text-red-500">
+                                            {errors.name}
+                                        </p>
                                     )}
                                 </div>
 
@@ -117,12 +136,25 @@ export default function Create({ flash }: Props) {
                                         id="guard_name"
                                         type="text"
                                         value={data.guard_name}
-                                        onChange={(e) => setData('guard_name', e.target.value)}
-                                        placeholder={t('permissions.guard_name_placeholder')}
-                                        className={errors.guard_name ? 'border-red-500' : ''}
+                                        onChange={(e) =>
+                                            setData(
+                                                'guard_name',
+                                                e.target.value,
+                                            )
+                                        }
+                                        placeholder={t(
+                                            'permissions.guard_name_placeholder',
+                                        )}
+                                        className={
+                                            errors.guard_name
+                                                ? 'border-red-500'
+                                                : ''
+                                        }
                                     />
                                     {errors.guard_name && (
-                                        <p className="text-sm text-red-500">{errors.guard_name}</p>
+                                        <p className="text-sm text-red-500">
+                                            {errors.guard_name}
+                                        </p>
                                     )}
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
                                         {t('permissions.guard_name_help')}
@@ -131,10 +163,16 @@ export default function Create({ flash }: Props) {
 
                                 <div className="flex gap-4">
                                     <Button type="submit" disabled={processing}>
-                                        {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                                        {processing && (
+                                            <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                                        )}
                                         {t('common.create')}
                                     </Button>
-                                    <Button type="button" variant="outline" onClick={() => reset()}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => reset()}
+                                    >
                                         {t('common.reset')}
                                     </Button>
                                 </div>

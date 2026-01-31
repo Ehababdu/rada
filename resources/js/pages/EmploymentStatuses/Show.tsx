@@ -1,8 +1,3 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { useTranslation } from 'react-i18next';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -14,10 +9,20 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
+import {
+    destroy as employmentStatusesDestroy,
+    edit as employmentStatusesEdit,
+    index as employmentStatusesIndex,
+    show as employmentStatusesShow,
+} from '@/routes/employment-statuses';
 import { BreadcrumbItem } from '@/types';
-import { index as employmentStatusesIndex, show as employmentStatusesShow, edit as employmentStatusesEdit, destroy as employmentStatusesDestroy } from '@/routes/employment-statuses';
+import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, SquarePen, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface EmploymentStatus {
     id: number;
@@ -78,7 +83,9 @@ export default function Show({ employmentStatus, flash }: Props) {
                             </Link>
                         </Button>
                         <div>
-                            <h1 className="text-2xl font-bold">{employmentStatus.name}</h1>
+                            <h1 className="text-2xl font-bold">
+                                {employmentStatus.name}
+                            </h1>
                             <p className="text-muted-foreground">
                                 {t('employment_statuses.show_description')}
                             </p>
@@ -86,7 +93,12 @@ export default function Show({ employmentStatus, flash }: Props) {
                     </div>
                     <div className="flex gap-2">
                         <Button variant="outline" asChild>
-                            <Link href={employmentStatusesEdit(employmentStatus.id).url}>
+                            <Link
+                                href={
+                                    employmentStatusesEdit(employmentStatus.id)
+                                        .url
+                                }
+                            >
                                 <SquarePen className="h-4 w-4" />
                                 {t('edit')}
                             </Link>
@@ -100,13 +112,17 @@ export default function Show({ employmentStatus, flash }: Props) {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>{t('confirm_delete')}</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                        {t('confirm_delete')}
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
                                         {t('confirm_delete_description')}
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                                    <AlertDialogCancel>
+                                        {t('cancel')}
+                                    </AlertDialogCancel>
                                     <AlertDialogAction
                                         onClick={handleDelete}
                                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -122,7 +138,9 @@ export default function Show({ employmentStatus, flash }: Props) {
                 <div className="max-w-2xl">
                     <Card>
                         <CardHeader>
-                            <CardTitle>{t('employment_statuses.details')}</CardTitle>
+                            <CardTitle>
+                                {t('employment_statuses.details')}
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid grid-cols-1 gap-4">
@@ -130,19 +148,25 @@ export default function Show({ employmentStatus, flash }: Props) {
                                     <label className="text-sm font-medium text-muted-foreground">
                                         {t('employment_statuses.name')}
                                     </label>
-                                    <p className="text-sm">{employmentStatus.name}</p>
+                                    <p className="text-sm">
+                                        {employmentStatus.name}
+                                    </p>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-muted-foreground">
                                         {t('created_at')}
                                     </label>
-                                    <p className="text-sm">{employmentStatus.created_at}</p>
+                                    <p className="text-sm">
+                                        {employmentStatus.created_at}
+                                    </p>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-muted-foreground">
                                         {t('updated_at')}
                                     </label>
-                                    <p className="text-sm">{employmentStatus.updated_at}</p>
+                                    <p className="text-sm">
+                                        {employmentStatus.updated_at}
+                                    </p>
                                 </div>
                             </div>
                         </CardContent>

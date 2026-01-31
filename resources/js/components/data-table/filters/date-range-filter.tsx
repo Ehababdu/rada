@@ -1,10 +1,9 @@
-import * as React from 'react';
-import { CalendarIcon } from 'lucide-react';
-import { DateRange } from 'react-day-picker';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
+import { CalendarIcon } from 'lucide-react';
+import * as React from 'react';
+import { DateRange } from 'react-day-picker';
 
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -12,6 +11,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
 interface DateRangeFilterProps<TData> {
@@ -45,7 +45,7 @@ export function DateRangeFilter<TData>({
                         variant="outline"
                         className={cn(
                             'w-full justify-start text-left font-normal',
-                            !date && 'text-muted-foreground'
+                            !date && 'text-muted-foreground',
                         )}
                     >
                         <CalendarIcon className="mr-2 h-4 w-4" />

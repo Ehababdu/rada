@@ -1,5 +1,8 @@
 FROM php:8.2-fpm
 
+# Create sail user
+RUN useradd -m -s /bin/bash sail
+
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev libpng-dev libonig-dev libxml2-dev zip curl \
     nodejs npm \
@@ -19,7 +22,7 @@ RUN if [ -f composer.json ]; then composer install --no-dev --optimize-autoloade
 
 COPY . .
 
-RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html/storage || true
+RUN chown -R sail:sail /var/www/html && chmod -R 755 /var/www/html/storage || true
 
 EXPOSE 9000
 

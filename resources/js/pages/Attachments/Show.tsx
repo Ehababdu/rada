@@ -1,20 +1,19 @@
-import React from 'react';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Martyr } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
 import {
     ArrowLeft,
-    Eye,
+    Calendar,
     Download,
     Edit,
+    Eye,
     FileText,
+    Hash,
     Image,
-    Calendar,
     User,
-    Hash
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Attachment {
     id: number;
@@ -65,26 +64,31 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
     };
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString(i18n.language === 'ar' ? 'ar' : 'en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
+        return new Date(dateString).toLocaleDateString(
+            i18n.language === 'ar' ? 'ar' : 'en-US',
+            {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            },
+        );
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`${attachment.original_filename} - ${martyr.full_name}`} />
+            <Head
+                title={`${attachment.original_filename} - ${martyr.full_name}`}
+            />
 
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-4 md:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+            <div className="flex h-full min-h-screen flex-1 flex-col gap-6 overflow-x-auto rounded-xl bg-gray-50 p-4 md:p-6 dark:bg-gray-900">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="flex flex-col items-start justify-between gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center dark:border-gray-700 dark:bg-gray-800">
                     <div className="flex items-center gap-4">
                         <Link
                             href={`/martyrs/${martyr.id}/attachments`}
-                            className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                         >
                             <ArrowLeft size={20} />
                         </Link>
@@ -92,14 +96,21 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
                                 {attachment.original_filename}
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400 mt-1">
-                                {martyr.full_name} - {attachmentTypes[attachment.attachment_type] || attachment.attachment_type}
+                            <p className="mt-1 text-gray-600 dark:text-gray-400">
+                                {martyr.full_name} -{' '}
+                                {attachmentTypes[attachment.attachment_type] ||
+                                    attachment.attachment_type}
                             </p>
                         </div>
                     </div>
                     <div className="flex gap-3">
-                        <Link href={`/martyrs/${martyr.id}/attachments/${attachment.id}/edit`}>
-                            <Button variant="outline" className="flex items-center gap-2">
+                        <Link
+                            href={`/martyrs/${martyr.id}/attachments/${attachment.id}/edit`}
+                        >
+                            <Button
+                                variant="outline"
+                                className="flex items-center gap-2"
+                            >
                                 <Edit size={16} />
                                 {t('edit')}
                             </Button>
@@ -109,15 +120,15 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            <Button variant="outline" className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                className="flex items-center gap-2"
+                            >
                                 <Eye size={16} />
                                 {t('view_file')}
                             </Button>
                         </a>
-                        <a
-                            href={`/storage/${attachment.file_path}`}
-                            download
-                        >
+                        <a href={`/storage/${attachment.file_path}`} download>
                             <Button className="flex items-center gap-2">
                                 <Download size={16} />
                                 {t('download_file')}
@@ -127,11 +138,11 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
                 </div>
 
                 {/* Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     {/* File Preview */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                            <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">
                                 {t('view_file')}
                             </h2>
 
@@ -140,18 +151,18 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
                                     <img
                                         src={`/storage/${attachment.file_path}`}
                                         alt={attachment.original_filename}
-                                        className="max-w-full h-auto max-h-96 object-contain rounded-lg border border-gray-200 dark:border-gray-600"
+                                        className="h-auto max-h-96 max-w-full rounded-lg border border-gray-200 object-contain dark:border-gray-600"
                                     />
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                                    <div className="p-6 bg-gray-50 dark:bg-gray-700 rounded-full mb-4">
+                                    <div className="mb-4 rounded-full bg-gray-50 p-6 dark:bg-gray-700">
                                         {getFileIcon(attachment.mime_type, 64)}
                                     </div>
-                                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                                    <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-gray-100">
                                         {attachment.original_filename}
                                     </h3>
-                                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                                    <p className="mb-4 text-gray-600 dark:text-gray-400">
                                         {attachment.mime_type}
                                     </p>
                                     <div className="flex gap-3">
@@ -159,7 +170,7 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
                                             href={`/storage/${attachment.file_path}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
                                         >
                                             <Eye size={16} />
                                             {t('view_file')}
@@ -167,7 +178,7 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
                                         <a
                                             href={`/storage/${attachment.file_path}`}
                                             download
-                                            className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                            className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
                                         >
                                             <Download size={16} />
                                             {t('download_file')}
@@ -181,43 +192,51 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
                     {/* File Information */}
                     <div className="space-y-6">
                         {/* File Details */}
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                            <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">
                                 {t('martyrs.details')}
                             </h2>
 
                             <div className="space-y-4">
                                 <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                    <div className="rounded-lg bg-blue-50 p-2 dark:bg-blue-900/20">
                                         {getFileIcon(attachment.mime_type, 20)}
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                                             {t('file_name')}
                                         </p>
-                                        <p className="text-sm text-gray-900 dark:text-gray-100 break-all">
+                                        <p className="text-sm break-all text-gray-900 dark:text-gray-100">
                                             {attachment.original_filename}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                                        <Hash size={20} className="text-green-600 dark:text-green-400" />
+                                    <div className="rounded-lg bg-green-50 p-2 dark:bg-green-900/20">
+                                        <Hash
+                                            size={20}
+                                            className="text-green-600 dark:text-green-400"
+                                        />
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                                             {t('attachment_type')}
                                         </p>
                                         <p className="text-sm text-gray-900 dark:text-gray-100">
-                                            {attachmentTypes[attachment.attachment_type] || attachment.attachment_type}
+                                            {attachmentTypes[
+                                                attachment.attachment_type
+                                            ] || attachment.attachment_type}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                                        <FileText size={20} className="text-purple-600 dark:text-purple-400" />
+                                    <div className="rounded-lg bg-purple-50 p-2 dark:bg-purple-900/20">
+                                        <FileText
+                                            size={20}
+                                            className="text-purple-600 dark:text-purple-400"
+                                        />
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -230,8 +249,11 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
                                 </div>
 
                                 <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                                        <Calendar size={20} className="text-orange-600 dark:text-orange-400" />
+                                    <div className="rounded-lg bg-orange-50 p-2 dark:bg-orange-900/20">
+                                        <Calendar
+                                            size={20}
+                                            className="text-orange-600 dark:text-orange-400"
+                                        />
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -245,8 +267,11 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
 
                                 {attachment.description && (
                                     <div className="flex items-start gap-3">
-                                        <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                            <FileText size={20} className="text-gray-600 dark:text-gray-400" />
+                                        <div className="rounded-lg bg-gray-50 p-2 dark:bg-gray-700">
+                                            <FileText
+                                                size={20}
+                                                className="text-gray-600 dark:text-gray-400"
+                                            />
                                         </div>
                                         <div className="flex-1">
                                             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -262,15 +287,18 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
                         </div>
 
                         {/* Martyr Information */}
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-                            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                            <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">
                                 {t('martyrs.martyr_info')}
                             </h2>
 
                             <div className="space-y-4">
                                 <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                        <User size={20} className="text-blue-600 dark:text-blue-400" />
+                                    <div className="rounded-lg bg-blue-50 p-2 dark:bg-blue-900/20">
+                                        <User
+                                            size={20}
+                                            className="text-blue-600 dark:text-blue-400"
+                                        />
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -283,8 +311,11 @@ export default function Show({ martyr, attachment, attachmentTypes }: Props) {
                                 </div>
 
                                 <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                                        <Hash size={20} className="text-green-600 dark:text-green-400" />
+                                    <div className="rounded-lg bg-green-50 p-2 dark:bg-green-900/20">
+                                        <Hash
+                                            size={20}
+                                            className="text-green-600 dark:text-green-400"
+                                        />
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm font-medium text-gray-600 dark:text-gray-400">

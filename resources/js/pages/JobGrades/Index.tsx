@@ -1,17 +1,3 @@
-import React, { useState, useCallback, useRef } from 'react';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useTranslation } from 'react-i18next';
-import { Plus, Search, Edit, Eye, Trash2, Award, CheckCircle, XCircle, FilterX, ArrowUpDown } from 'lucide-react';
-import { DataTable } from '@/components/ui/data-table';
-import { ColumnDef } from '@tanstack/react-table';
-import { cn } from '@/lib/utils';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,6 +9,31 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { DataTable } from '@/components/ui/data-table';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/app-layout';
+import { cn } from '@/lib/utils';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
+import { ColumnDef } from '@tanstack/react-table';
+import {
+    ArrowUpDown,
+    Award,
+    CheckCircle,
+    Edit,
+    Eye,
+    FilterX,
+    Plus,
+    Search,
+    Trash2,
+    XCircle,
+} from 'lucide-react';
+import { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface JobGrade {
     id: number;
@@ -57,7 +68,9 @@ export default function Index({ jobGrades, filters }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
     const [search, setSearch] = useState(filters.search || '');
-    const [isActiveFilter, setIsActiveFilter] = useState(filters.is_active || '');
+    const [isActiveFilter, setIsActiveFilter] = useState(
+        filters.is_active || '',
+    );
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -65,18 +78,28 @@ export default function Index({ jobGrades, filters }: Props) {
     ];
 
     // دالة البحث مع Debounce
-    const triggerSearch = useCallback((searchValue: string, activeValue: string) => {
-        router.get('/job-grades', {
-            search: searchValue || undefined,
-            is_active: activeValue || undefined,
-            page: 1,
-        }, { preserveState: true, replace: true });
-    }, []);
+    const triggerSearch = useCallback(
+        (searchValue: string, activeValue: string) => {
+            router.get(
+                '/job-grades',
+                {
+                    search: searchValue || undefined,
+                    is_active: activeValue || undefined,
+                    page: 1,
+                },
+                { preserveState: true, replace: true },
+            );
+        },
+        [],
+    );
 
     const onSearchChange = (val: string) => {
         setSearch(val);
         if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-        searchTimeoutRef.current = setTimeout(() => triggerSearch(val, isActiveFilter), 400);
+        searchTimeoutRef.current = setTimeout(
+            () => triggerSearch(val, isActiveFilter),
+            400,
+        );
     };
 
     const onStatusFilterChange = (val: string) => {
@@ -85,8 +108,15 @@ export default function Index({ jobGrades, filters }: Props) {
     };
 
     const handleSort = (field: string) => {
-        const direction = filters.sort === field && filters.direction === 'asc' ? 'desc' : 'asc';
-        router.get('/job-grades', { ...filters, sort: field, direction, page: 1 }, { preserveState: true, replace: true });
+        const direction =
+            filters.sort === field && filters.direction === 'asc'
+                ? 'desc'
+                : 'asc';
+        router.get(
+            '/job-grades',
+            { ...filters, sort: field, direction, page: 1 },
+            { preserveState: true, replace: true },
+        );
     };
 
     const handleDelete = (id: number) => {
@@ -97,22 +127,36 @@ export default function Index({ jobGrades, filters }: Props) {
         {
             accessorKey: 'name_ar',
             header: () => (
-                <Button variant="ghost" onClick={() => handleSort('name_ar')} className="h-8 gap-1 p-0 font-bold hover:bg-transparent text-inherit">
+                <Button
+                    variant="ghost"
+                    onClick={() => handleSort('name_ar')}
+                    className="h-8 gap-1 p-0 font-bold text-inherit hover:bg-transparent"
+                >
                     {t('job_grades.name_ar')}
                     <ArrowUpDown className="h-4 w-4 opacity-50" />
                 </Button>
             ),
-            cell: ({ row }) => <div className="font-semibold">{row.original.name_ar}</div>,
+            cell: ({ row }) => (
+                <div className="font-semibold">{row.original.name_ar}</div>
+            ),
         },
         {
             accessorKey: 'name_en',
             header: t('job_grades.name_en'),
-            cell: ({ row }) => <div className="text-muted-foreground italic text-sm">{row.original.name_en}</div>,
+            cell: ({ row }) => (
+                <div className="text-sm text-muted-foreground italic">
+                    {row.original.name_en}
+                </div>
+            ),
         },
         {
             accessorKey: 'order',
             header: () => (
-                <Button variant="ghost" onClick={() => handleSort('order')} className="h-8 gap-1 p-0 font-bold hover:bg-transparent text-inherit">
+                <Button
+                    variant="ghost"
+                    onClick={() => handleSort('order')}
+                    className="h-8 gap-1 p-0 font-bold text-inherit hover:bg-transparent"
+                >
                     {t('job_grades.order')}
                     <ArrowUpDown className="h-4 w-4 opacity-50" />
                 </Button>
@@ -127,13 +171,19 @@ export default function Index({ jobGrades, filters }: Props) {
             accessorKey: 'is_active',
             header: t('job_grades.status'),
             cell: ({ row }) => (
-                <Badge className={cn(
-                    "gap-1 px-2 py-0.5 shadow-none border-none font-medium",
-                    row.original.is_active 
-                        ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100" 
-                        : "bg-red-100 text-red-700 hover:bg-red-100"
-                )}>
-                    {row.original.is_active ? <CheckCircle className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                <Badge
+                    className={cn(
+                        'gap-1 border-none px-2 py-0.5 font-medium shadow-none',
+                        row.original.is_active
+                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100'
+                            : 'bg-red-100 text-red-700 hover:bg-red-100',
+                    )}
+                >
+                    {row.original.is_active ? (
+                        <CheckCircle className="h-3 w-3" />
+                    ) : (
+                        <XCircle className="h-3 w-3" />
+                    )}
                     {row.original.is_active ? t('active') : t('inactive')}
                 </Badge>
             ),
@@ -142,35 +192,67 @@ export default function Index({ jobGrades, filters }: Props) {
             id: 'actions',
             header: t('actions'),
             cell: ({ row }) => (
-                <div className={cn("flex items-center gap-1", isRTL ? "justify-start" : "justify-end")}>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:bg-blue-50" asChild>
+                <div
+                    className={cn(
+                        'flex items-center gap-1',
+                        isRTL ? 'justify-start' : 'justify-end',
+                    )}
+                >
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-blue-600 hover:bg-blue-50"
+                        asChild
+                    >
                         <Link href={`/job-grades/${row.original.id}`}>
                             <Eye className="h-4 w-4" />
                         </Link>
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-amber-600 hover:bg-amber-50" asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-amber-600 hover:bg-amber-50"
+                        asChild
+                    >
                         <Link href={`/job-grades/${row.original.id}/edit`}>
                             <Edit className="h-4 w-4" />
                         </Link>
                     </Button>
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-red-50">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:bg-red-50"
+                            >
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent dir={isRTL ? "rtl" : "ltr"}>
+                        <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
                             <AlertDialogHeader>
-                                <AlertDialogTitle>{t('confirm_delete')}</AlertDialogTitle>
+                                <AlertDialogTitle>
+                                    {t('confirm_delete')}
+                                </AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    {t('job_grades.confirm_delete', { name: row.original.name_ar })}
+                                    {t('job_grades.confirm_delete', {
+                                        name: row.original.name_ar,
+                                    })}
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <AlertDialogFooter className={cn("gap-2", isRTL && "sm:flex-row-reverse")}>
-                                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                                <AlertDialogAction 
-                                    onClick={() => handleDelete(row.original.id)} 
-                                    className="bg-destructive hover:bg-destructive/90 text-white"
+                            <AlertDialogFooter
+                                className={cn(
+                                    'gap-2',
+                                    isRTL && 'sm:flex-row-reverse',
+                                )}
+                            >
+                                <AlertDialogCancel>
+                                    {t('cancel')}
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={() =>
+                                        handleDelete(row.original.id)
+                                    }
+                                    className="bg-destructive text-white hover:bg-destructive/90"
                                 >
                                     {t('delete')}
                                 </AlertDialogAction>
@@ -186,52 +268,87 @@ export default function Index({ jobGrades, filters }: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={t('job_grades.title')} />
 
-            <div className="flex flex-col gap-6 p-6 max-w-[1600px] mx-auto w-full" dir={isRTL ? 'rtl' : 'ltr'}>
-                
+            <div
+                className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 p-6"
+                dir={isRTL ? 'rtl' : 'ltr'}
+            >
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card p-6 rounded-xl border shadow-sm">
+                <div className="flex flex-col justify-between gap-4 rounded-xl border bg-card p-6 shadow-sm md:flex-row md:items-center">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-primary/10 rounded-lg text-primary">
+                        <div className="rounded-lg bg-primary/10 p-3 text-primary">
                             <Award className="h-8 w-8" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold tracking-tight">{t('job_grades.title')}</h1>
-                            <p className="text-muted-foreground text-sm">{t('job_grades.list_description')}</p>
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                {t('job_grades.title')}
+                            </h1>
+                            <p className="text-sm text-muted-foreground">
+                                {t('job_grades.list_description')}
+                            </p>
                         </div>
                     </div>
                     <Button asChild className="shrink-0 shadow-sm">
                         <Link href="/job-grades/create">
-                            <Plus className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
+                            <Plus
+                                className={cn(
+                                    'h-4 w-4',
+                                    isRTL ? 'ml-2' : 'mr-2',
+                                )}
+                            />
                             {t('job_grades.create')}
                         </Link>
                     </Button>
                 </div>
 
                 {/* Filters Section */}
-                <Card className="border-none shadow-sm bg-muted/20">
+                <Card className="border-none bg-muted/20 shadow-sm">
                     <CardContent className="p-4">
                         <div className="flex flex-wrap items-end gap-4">
-                            <div className="flex-1 min-w-[240px] space-y-1.5">
-                                <Label htmlFor="search" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('search')}</Label>
+                            <div className="min-w-[240px] flex-1 space-y-1.5">
+                                <Label
+                                    htmlFor="search"
+                                    className="text-xs font-bold tracking-wider text-muted-foreground uppercase"
+                                >
+                                    {t('search')}
+                                </Label>
                                 <div className="relative">
-                                    <Search className={cn("absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground", isRTL ? "right-3" : "left-3")} />
+                                    <Search
+                                        className={cn(
+                                            'absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground',
+                                            isRTL ? 'right-3' : 'left-3',
+                                        )}
+                                    />
                                     <Input
                                         id="search"
                                         value={search}
-                                        onChange={(e) => onSearchChange(e.target.value)}
-                                        placeholder={t('job_grades.search_placeholder')}
-                                        className={cn("bg-background border-muted-foreground/20", isRTL ? "pr-10" : "pl-10")}
+                                        onChange={(e) =>
+                                            onSearchChange(e.target.value)
+                                        }
+                                        placeholder={t(
+                                            'job_grades.search_placeholder',
+                                        )}
+                                        className={cn(
+                                            'border-muted-foreground/20 bg-background',
+                                            isRTL ? 'pr-10' : 'pl-10',
+                                        )}
                                     />
                                 </div>
                             </div>
 
-                            <div className="w-full md:w-48 space-y-1.5">
-                                <Label htmlFor="is_active" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{t('status')}</Label>
+                            <div className="w-full space-y-1.5 md:w-48">
+                                <Label
+                                    htmlFor="is_active"
+                                    className="text-xs font-bold tracking-wider text-muted-foreground uppercase"
+                                >
+                                    {t('status')}
+                                </Label>
                                 <select
                                     id="is_active"
                                     value={isActiveFilter}
-                                    onChange={(e) => onStatusFilterChange(e.target.value)}
-                                    className="w-full h-10 px-3 py-2 bg-background border border-muted-foreground/20 rounded-md text-sm focus:ring-2 focus:ring-primary shadow-sm outline-none"
+                                    onChange={(e) =>
+                                        onStatusFilterChange(e.target.value)
+                                    }
+                                    className="h-10 w-full rounded-md border border-muted-foreground/20 bg-background px-3 py-2 text-sm shadow-sm outline-none focus:ring-2 focus:ring-primary"
                                 >
                                     <option value="">{t('all')}</option>
                                     <option value="1">{t('active')}</option>
@@ -240,12 +357,21 @@ export default function Index({ jobGrades, filters }: Props) {
                             </div>
 
                             {(search || isActiveFilter) && (
-                                <Button 
-                                    variant="ghost" 
-                                    onClick={() => { setSearch(''); setIsActiveFilter(''); triggerSearch('', ''); }} 
-                                    className="h-10 text-muted-foreground hover:text-primary transition-colors"
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => {
+                                        setSearch('');
+                                        setIsActiveFilter('');
+                                        triggerSearch('', '');
+                                    }}
+                                    className="h-10 text-muted-foreground transition-colors hover:text-primary"
                                 >
-                                    <FilterX className={cn("h-4 w-4", isRTL ? "ml-2" : "mr-2")} />
+                                    <FilterX
+                                        className={cn(
+                                            'h-4 w-4',
+                                            isRTL ? 'ml-2' : 'mr-2',
+                                        )}
+                                    />
                                     {t('reset')}
                                 </Button>
                             )}
@@ -254,7 +380,7 @@ export default function Index({ jobGrades, filters }: Props) {
                 </Card>
 
                 {/* Data Table Section */}
-                <Card className="border-none shadow-sm overflow-hidden">
+                <Card className="overflow-hidden border-none shadow-sm">
                     <CardContent className="p-0">
                         {/* ملاحظة: إذا كان الخطأ في الترقيم مستمراً، قمنا هنا بتمرير المعاملات 
                           كـ Numbers صريحة لتجنب 'any' 
@@ -272,10 +398,18 @@ export default function Index({ jobGrades, filters }: Props) {
                                 to: jobGrades.to,
                             }}
                             onPageChange={(page: number) => {
-                                router.get('/job-grades', { ...filters, page }, { preserveState: true, replace: true });
+                                router.get(
+                                    '/job-grades',
+                                    { ...filters, page },
+                                    { preserveState: true, replace: true },
+                                );
                             }}
                             onPerPageChange={(perPage: number) => {
-                                router.get('/job-grades', { ...filters, per_page: perPage, page: 1 }, { preserveState: true, replace: true });
+                                router.get(
+                                    '/job-grades',
+                                    { ...filters, per_page: perPage, page: 1 },
+                                    { preserveState: true, replace: true },
+                                );
                             }}
                         />
                     </CardContent>

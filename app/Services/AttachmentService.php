@@ -14,6 +14,7 @@ class AttachmentService
     {
         $search = $request->get('search');
         $type = $request->get('type');
+        $perPage = $request->get('per_page', 15);
 
         if ($search) {
             // Use Scout for search, then filter by martyr
@@ -30,9 +31,9 @@ class AttachmentService
 
             $sortedResults = $filteredResults->sortByDesc('created_at');
             $attachments = new \Illuminate\Pagination\LengthAwarePaginator(
-                $sortedResults->forPage($request->page ?? 1, 15),
+                $sortedResults->forPage($request->page ?? 1, $perPage),
                 $sortedResults->count(),
-                15,
+                $perPage,
                 $request->page ?? 1,
                 ['path' => $request->url(), 'pageName' => 'page']
             );
@@ -43,11 +44,11 @@ class AttachmentService
                     $query->where('attachment_type', $type);
                 })
                 ->orderBy('created_at', 'desc')
-                ->paginate(15);
+                ->paginate($perPage);
         }
 
         // Load attachmentType relationship for all attachments
-        // $attachments->load('attachmentType');
+        $attachments->load('attachmentType');
 
         return $attachments;
     }

@@ -1,9 +1,18 @@
 import { Head, Link } from '@inertiajs/react';
-import { Plus, Search, Eye, Edit, Trash2, MapPin } from 'lucide-react';
+import { Edit, Eye, MapPin, Plus, Search, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import {
     Table,
     TableBody,
@@ -12,19 +21,13 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
+import {
+    index as employersIndex,
+    show as employersShow,
+} from '@/routes/employers';
+import { create, edit, index, show } from '@/routes/employers/locations';
 import { BreadcrumbItem } from '@/types';
-import { index, create, show, edit, destroy } from '@/routes/employers/locations';
-import { index as employersIndex, show as employersShow } from '@/routes/employers';
 
 interface Location {
     id: number;
@@ -74,7 +77,9 @@ export default function Index({ employer, locations, filters }: Props) {
         const params = new URLSearchParams();
         if (search) params.set('search', search);
         if (isActive && isActive !== 'all') params.set('is_active', isActive);
-        window.location.href = index(employer.id).url + (params.toString() ? '?' + params.toString() : '');
+        window.location.href =
+            index(employer.id).url +
+            (params.toString() ? '?' + params.toString() : '');
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -113,12 +118,17 @@ export default function Index({ employer, locations, filters }: Props) {
                                     className="max-w-sm"
                                 />
                             </div>
-                            <Select value={isActive} onValueChange={setIsActive}>
+                            <Select
+                                value={isActive}
+                                onValueChange={setIsActive}
+                            >
                                 <SelectTrigger className="w-32">
                                     <SelectValue placeholder="Status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Status</SelectItem>
+                                    <SelectItem value="all">
+                                        All Status
+                                    </SelectItem>
                                     <SelectItem value="1">Active</SelectItem>
                                     <SelectItem value="0">Inactive</SelectItem>
                                 </SelectContent>
@@ -139,54 +149,132 @@ export default function Index({ employer, locations, filters }: Props) {
                                         <TableHead>Employer</TableHead>
                                         <TableHead>Status</TableHead>
                                         <TableHead>Created</TableHead>
-                                        <TableHead className="text-right">Actions</TableHead>
+                                        <TableHead className="text-right">
+                                            Actions
+                                        </TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {locations.data.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                                            <TableCell
+                                                colSpan={7}
+                                                className="py-8 text-center text-muted-foreground"
+                                            >
                                                 No locations found
                                             </TableCell>
                                         </TableRow>
                                     ) : (
                                         locations.data.map((location) => (
                                             <TableRow key={location.id}>
-                                                <TableCell className="font-medium">{location.id}</TableCell>
+                                                <TableCell className="font-medium">
+                                                    {location.id}
+                                                </TableCell>
                                                 <TableCell>
-                                                    <Link href={show({ employer: employer.id, location: location.id }).url} className="text-blue-600 hover:text-blue-800 hover:underline">
+                                                    <Link
+                                                        href={
+                                                            show({
+                                                                employer:
+                                                                    employer.id,
+                                                                location:
+                                                                    location.id,
+                                                            }).url
+                                                        }
+                                                        className="text-blue-600 hover:text-blue-800 hover:underline"
+                                                    >
                                                         {location.name_ar}
                                                     </Link>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Link href={show({ employer: employer.id, location: location.id }).url} className="text-blue-600 hover:text-blue-800 hover:underline">
+                                                    <Link
+                                                        href={
+                                                            show({
+                                                                employer:
+                                                                    employer.id,
+                                                                location:
+                                                                    location.id,
+                                                            }).url
+                                                        }
+                                                        className="text-blue-600 hover:text-blue-800 hover:underline"
+                                                    >
                                                         {location.name_en}
                                                     </Link>
                                                 </TableCell>
                                                 <TableCell>
                                                     {location.employer ? (
-                                                        <Link href={`/employers/${location.employer.id}`} className="text-blue-600 hover:text-blue-800 hover:underline">
-                                                            {location.employer.name_ar} / {location.employer.name_en}
+                                                        <Link
+                                                            href={`/employers/${location.employer.id}`}
+                                                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                                                        >
+                                                            {
+                                                                location
+                                                                    .employer
+                                                                    .name_ar
+                                                            }{' '}
+                                                            /{' '}
+                                                            {
+                                                                location
+                                                                    .employer
+                                                                    .name_en
+                                                            }
                                                         </Link>
                                                     ) : (
-                                                        <span className="text-muted-foreground">-</span>
+                                                        <span className="text-muted-foreground">
+                                                            -
+                                                        </span>
                                                     )}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Badge variant={location.is_active ? 'default' : 'secondary'}>
-                                                        {location.is_active ? 'Active' : 'Inactive'}
+                                                    <Badge
+                                                        variant={
+                                                            location.is_active
+                                                                ? 'default'
+                                                                : 'secondary'
+                                                        }
+                                                    >
+                                                        {location.is_active
+                                                            ? 'Active'
+                                                            : 'Inactive'}
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell>{location.created_at}</TableCell>
+                                                <TableCell>
+                                                    {location.created_at}
+                                                </TableCell>
                                                 <TableCell className="text-right">
                                                     <div className="flex justify-end gap-2">
-                                                        <Button asChild variant="ghost" size="sm">
-                                                            <Link href={show({ employer: employer.id, location: location.id }).url}>
+                                                        <Button
+                                                            asChild
+                                                            variant="ghost"
+                                                            size="sm"
+                                                        >
+                                                            <Link
+                                                                href={
+                                                                    show({
+                                                                        employer:
+                                                                            employer.id,
+                                                                        location:
+                                                                            location.id,
+                                                                    }).url
+                                                                }
+                                                            >
                                                                 <Eye className="h-4 w-4" />
                                                             </Link>
                                                         </Button>
-                                                        <Button asChild variant="ghost" size="sm">
-                                                            <Link href={edit({ employer: employer.id, location: location.id }).url}>
+                                                        <Button
+                                                            asChild
+                                                            variant="ghost"
+                                                            size="sm"
+                                                        >
+                                                            <Link
+                                                                href={
+                                                                    edit({
+                                                                        employer:
+                                                                            employer.id,
+                                                                        location:
+                                                                            location.id,
+                                                                    }).url
+                                                                }
+                                                            >
                                                                 <Edit className="h-4 w-4" />
                                                             </Link>
                                                         </Button>
@@ -195,7 +283,11 @@ export default function Index({ employer, locations, filters }: Props) {
                                                             size="sm"
                                                             className="text-destructive hover:text-destructive"
                                                             onClick={() => {
-                                                                if (confirm('Are you sure you want to delete this location?')) {
+                                                                if (
+                                                                    confirm(
+                                                                        'Are you sure you want to delete this location?',
+                                                                    )
+                                                                ) {
                                                                     // Handle delete
                                                                 }
                                                             }}

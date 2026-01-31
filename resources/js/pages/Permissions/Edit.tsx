@@ -1,15 +1,20 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
+import {
+    edit as permissionsEdit,
+    index as permissionsIndex,
+    show as permissionsShow,
+    update as permissionsUpdate,
+} from '@/routes/permissions';
 import { BreadcrumbItem } from '@/types';
-import { index as permissionsIndex, show as permissionsShow, edit as permissionsEdit, update as permissionsUpdate } from '@/routes/permissions';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Permission {
     id: number;
@@ -89,7 +94,9 @@ export default function Edit({ permission, flash }: Props) {
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold">{t('common.edit')} {permission.name}</h1>
+                        <h1 className="text-2xl font-bold">
+                            {t('common.edit')} {permission.name}
+                        </h1>
                         <p className="text-muted-foreground">
                             {t('permissions.edit_description')}
                         </p>
@@ -105,19 +112,28 @@ export default function Edit({ permission, flash }: Props) {
                             <form onSubmit={submit} className="space-y-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">
-                                        {t('permissions.name')} <span className="text-red-500">*</span>
+                                        {t('permissions.name')}{' '}
+                                        <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
                                         id="name"
                                         type="text"
                                         value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                        placeholder={t('permissions.name_placeholder')}
-                                        className={errors.name ? 'border-red-500' : ''}
+                                        onChange={(e) =>
+                                            setData('name', e.target.value)
+                                        }
+                                        placeholder={t(
+                                            'permissions.name_placeholder',
+                                        )}
+                                        className={
+                                            errors.name ? 'border-red-500' : ''
+                                        }
                                         required
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-red-500">{errors.name}</p>
+                                        <p className="text-sm text-red-500">
+                                            {errors.name}
+                                        </p>
                                     )}
                                 </div>
 
@@ -129,12 +145,25 @@ export default function Edit({ permission, flash }: Props) {
                                         id="guard_name"
                                         type="text"
                                         value={data.guard_name}
-                                        onChange={(e) => setData('guard_name', e.target.value)}
-                                        placeholder={t('permissions.guard_name_placeholder')}
-                                        className={errors.guard_name ? 'border-red-500' : ''}
+                                        onChange={(e) =>
+                                            setData(
+                                                'guard_name',
+                                                e.target.value,
+                                            )
+                                        }
+                                        placeholder={t(
+                                            'permissions.guard_name_placeholder',
+                                        )}
+                                        className={
+                                            errors.guard_name
+                                                ? 'border-red-500'
+                                                : ''
+                                        }
                                     />
                                     {errors.guard_name && (
-                                        <p className="text-sm text-red-500">{errors.guard_name}</p>
+                                        <p className="text-sm text-red-500">
+                                            {errors.guard_name}
+                                        </p>
                                     )}
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
                                         {t('permissions.guard_name_help')}
@@ -143,10 +172,16 @@ export default function Edit({ permission, flash }: Props) {
 
                                 <div className="flex gap-4">
                                     <Button type="submit" disabled={processing}>
-                                        {processing && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                                        {processing && (
+                                            <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                                        )}
                                         {t('common.update')}
                                     </Button>
-                                    <Button type="button" variant="outline" onClick={() => reset()}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => reset()}
+                                    >
                                         {t('common.reset')}
                                     </Button>
                                 </div>

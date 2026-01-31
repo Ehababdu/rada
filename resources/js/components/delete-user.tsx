@@ -29,9 +29,7 @@ export default function DeleteUser() {
             <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
                 <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
                     <p className="font-medium">{t('warning')}</p>
-                    <p className="text-sm">
-                        {t('proceed_with_caution')}
-                    </p>
+                    <p className="text-sm">{t('proceed_with_caution')}</p>
                 </div>
 
                 <Dialog>
@@ -44,9 +42,7 @@ export default function DeleteUser() {
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <DialogTitle>
-                            {t('are_you_sure_delete')}
-                        </DialogTitle>
+                        <DialogTitle>{t('are_you_sure_delete')}</DialogTitle>
                         <DialogDescription>
                             {t('delete_confirmation')}
                         </DialogDescription>

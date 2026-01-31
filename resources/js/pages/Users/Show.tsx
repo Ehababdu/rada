@@ -1,21 +1,3 @@
-import React from 'react';
-import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type SharedData, type User } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import {
-    ArrowLeft,
-    Edit,
-    User as UserIcon,
-    Mail,
-    Calendar,
-    Shield,
-    Trash2
-} from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -27,8 +9,25 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { usePermissions } from '@/hooks/use-permissions';
+import { useToast } from '@/hooks/use-toast';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem, type SharedData, type User } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import {
+    ArrowLeft,
+    Calendar,
+    Edit,
+    Mail,
+    Shield,
+    Trash2,
+    User as UserIcon,
+} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     user: User;
@@ -109,14 +108,23 @@ export default function Show({ user }: Props) {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>{t('users.delete_confirm_title')}</AlertDialogTitle>
+                                        <AlertDialogTitle>
+                                            {t('users.delete_confirm_title')}
+                                        </AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            {t('users.delete_confirm_message', { name: user.name })}
+                                            {t('users.delete_confirm_message', {
+                                                name: user.name,
+                                            })}
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                        <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                                        <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                                        <AlertDialogCancel>
+                                            {t('common.cancel')}
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={handleDelete}
+                                            className="bg-red-600 hover:bg-red-700"
+                                        >
                                             {t('common.delete')}
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
@@ -172,13 +180,17 @@ export default function Show({ user }: Props) {
                                         {t('users.created_at')}
                                     </p>
                                     <p className="text-sm text-gray-900 dark:text-gray-100">
-                                        {new Date(user.created_at).toLocaleDateString(
-                                            i18n.language === 'ar' ? 'ar-SA' : 'en-US',
+                                        {new Date(
+                                            user.created_at,
+                                        ).toLocaleDateString(
+                                            i18n.language === 'ar'
+                                                ? 'ar-SA'
+                                                : 'en-US',
                                             {
                                                 year: 'numeric',
                                                 month: 'long',
                                                 day: 'numeric',
-                                            }
+                                            },
                                         )}
                                     </p>
                                 </div>
@@ -194,13 +206,17 @@ export default function Show({ user }: Props) {
                                                 {t('users.updated_at')}
                                             </p>
                                             <p className="text-sm text-gray-900 dark:text-gray-100">
-                                                {new Date(user.updated_at).toLocaleDateString(
-                                                    i18n.language === 'ar' ? 'ar-SA' : 'en-US',
+                                                {new Date(
+                                                    user.updated_at,
+                                                ).toLocaleDateString(
+                                                    i18n.language === 'ar'
+                                                        ? 'ar-SA'
+                                                        : 'en-US',
                                                     {
                                                         year: 'numeric',
                                                         month: 'long',
                                                         day: 'numeric',
-                                                    }
+                                                    },
                                                 )}
                                             </p>
                                         </div>
@@ -221,13 +237,16 @@ export default function Show({ user }: Props) {
                         <CardContent className="space-y-4">
                             {/* Roles */}
                             <div>
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                                <p className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
                                     {t('users.roles')}
                                 </p>
                                 <div className="flex flex-wrap gap-2">
                                     {user.roles && user.roles.length > 0 ? (
                                         user.roles.map((role) => (
-                                            <Badge key={role.id} variant="secondary">
+                                            <Badge
+                                                key={role.id}
+                                                variant="secondary"
+                                            >
                                                 {role.display_name || role.name}
                                             </Badge>
                                         ))
@@ -243,14 +262,19 @@ export default function Show({ user }: Props) {
 
                             {/* Permissions */}
                             <div>
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                                <p className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
                                     {t('users.permissions')}
                                 </p>
                                 <div className="flex flex-wrap gap-2">
-                                    {user.permissions && user.permissions.length > 0 ? (
+                                    {user.permissions &&
+                                    user.permissions.length > 0 ? (
                                         user.permissions.map((permission) => (
-                                            <Badge key={permission.id} variant="outline">
-                                                {permission.display_name || permission.name}
+                                            <Badge
+                                                key={permission.id}
+                                                variant="outline"
+                                            >
+                                                {permission.display_name ||
+                                                    permission.name}
                                             </Badge>
                                         ))
                                     ) : (

@@ -2,21 +2,14 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, MapPin } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem } from '@/types';
-import { index, create, store } from '@/routes/employers/locations';
 import { index as employersIndex } from '@/routes/employers';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { create, index, store } from '@/routes/employers/locations';
+import { BreadcrumbItem } from '@/types';
 
 interface Employer {
     id: number;
@@ -71,29 +64,41 @@ export default function Create({ employer }: Props) {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name_ar">Name (Arabic) *</Label>
+                                    <Label htmlFor="name_ar">
+                                        Name (Arabic) *
+                                    </Label>
                                     <Input
                                         id="name_ar"
                                         value={data.name_ar}
-                                        onChange={(e) => setData('name_ar', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('name_ar', e.target.value)
+                                        }
                                         placeholder="Enter location name in Arabic"
                                         required
                                     />
                                     {errors.name_ar && (
-                                        <p className="text-sm text-destructive">{errors.name_ar}</p>
+                                        <p className="text-sm text-destructive">
+                                            {errors.name_ar}
+                                        </p>
                                     )}
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="name_en">Name (English)</Label>
+                                    <Label htmlFor="name_en">
+                                        Name (English)
+                                    </Label>
                                     <Input
                                         id="name_en"
                                         value={data.name_en}
-                                        onChange={(e) => setData('name_en', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('name_en', e.target.value)
+                                        }
                                         placeholder="Enter location name in English"
                                     />
                                     {errors.name_en && (
-                                        <p className="text-sm text-destructive">{errors.name_en}</p>
+                                        <p className="text-sm text-destructive">
+                                            {errors.name_en}
+                                        </p>
                                     )}
                                 </div>
                             </div>
@@ -102,17 +107,23 @@ export default function Create({ employer }: Props) {
                                 <Switch
                                     id="is_active"
                                     checked={data.is_active}
-                                    onCheckedChange={(checked) => setData('is_active', checked)}
+                                    onCheckedChange={(checked) =>
+                                        setData('is_active', checked)
+                                    }
                                 />
                                 <Label htmlFor="is_active">Active</Label>
                             </div>
 
                             <div className="flex gap-4">
                                 <Button type="submit" disabled={processing}>
-                                    {processing ? 'Creating...' : 'Create Location'}
+                                    {processing
+                                        ? 'Creating...'
+                                        : 'Create Location'}
                                 </Button>
                                 <Button type="button" variant="outline" asChild>
-                                    <Link href={index(employer.id).url}>Cancel</Link>
+                                    <Link href={index(employer.id).url}>
+                                        Cancel
+                                    </Link>
                                 </Button>
                             </div>
                         </form>

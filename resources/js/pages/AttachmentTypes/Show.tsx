@@ -1,9 +1,3 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { useTranslation } from 'react-i18next';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -15,10 +9,20 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
+import {
+    destroy as attachmentTypesDestroy,
+    edit as attachmentTypesEdit,
+    index as attachmentTypesIndex,
+} from '@/routes/attachment-types';
 import { BreadcrumbItem } from '@/types';
-import { index as attachmentTypesIndex, show as attachmentTypesShow, edit as attachmentTypesEdit, destroy as attachmentTypesDestroy } from '@/routes/attachment-types';
+import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, SquarePen, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface AttachmentType {
     id: number;
@@ -82,7 +86,9 @@ export default function Show({ attachmentType, flash }: Props) {
                             </Link>
                         </Button>
                         <div>
-                            <h1 className="text-xl font-semibold">{attachmentType.label}</h1>
+                            <h1 className="text-xl font-semibold">
+                                {attachmentType.label}
+                            </h1>
                             <p className="text-muted-foreground">
                                 عرض تفاصيل نوع المرفق
                             </p>
@@ -104,10 +110,13 @@ export default function Show({ attachmentType, flash }: Props) {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                        تأكيد الحذف
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        هل أنت متأكد من حذف نوع المرفق "{attachmentType.label}"؟
-                                        هذا الإجراء لا يمكن التراجع عنه.
+                                        هل أنت متأكد من حذف نوع المرفق "
+                                        {attachmentType.label}"؟ هذا الإجراء لا
+                                        يمكن التراجع عنه.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
@@ -130,17 +139,31 @@ export default function Show({ attachmentType, flash }: Props) {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
-                            <Label className="text-sm font-medium text-muted-foreground">الاسم</Label>
+                            <Label className="text-sm font-medium text-muted-foreground">
+                                الاسم
+                            </Label>
                             <p>{attachmentType.label}</p>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <Label className="text-sm font-medium text-muted-foreground">تاريخ الإنشاء</Label>
-                                <p>{new Date(attachmentType.created_at).toLocaleDateString('ar')}</p>
+                                <Label className="text-sm font-medium text-muted-foreground">
+                                    تاريخ الإنشاء
+                                </Label>
+                                <p>
+                                    {new Date(
+                                        attachmentType.created_at,
+                                    ).toLocaleDateString('ar')}
+                                </p>
                             </div>
                             <div>
-                                <Label className="text-sm font-medium text-muted-foreground">تاريخ آخر تحديث</Label>
-                                <p>{new Date(attachmentType.updated_at).toLocaleDateString('ar')}</p>
+                                <Label className="text-sm font-medium text-muted-foreground">
+                                    تاريخ آخر تحديث
+                                </Label>
+                                <p>
+                                    {new Date(
+                                        attachmentType.updated_at,
+                                    ).toLocaleDateString('ar')}
+                                </p>
                             </div>
                         </div>
                     </CardContent>

@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -6,8 +5,9 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Globe, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Check, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function LanguageSwitcher() {
     const { i18n } = useTranslation();
@@ -21,15 +21,20 @@ export default function LanguageSwitcher() {
 
     const languages = [
         { code: 'ar', label: 'العربية', dir: 'rtl' },
-        { code: 'en', label: 'English', dir: 'ltr' }
+        { code: 'en', label: 'English', dir: 'ltr' },
     ];
 
-    const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0];
+    const currentLanguage =
+        languages.find((l) => l.code === i18n.language) || languages[0];
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 rounded-full"
+                >
                     <Globe className="h-4 w-4" />
                     <span className="sr-only">Toggle language</span>
                 </Button>
@@ -40,11 +45,18 @@ export default function LanguageSwitcher() {
                         key={language.code}
                         onClick={() => changeLanguage(language.code)}
                         className={cn(
-                            "flex items-center justify-between gap-4 cursor-pointer",
-                            i18n.language === language.code && "bg-accent text-accent-foreground"
+                            'flex cursor-pointer items-center justify-between gap-4',
+                            i18n.language === language.code &&
+                                'bg-accent text-accent-foreground',
                         )}
                     >
-                        <span className={cn(language.code === 'ar' && "font-cairo")}>{language.label}</span>
+                        <span
+                            className={cn(
+                                language.code === 'ar' && 'font-cairo',
+                            )}
+                        >
+                            {language.label}
+                        </span>
                         {i18n.language === language.code && (
                             <Check className="h-4 w-4" />
                         )}

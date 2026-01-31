@@ -1,7 +1,7 @@
-import * as React from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
+import * as React from 'react';
 
-import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Command,
@@ -16,7 +16,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
 interface MultiSelectFilterProps<TData> {
@@ -36,7 +36,9 @@ export function MultiSelectFilter<TData>({
 }: MultiSelectFilterProps<TData>) {
     const { t } = useTranslation();
     const [open, setOpen] = React.useState(false);
-    const selectedValues = new Set(column?.getFilterValue() as string[] || []);
+    const selectedValues = new Set(
+        (column?.getFilterValue() as string[]) || [],
+    );
 
     const handleSelect = (value: string) => {
         if (selectedValues.has(value)) {
@@ -66,11 +68,16 @@ export function MultiSelectFilter<TData>({
                 >
                     <div className="flex flex-wrap gap-1">
                         {selectedValues.size === 0 && (
-                            <span className="text-muted-foreground">{title}</span>
+                            <span className="text-muted-foreground">
+                                {title}
+                            </span>
                         )}
-                        {selectedValues.size > 0 && selectedValues.size <= 3 && (
+                        {selectedValues.size > 0 &&
+                            selectedValues.size <= 3 &&
                             Array.from(selectedValues).map((value) => {
-                                const option = options.find((opt) => opt.value === value);
+                                const option = options.find(
+                                    (opt) => opt.value === value,
+                                );
                                 return (
                                     <Badge
                                         key={value}
@@ -80,8 +87,7 @@ export function MultiSelectFilter<TData>({
                                         {option?.label || value}
                                     </Badge>
                                 );
-                            })
-                        )}
+                            })}
                         {selectedValues.size > 3 && (
                             <span className="text-sm">
                                 {selectedValues.size} {t('dataTable.selected')}
@@ -98,16 +104,22 @@ export function MultiSelectFilter<TData>({
                         <CommandEmpty>{t('dataTable.noResults')}</CommandEmpty>
                         <CommandGroup>
                             {options.map((option) => {
-                                const isSelected = selectedValues.has(option.value);
+                                const isSelected = selectedValues.has(
+                                    option.value,
+                                );
                                 return (
                                     <CommandItem
                                         key={option.value}
-                                        onSelect={() => handleSelect(option.value)}
+                                        onSelect={() =>
+                                            handleSelect(option.value)
+                                        }
                                     >
                                         <Check
                                             className={cn(
                                                 'mr-2 h-4 w-4',
-                                                isSelected ? 'opacity-100' : 'opacity-0'
+                                                isSelected
+                                                    ? 'opacity-100'
+                                                    : 'opacity-0',
                                             )}
                                         />
                                         {option.icon && (

@@ -22,7 +22,21 @@ class StoreAttachmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attachment_type' => 'required|exists:attachment_types,id',
+            'attachment_type' => [
+                'required',
+                'exists:attachment_types,id',
+                function ($attribute, $value, $fail) {
+                    if ($value != 19) { // مكافآت
+                        $exists = \App\Models\Attachment::where('martyr_id', $this->route('martyr')->id)
+                            ->where('attachment_type', $value)
+                            ->exists();
+
+                        if ($exists) {
+                            $fail('لا يمكن رفع مرفق من هذا النوع لأنه موجود مسبقاً.');
+                        }
+                    }
+                },
+            ],
             'file' => 'required|file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png',
             'description' => 'nullable|string|max:500',
         ];
@@ -37,7 +51,7 @@ class StoreAttachmentRequest extends FormRequest
     {
         return [
             'attachment_type.required' => 'نوع المرفق مطلوب.',
-            'attachment_type.in' => 'نوع المرفق غير صحيح.',
+            'attachment_type.exists' => 'نوع المرفق غير صحيح.',
             'file.required' => 'الملف مطلوب.',
             'file.max' => 'حجم الملف يجب أن يكون أقل من 10 ميجابايت.',
             'file.mimes' => 'نوع الملف يجب أن يكون pdf, doc, docx, jpg, jpeg, أو png.',

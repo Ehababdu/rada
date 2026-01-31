@@ -1,12 +1,12 @@
-import * as React from 'react';
 import { X } from 'lucide-react';
+import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 import { DataTableFacetedFilter } from '../data-table-faceted-filter';
 import { DateRangeFilter } from './date-range-filter';
-import { NumericRangeFilter } from './numeric-range-filter';
 import { MultiSelectFilter } from './multi-select-filter';
-import { useTranslation } from 'react-i18next';
+import { NumericRangeFilter } from './numeric-range-filter';
 
 export interface FilterConfig {
     id: string;
@@ -50,7 +50,9 @@ export function FilterPanel<TData>({
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">{t('dataTable.filters')}</h3>
+                <h3 className="text-lg font-medium">
+                    {t('dataTable.filters')}
+                </h3>
                 {onClose && (
                     <Button variant="ghost" size="sm" onClick={onClose}>
                         <X className="h-4 w-4" />
@@ -108,7 +110,11 @@ export function FilterPanel<TData>({
 
             {hasActiveFilters && (
                 <div className="flex justify-end">
-                    <Button variant="outline" size="sm" onClick={clearAllFilters}>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={clearAllFilters}
+                    >
                         {t('dataTable.clearAllFilters')}
                     </Button>
                 </div>

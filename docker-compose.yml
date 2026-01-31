@@ -1,34 +1,54 @@
-version: '3.8'
-
 services:
-  app:
+  # خدمة التطبيق (Laravel + PHP + Node/Vite)
+  laravel.test:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # لتجنب مشاكل الصلاحيات في أوبنتو
+        WWWGROUP: '${WWWGROUP:-1000}'
     image: erp_system_app
-    ports:
-      - "5173:5173"
+    container_name: laravel.test
+    hostname: laravel.test
+    # ضبط المستخدم ليتوافق مع مستخدم جهازك في أوبنتو
+    user: '${WWWUSER:-1000}:${WWWGROUP:-1000}'
+    environment:
+      WWWUSER: '${WWWUSER:-1000}'
+      # لإجبار Vite على مراقبة التغييرات في Docker
+      CHOKIDAR_USEPOLLING: 'true'
     volumes:
-      - ./:/var/www/html
+      - ./:/var/www/html:delegated
+      # حماية المكتبات من التداخل مع ملفات النظام المضيف
+      - /var/www/html/vendor
+      - /var/www/html/node_modules
+    ports:
+      - "5173:5173" # منفذ Vite الأساسي للـ Hot Reload
     depends_on:
       - db
+      - redis
     networks:
-      - app-network
+      app-network:
+        aliases:
+          - laravel.test
 
+  # خادم الويب Nginx
   web:
     image: nginx:1.25-alpine
+    container_name: laravel_nginx
     ports:
       - "8080:80"
     volumes:
       - ./:/var/www/html:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      - app
+      - laravel.test
     networks:
       - app-network
 
+  # قاعدة البيانات MySQL
   db:
     image: mysql:8.0
+    container_name: laravel_db
     environment:
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: erp
@@ -41,16 +61,20 @@ services:
     networks:
       - app-network
 
+  # خدمة Redis للكاش والـ Queues
   redis:
     image: redis:7-alpine
+    container_name: laravel_redis
     restart: unless-stopped
     ports:
       - "6379:6379"
     networks:
       - app-network
 
+  # واجهة إدارة قاعدة البيانات
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
+    container_name: laravel_phpmyadmin
     restart: unless-stopped
     environment:
       PMA_HOST: db

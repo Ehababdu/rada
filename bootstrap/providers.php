@@ -5,4 +5,5 @@ return [
     App\Providers\FortifyServiceProvider::class,
     App\Providers\AuthServiceProvider::class,
     Laravel\Scout\ScoutServiceProvider::class,
+    Laravel\Boost\BoostServiceProvider::class,
 ];

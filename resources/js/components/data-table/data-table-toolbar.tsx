@@ -1,13 +1,13 @@
+import { Download, Filter, Search, Settings } from 'lucide-react';
 import * as React from 'react';
-import { Search, Filter, Download, Settings } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DataTableFacetedFilter } from './data-table-faceted-filter';
-import { BulkActions } from './bulk-actions';
-import { SavedFilters } from './filters/saved-filters';
-import { useTranslation } from 'react-i18next';
 import { createFuzzySearcher } from '@/lib/fuzzy-search';
+import { useTranslation } from 'react-i18next';
+import { BulkActions } from './bulk-actions';
+import { DataTableFacetedFilter } from './data-table-faceted-filter';
+import { SavedFilters } from './filters/saved-filters';
 
 interface DataTableToolbarProps<TData> {
     table: any;
@@ -55,7 +55,8 @@ export function DataTableToolbar<TData>({
     const fuzzySearcher = React.useMemo(() => {
         if (!searchKeys || searchKeys.length === 0) return null;
 
-        const allData = table?.getCoreRowModel().rows.map((row: any) => row.original) || [];
+        const allData =
+            table?.getCoreRowModel().rows.map((row: any) => row.original) || [];
         return createFuzzySearcher(allData, {
             keys: searchKeys,
             threshold: 0.3,
@@ -72,7 +73,9 @@ export function DataTableToolbar<TData>({
 
         if (fuzzySearcher) {
             const results = fuzzySearcher.search(globalFilter);
-            const filteredIds = new Set(results.map(result => result.refIndex));
+            const filteredIds = new Set(
+                results.map((result) => result.refIndex),
+            );
 
             table?.setGlobalFilter((row: any) => {
                 return filteredIds.has(row.index);
@@ -101,12 +104,14 @@ export function DataTableToolbar<TData>({
                 <div className="flex flex-1 items-center gap-2">
                     {/* Search Input */}
                     {hasSearch && (
-                        <div className="relative flex-1 max-w-sm">
-                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <div className="relative max-w-sm flex-1">
+                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                             <Input
                                 placeholder={t('dataTable.search')}
                                 value={globalFilter}
-                                onChange={(e) => setGlobalFilter(e.target.value)}
+                                onChange={(e) =>
+                                    setGlobalFilter(e.target.value)
+                                }
                                 className="pl-9"
                             />
                         </div>
@@ -181,10 +186,14 @@ export function DataTableToolbar<TData>({
                                 <Input
                                     placeholder={`${t('dataTable.search')} ${column.title}`}
                                     value={
-                                        (table?.getColumn(column.id)?.getFilterValue() as string) ?? ''
+                                        (table
+                                            ?.getColumn(column.id)
+                                            ?.getFilterValue() as string) ?? ''
                                     }
                                     onChange={(e) =>
-                                        table?.getColumn(column.id)?.setFilterValue(e.target.value)
+                                        table
+                                            ?.getColumn(column.id)
+                                            ?.setFilterValue(e.target.value)
                                     }
                                     className="h-8"
                                 />

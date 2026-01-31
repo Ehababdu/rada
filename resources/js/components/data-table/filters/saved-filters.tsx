@@ -1,7 +1,16 @@
-import * as React from 'react';
 import { Bookmark, BookmarkCheck, Trash2 } from 'lucide-react';
+import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,15 +21,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
 
 interface SavedFilter {
@@ -50,10 +50,12 @@ export function SavedFilters<TData>({
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                setSavedFilters(parsed.map((filter: any) => ({
-                    ...filter,
-                    createdAt: new Date(filter.createdAt),
-                })));
+                setSavedFilters(
+                    parsed.map((filter: any) => ({
+                        ...filter,
+                        createdAt: new Date(filter.createdAt),
+                    })),
+                );
             } catch (error) {
                 console.error('Failed to load saved filters:', error);
             }
@@ -62,7 +64,10 @@ export function SavedFilters<TData>({
 
     // Save filters to localStorage whenever savedFilters changes
     React.useEffect(() => {
-        localStorage.setItem('data-table-saved-filters', JSON.stringify(savedFilters));
+        localStorage.setItem(
+            'data-table-saved-filters',
+            JSON.stringify(savedFilters),
+        );
     }, [savedFilters]);
 
     const getCurrentFilters = () => {
@@ -91,7 +96,7 @@ export function SavedFilters<TData>({
             createdAt: new Date(),
         };
 
-        setSavedFilters(prev => [...prev, newFilter]);
+        setSavedFilters((prev) => [...prev, newFilter]);
         setFilterName('');
         setIsSaveDialogOpen(false);
     };
@@ -101,12 +106,12 @@ export function SavedFilters<TData>({
     };
 
     const deleteSavedFilter = (filterId: string) => {
-        setSavedFilters(prev => prev.filter(f => f.id !== filterId));
+        setSavedFilters((prev) => prev.filter((f) => f.id !== filterId));
     };
 
-    const hasActiveFilters = table.getAllColumns().some((column: any) =>
-        column.getFilterValue() !== undefined
-    );
+    const hasActiveFilters = table
+        .getAllColumns()
+        .some((column: any) => column.getFilterValue() !== undefined);
 
     return (
         <>
@@ -118,7 +123,9 @@ export function SavedFilters<TData>({
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel>{t('dataTable.savedFilters')}</DropdownMenuLabel>
+                    <DropdownMenuLabel>
+                        {t('dataTable.savedFilters')}
+                    </DropdownMenuLabel>
                     <DropdownMenuSeparator />
 
                     {savedFilters.length === 0 ? (
@@ -150,7 +157,10 @@ export function SavedFilters<TData>({
 
                     <DropdownMenuSeparator />
 
-                    <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+                    <Dialog
+                        open={isSaveDialogOpen}
+                        onOpenChange={setIsSaveDialogOpen}
+                    >
                         <DialogTrigger asChild>
                             <DropdownMenuItem
                                 disabled={!hasActiveFilters}
@@ -162,7 +172,9 @@ export function SavedFilters<TData>({
                         </DialogTrigger>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>{t('dataTable.saveFilter')}</DialogTitle>
+                                <DialogTitle>
+                                    {t('dataTable.saveFilter')}
+                                </DialogTitle>
                                 <DialogDescription>
                                     {t('dataTable.saveFilterDescription')}
                                 </DialogDescription>
@@ -175,8 +187,12 @@ export function SavedFilters<TData>({
                                     <Input
                                         id="filter-name"
                                         value={filterName}
-                                        onChange={(e) => setFilterName(e.target.value)}
-                                        placeholder={t('dataTable.enterFilterName')}
+                                        onChange={(e) =>
+                                            setFilterName(e.target.value)
+                                        }
+                                        placeholder={t(
+                                            'dataTable.enterFilterName',
+                                        )}
                                     />
                                 </div>
                             </div>

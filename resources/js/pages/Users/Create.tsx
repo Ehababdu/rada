@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, Save, User as UserIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     roles: { id: number; name: string; display_name?: string }[];
@@ -44,18 +50,18 @@ export default function Create({ roles }: Props) {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleInputChange = (field: string, value: string) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
+        setFormData((prev) => ({ ...prev, [field]: value }));
         if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: '' }));
+            setErrors((prev) => ({ ...prev, [field]: '' }));
         }
     };
 
     const handleRoleChange = (roleName: string, checked: boolean) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
             roles: checked
                 ? [...prev.roles, roleName]
-                : prev.roles.filter(role => role !== roleName)
+                : prev.roles.filter((role) => role !== roleName),
         }));
     };
 
@@ -119,14 +125,23 @@ export default function Create({ roles }: Props) {
                         <CardContent className="space-y-6">
                             {/* Name */}
                             <div className="space-y-2">
-                                <Label htmlFor="name">{t('users.name')} *</Label>
+                                <Label htmlFor="name">
+                                    {t('users.name')} *
+                                </Label>
                                 <Input
                                     id="name"
                                     type="text"
                                     value={formData.name}
-                                    onChange={(e) => handleInputChange('name', e.target.value)}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            'name',
+                                            e.target.value,
+                                        )
+                                    }
                                     placeholder={t('users.name')}
-                                    className={errors.name ? 'border-red-500' : ''}
+                                    className={
+                                        errors.name ? 'border-red-500' : ''
+                                    }
                                 />
                                 {errors.name && (
                                     <p className="text-sm text-red-600 dark:text-red-400">
@@ -137,14 +152,23 @@ export default function Create({ roles }: Props) {
 
                             {/* Email */}
                             <div className="space-y-2">
-                                <Label htmlFor="email">{t('users.email')} *</Label>
+                                <Label htmlFor="email">
+                                    {t('users.email')} *
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
                                     value={formData.email}
-                                    onChange={(e) => handleInputChange('email', e.target.value)}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            'email',
+                                            e.target.value,
+                                        )
+                                    }
                                     placeholder={t('users.email')}
-                                    className={errors.email ? 'border-red-500' : ''}
+                                    className={
+                                        errors.email ? 'border-red-500' : ''
+                                    }
                                 />
                                 {errors.email && (
                                     <p className="text-sm text-red-600 dark:text-red-400">
@@ -155,14 +179,23 @@ export default function Create({ roles }: Props) {
 
                             {/* Password */}
                             <div className="space-y-2">
-                                <Label htmlFor="password">{t('users.password')} *</Label>
+                                <Label htmlFor="password">
+                                    {t('users.password')} *
+                                </Label>
                                 <Input
                                     id="password"
                                     type="password"
                                     value={formData.password}
-                                    onChange={(e) => handleInputChange('password', e.target.value)}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            'password',
+                                            e.target.value,
+                                        )
+                                    }
                                     placeholder={t('users.password')}
-                                    className={errors.password ? 'border-red-500' : ''}
+                                    className={
+                                        errors.password ? 'border-red-500' : ''
+                                    }
                                 />
                                 {errors.password && (
                                     <p className="text-sm text-red-600 dark:text-red-400">
@@ -173,14 +206,27 @@ export default function Create({ roles }: Props) {
 
                             {/* Password Confirmation */}
                             <div className="space-y-2">
-                                <Label htmlFor="password_confirmation">{t('users.password_confirmation')} *</Label>
+                                <Label htmlFor="password_confirmation">
+                                    {t('users.password_confirmation')} *
+                                </Label>
                                 <Input
                                     id="password_confirmation"
                                     type="password"
                                     value={formData.password_confirmation}
-                                    onChange={(e) => handleInputChange('password_confirmation', e.target.value)}
-                                    placeholder={t('users.password_confirmation')}
-                                    className={errors.password_confirmation ? 'border-red-500' : ''}
+                                    onChange={(e) =>
+                                        handleInputChange(
+                                            'password_confirmation',
+                                            e.target.value,
+                                        )
+                                    }
+                                    placeholder={t(
+                                        'users.password_confirmation',
+                                    )}
+                                    className={
+                                        errors.password_confirmation
+                                            ? 'border-red-500'
+                                            : ''
+                                    }
                                 />
                                 {errors.password_confirmation && (
                                     <p className="text-sm text-red-600 dark:text-red-400">
@@ -194,12 +240,20 @@ export default function Create({ roles }: Props) {
                                 <Label>{t('users.roles')}</Label>
                                 <div className="space-y-2">
                                     {roles.map((role) => (
-                                        <div key={role.id} className="flex items-center space-x-2">
+                                        <div
+                                            key={role.id}
+                                            className="flex items-center space-x-2"
+                                        >
                                             <Checkbox
                                                 id={`role-${role.id}`}
-                                                checked={formData.roles.includes(role.name)}
+                                                checked={formData.roles.includes(
+                                                    role.name,
+                                                )}
                                                 onCheckedChange={(checked) =>
-                                                    handleRoleChange(role.name, checked as boolean)
+                                                    handleRoleChange(
+                                                        role.name,
+                                                        checked as boolean,
+                                                    )
                                                 }
                                             />
                                             <Label
@@ -230,7 +284,9 @@ export default function Create({ roles }: Props) {
                                 </Button>
                                 <Button type="submit" disabled={isSubmitting}>
                                     <Save className="mr-2 h-4 w-4" />
-                                    {isSubmitting ? t('common.saving') : t('common.save')}
+                                    {isSubmitting
+                                        ? t('common.saving')
+                                        : t('common.save')}
                                 </Button>
                             </div>
                         </CardContent>
