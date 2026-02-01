@@ -18,7 +18,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { DataTable } from '@/components/ui/data-table';
 import {
@@ -40,15 +39,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from '@/components/ui/pagination';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
     Select,
@@ -172,7 +162,6 @@ interface Filters {
     branch_id?: string;
     parents_status_id?: string;
     death_date_from?: string;
-    death_date_to?: string;
     military_number?: string;
     military_rank?: string;
     branch?: string;
@@ -182,6 +171,11 @@ interface Filters {
     date_to?: string;
     sort?: string;
     per_page?: string;
+    employer_id?: string;
+    previous_employer_id?: string;
+    decision_date_from?: string;
+    status?: string;
+    wife_status?: string;
 }
 
 interface Props {
@@ -200,6 +194,9 @@ interface Props {
     banks: Array<{ id: number; name_ar: string }>;
     parentsStatuses: Array<{ id: number; name_ar: string; name_en: string }>;
     militaryRanks?: Array<{ id: number; name_ar: string; name_en: string }>;
+    branches?: Array<{ id: number; name_ar: string; bank_id: number }>;
+    employers?: Array<{ id: number; name_ar: string; name_en?: string }>;
+    previousEmployers?: Array<{ id: number; name_ar: string; name_en?: string }>;
 }
 
 export default function Index({
@@ -210,6 +207,9 @@ export default function Index({
     banks,
     parentsStatuses,
     militaryRanks = [],
+    branches = [],
+    employers = [],
+    previousEmployers = [],
 }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
@@ -235,6 +235,7 @@ export default function Index({
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [filteredBranches, setFilteredBranches] = useState(branches);
 
     // Columns Configuration
     const availableColumns = useMemo(
@@ -256,22 +257,22 @@ export default function Index({
             {
                 key: 'military_rank',
                 label: t('martyrs.military_rank'),
-                required: false,
+                required: true,
             },
             {
                 key: 'job_grade',
                 label: t('martyrs.job_grade'),
-                required: false,
+                required: true,
             },
             {
                 key: 'employment_status',
                 label: t('martyrs.employment_status'),
-                required: false,
+                required: true,
             },
             {
                 key: 'marital_status',
                 label: t('martyrs.marital_status'),
-                required: false,
+                required: true,
             },
             {
                 key: 'wife_status',
@@ -281,7 +282,7 @@ export default function Index({
             {
                 key: 'military_number',
                 label: t('martyrs.military_number'),
-                required: false,
+                required: true,
             },
             {
                 key: 'parents_status',
@@ -290,7 +291,7 @@ export default function Index({
             },
             { key: 'bank', label: t('martyrs.bank'), required: false },
             { key: 'branch', label: t('martyrs.branch'), required: false },
-            { key: 'employer', label: t('martyrs.employer'), required: false },
+            { key: 'employer', label: t('martyrs.employer'), required: true },
             {
                 key: 'employer_location',
                 label: t('martyrs.employer_location'),
@@ -319,7 +320,7 @@ export default function Index({
             {
                 key: 'has_martyr_decision',
                 label: t('martyrs.decision'),
-                required: false,
+                required: true,
             },
             {
                 key: 'decision_number',
@@ -334,7 +335,7 @@ export default function Index({
             {
                 key: 'agent_name',
                 label: t('martyrs.agent_name'),
-                required: false,
+                required: true,
             },
             {
                 key: 'agent_phone',
@@ -357,7 +358,7 @@ export default function Index({
                       {
                           key: 'attachments',
                           label: t('martyrs.attachments'),
-                          required: false,
+                          required: true,
                       },
                   ]
                 : []),
@@ -370,6 +371,27 @@ export default function Index({
         availableColumns.map((c) => c.key),
     );
     const VISIBLE_COLUMNS_KEY = 'martyrs_visible_columns';
+
+    const basicKeys = useMemo(() =>
+        availableColumns
+            .filter((col) =>
+                ['id', 'full_name', 'national_id', 'military_rank', 'job_grade', 'marital_status', 'employment_status', 'employer', 'has_martyr_decision', 'agent_name', 'military_number', ...(canViewAttachments ? ['attachments'] : [])].includes(col.key),
+            )
+            .map((c) => c.key),
+        [availableColumns, canViewAttachments],
+    );
+
+    const additionalKeys = useMemo(() =>
+        availableColumns
+            .filter((col) => !basicKeys.includes(col.key))
+            .map((c) => c.key),
+        [availableColumns, basicKeys],
+    );
+
+    const areAllBasicSelected = basicKeys.length > 0 && basicKeys.every((k) => visibleColumns.includes(k));
+    const areSomeBasicSelected = basicKeys.some((k) => visibleColumns.includes(k)) && !areAllBasicSelected;
+    const areAllAdditionalSelected = additionalKeys.length > 0 && additionalKeys.every((k) => visibleColumns.includes(k));
+    const areSomeAdditionalSelected = additionalKeys.some((k) => visibleColumns.includes(k)) && !areAllAdditionalSelected;
 
     // Persist Columns
     useEffect(() => {
@@ -416,6 +438,26 @@ export default function Index({
             mounted = false;
         };
     }, []);
+
+    // Filter branches based on selected bank
+    useEffect(() => {
+        if (localFilters.bank_id && localFilters.bank_id !== 'all') {
+            const bankId = parseInt(localFilters.bank_id);
+            setFilteredBranches(branches.filter(branch => branch.bank_id === bankId));
+            // Clear branch filter if selected branch doesn't belong to the new bank
+            if (localFilters.branch_id && localFilters.branch_id !== 'all') {
+                const branchExists = branches.some(branch =>
+                    branch.id === parseInt(localFilters.branch_id as string) &&
+                    branch.bank_id === bankId
+                );
+                if (!branchExists) {
+                    handleFilterChange('branch_id', '');
+                }
+            }
+        } else {
+            setFilteredBranches(branches);
+        }
+    }, [localFilters.bank_id, branches]);
 
     // Filter Logic
     const handleFilterChange = (key: keyof Filters, value: string) => {
@@ -1261,21 +1303,144 @@ export default function Index({
                                                     </div>
                                                 </div>
 
-                                                {/* Parents Status */}
+                                                {/* Branch - dependent on selected bank */}
                                                 <div className="space-y-2">
                                                     <Label>
-                                                        {t(
-                                                            'martyrs.parents_status',
-                                                        )}
+                                                        {t('martyrs.branch')}
                                                     </Label>
                                                     <Select
                                                         value={
-                                                            localFilters.parents_status_id ||
+                                                            localFilters.branch_id ||
                                                             'all'
                                                         }
                                                         onValueChange={(v) =>
                                                             handleFilterChange(
-                                                                'parents_status_id',
+                                                                'branch_id',
+                                                                v,
+                                                            )
+                                                        }
+                                                        disabled={!localFilters.bank_id || localFilters.bank_id === 'all'}
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue
+                                                                placeholder={
+                                                                    !localFilters.bank_id || localFilters.bank_id === 'all'
+                                                                        ? t('martyrs.select_bank_first')
+                                                                        : t('martyrs.select')
+                                                                }
+                                                            />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="all">
+                                                                {t('martyrs.all')}
+                                                            </SelectItem>
+                                                            {filteredBranches.map((b) => (
+                                                                <SelectItem
+                                                                    key={b.id}
+                                                                    value={String(b.id)}
+                                                                >
+                                                                    {b.name_ar}
+                                                                </SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                                    {/* Employer */}
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            {t('martyrs.employer')}
+                                                        </Label>
+                                                        <Select
+                                                            value={
+                                                                localFilters.employer_id ||
+                                                                'all'
+                                                            }
+                                                            onValueChange={(v) =>
+                                                                handleFilterChange(
+                                                                    'employer_id',
+                                                                    v,
+                                                                )
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        'martyrs.select',
+                                                                    )}
+                                                                />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">
+                                                                    {t('martyrs.all')}
+                                                                </SelectItem>
+                                                                {employers.map((e) => (
+                                                                    <SelectItem
+                                                                        key={e.id}
+                                                                        value={String(e.id)}
+                                                                    >
+                                                                        {isRTL ? e.name_ar : (e.name_en || e.name_ar)}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+
+                                                    {/* Previous Employer */}
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            {t('martyrs.previous_employer')}
+                                                        </Label>
+                                                        <Select
+                                                            value={
+                                                                localFilters.previous_employer_id ||
+                                                                'all'
+                                                            }
+                                                            onValueChange={(v) =>
+                                                                handleFilterChange(
+                                                                    'previous_employer_id',
+                                                                    v,
+                                                                )
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        'martyrs.select',
+                                                                    )}
+                                                                />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="all">
+                                                                    {t('martyrs.all')}
+                                                                </SelectItem>
+                                                                {previousEmployers.map((e) => (
+                                                                    <SelectItem
+                                                                        key={e.id}
+                                                                        value={String(e.id)}
+                                                                    >
+                                                                        {isRTL ? e.name_ar : (e.name_en || e.name_ar)}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+
+                                                {/* Status */}
+                                                <div className="space-y-2">
+                                                    <Label>
+                                                        {t('martyrs.status')}
+                                                    </Label>
+                                                    <Select
+                                                        value={
+                                                            localFilters.status ||
+                                                            'all'
+                                                        }
+                                                        onValueChange={(v) =>
+                                                            handleFilterChange(
+                                                                'status',
                                                                 v,
                                                             )
                                                         }
@@ -1289,28 +1454,59 @@ export default function Index({
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectItem value="all">
-                                                                {t(
-                                                                    'martyrs.all',
-                                                                )}
+                                                                {t('martyrs.all')}
                                                             </SelectItem>
-                                                            {parentsStatuses.map(
-                                                                (s) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            s.id
-                                                                        }
-                                                                        value={String(
-                                                                            s.id,
-                                                                        )}
-                                                                    >
-                                                                        {isRTL
-                                                                            ? s.name_ar
-                                                                            : s.name_en}
-                                                                    </SelectItem>
-                                                                ),
-                                                            )}
+                                                            <SelectItem value="active">
+                                                                {t('martyrs.status.active')}
+                                                            </SelectItem>
+                                                            <SelectItem value="inactive">
+                                                                {t('martyrs.status.inactive')}
+                                                            </SelectItem>
+                                                            <SelectItem value="pending">
+                                                                {t('martyrs.status.pending')}
+                                                            </SelectItem>
+                                                            <SelectItem value="complete">
+                                                                {t('martyrs.status.complete')}
+                                                            </SelectItem>
+                                                            <SelectItem value="incomplete">
+                                                                {t('martyrs.status.incomplete')}
+                                                            </SelectItem>
                                                         </SelectContent>
                                                     </Select>
+                                                </div>
+
+                                                <Separator />
+
+                                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                                    {/* Death Date Year */}
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            {t('martyrs.death_date_year')}
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            placeholder={t('martyrs.death_date_year_placeholder')}
+                                                            value={localFilters.death_date_from || ''}
+                                                            onChange={(e) =>
+                                                                handleFilterChange('death_date_from', e.target.value)
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    {/* Decision Date */}
+                                                    <div className="space-y-2">
+                                                        <Label>
+                                                            {t('martyrs.decision_date_year')}
+                                                        </Label>
+                                                        <Input
+                                                            type="text"
+                                                            placeholder={t('martyrs.decision_date_year_placeholder')}
+                                                            value={localFilters.decision_date_from || ''}
+                                                            onChange={(e) =>
+                                                                handleFilterChange('decision_date_from', e.target.value)
+                                                            }
+                                                        />
+                                                    </div>
                                                 </div>
 
                                                 <Separator />
@@ -1458,52 +1654,166 @@ export default function Index({
                                         </DialogDescription>
                                     </DialogHeader>
                                     <ScrollArea className="h-[300px] rounded-md border p-4">
-                                        <div className="space-y-4">
-                                            {availableColumns.map((col) => (
-                                                <div
-                                                    key={col.key}
-                                                    className="flex items-center space-x-2"
-                                                >
-                                                    <Checkbox
-                                                        id={`col-${col.key}`}
-                                                        checked={visibleColumns.includes(
-                                                            col.key,
-                                                        )}
-                                                        onCheckedChange={(
-                                                            checked,
-                                                        ) => {
-                                                            if (checked)
-                                                                setVisibleColumns(
-                                                                    [
-                                                                        ...visibleColumns,
-                                                                        col.key,
-                                                                    ],
-                                                                );
-                                                            else if (
-                                                                !col.required
-                                                            )
-                                                                setVisibleColumns(
-                                                                    visibleColumns.filter(
-                                                                        (c) =>
-                                                                            c !==
-                                                                            col.key,
-                                                                    ),
-                                                                );
-                                                        }}
-                                                        disabled={col.required}
-                                                    />
-                                                    <Label
-                                                        htmlFor={`col-${col.key}`}
-                                                        className={cn(
-                                                            col.required &&
-                                                                'text-muted-foreground italic',
-                                                        )}
-                                                    >
-                                                        {col.label}{' '}
-                                                        {col.required && '*'}
-                                                    </Label>
+                                        <div className="grid grid-cols-2 gap-6">
+                                            {/* Basic Information Columns */}
+                                            <div className="space-y-4">
+                                                <div className="flex items-center justify-between">
+                                                    <h4 className="font-medium text-sm text-muted-foreground">
+                                                        {t('martyrs.basic_information')}
+                                                    </h4>
+                                                    <div className="flex items-center gap-3">
+                                                        <Checkbox
+                                                            id="select-basic"
+                                                            checked={areAllBasicSelected}
+                                                            onCheckedChange={(checked) => {
+                                                                if (checked) {
+                                                                    setVisibleColumns([
+                                                                        ...new Set([
+                                                                            ...visibleColumns,
+                                                                            ...basicKeys,
+                                                                        ]),
+                                                                    ]);
+                                                                } else {
+                                                                    const toRemove = basicKeys.filter((k) => {
+                                                                        const col = availableColumns.find((c) => c.key === k);
+                                                                        return col ? !col.required : true;
+                                                                    });
+                                                                    setVisibleColumns(
+                                                                        visibleColumns.filter((c) => !toRemove.includes(c)),
+                                                                    );
+                                                                }
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </div>
-                                            ))}
+                                                {availableColumns
+                                                    .filter(col => ['id', 'full_name', 'national_id', 'military_rank', 'job_grade', 'marital_status', 'employment_status', 'employer', 'has_martyr_decision', 'agent_name', 'military_number', ...(canViewAttachments ? ['attachments'] : [])].includes(col.key))
+                                                    .map((col) => (
+                                                        <div
+                                                            key={col.key}
+                                                            className="flex items-center space-x-2"
+                                                        >
+                                                            <Checkbox
+                                                                id={`col-${col.key}`}
+                                                                checked={visibleColumns.includes(
+                                                                    col.key,
+                                                                )}
+                                                                onCheckedChange={(
+                                                                    checked,
+                                                                ) => {
+                                                                    if (checked)
+                                                                        setVisibleColumns(
+                                                                            [
+                                                                                ...visibleColumns,
+                                                                                col.key,
+                                                                            ],
+                                                                        );
+                                                                    else if (
+                                                                        !col.required
+                                                                    )
+                                                                        setVisibleColumns(
+                                                                            visibleColumns.filter(
+                                                                                (c) =>
+                                                                                    c !==
+                                                                                    col.key,
+                                                                            ),
+                                                                        );
+                                                                }}
+                                                                disabled={col.required}
+                                                            />
+                                                            <Label
+                                                                htmlFor={`col-${col.key}`}
+                                                                className={cn(
+                                                                    col.required &&
+                                                                        'text-muted-foreground italic',
+                                                                )}
+                                                            >
+                                                                {col.label}{' '}
+                                                                {col.required && '*'}
+                                                            </Label>
+                                                        </div>
+                                                    ))}
+                                            </div>
+
+                                            {/* Additional Information Columns */}
+                                            <div className="space-y-4">
+                                                <div className="flex items-center justify-between">
+                                                    <h4 className="font-medium text-sm text-muted-foreground">
+                                                        {t('martyrs.additional_information')}
+                                                    </h4>
+                                                    <div className="flex items-center gap-3">
+                                                        <Checkbox
+                                                            id="select-additional"
+                                                            checked={areAllAdditionalSelected}
+                                                            onCheckedChange={(checked) => {
+                                                                if (checked) {
+                                                                    setVisibleColumns([
+                                                                        ...new Set([
+                                                                            ...visibleColumns,
+                                                                            ...additionalKeys,
+                                                                        ]),
+                                                                    ]);
+                                                                } else {
+                                                                    const toRemove = additionalKeys.filter((k) => {
+                                                                        const col = availableColumns.find((c) => c.key === k);
+                                                                        return col ? !col.required : true;
+                                                                    });
+                                                                    setVisibleColumns(
+                                                                        visibleColumns.filter((c) => !toRemove.includes(c)),
+                                                                    );
+                                                                }
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                {availableColumns
+                                                    .filter(col => !['id', 'full_name', 'national_id', 'military_rank', 'job_grade', 'marital_status', 'employment_status', 'employer', 'has_martyr_decision', 'agent_name', 'military_number', ...(canViewAttachments ? ['attachments'] : [])].includes(col.key))
+                                                    .map((col) => (
+                                                        <div
+                                                            key={col.key}
+                                                            className="flex items-center space-x-2"
+                                                        >
+                                                            <Checkbox
+                                                                id={`col-${col.key}`}
+                                                                checked={visibleColumns.includes(
+                                                                    col.key,
+                                                                )}
+                                                                onCheckedChange={(
+                                                                    checked,
+                                                                ) => {
+                                                                    if (checked)
+                                                                        setVisibleColumns(
+                                                                            [
+                                                                                ...visibleColumns,
+                                                                                col.key,
+                                                                            ],
+                                                                        );
+                                                                    else if (
+                                                                        !col.required
+                                                                    )
+                                                                        setVisibleColumns(
+                                                                            visibleColumns.filter(
+                                                                                (c) =>
+                                                                                    c !==
+                                                                                    col.key,
+                                                                            ),
+                                                                        );
+                                                                }}
+                                                                disabled={col.required}
+                                                            />
+                                                            <Label
+                                                                htmlFor={`col-${col.key}`}
+                                                                className={cn(
+                                                                    col.required &&
+                                                                        'text-muted-foreground italic',
+                                                                )}
+                                                            >
+                                                                {col.label}{' '}
+                                                                {col.required && '*'}
+                                                            </Label>
+                                                        </div>
+                                                    ))}
+                                            </div>
                                         </div>
                                     </ScrollArea>
                                     <DialogFooter>
@@ -1567,134 +1877,94 @@ export default function Index({
                         </div>
                     </div>
 
-                    {/* Data Table Card */}
-                    <Card className="border-muted shadow-sm transition-all duration-200 hover:shadow-md">
-                        <CardContent className="p-0">
-                            <DataTable
-                                columns={filteredColumns}
-                                data={martyrs.data}
-                                columnVisibility={availableColumns.reduce(
-                                    (acc, col) => ({
-                                        ...acc,
-                                        [col.key]: visibleColumns.includes(
-                                            col.key,
-                                        ),
-                                    }),
-                                    {},
-                                )}
-                            />
-                        </CardContent>
-                    </Card>
+                    {/* Data Table */}
+                    <DataTable
+                        columns={filteredColumns}
+                        data={martyrs.data}
+                        columnVisibility={availableColumns.reduce(
+                            (acc, col) => ({
+                                ...acc,
+                                [col.key]: visibleColumns.includes(
+                                    col.key,
+                                ),
+                            }),
+                            {},
+                        )}
+                    />
 
                     {/* Pagination */}
                     {martyrs.last_page > 1 && (
-                        <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                            <p className="text-sm text-muted-foreground">
-                                {t('martyrs.pagination.showing', {
-                                    from: martyrs.from,
-                                    to: martyrs.to,
-                                    total: martyrs.total,
-                                })}
-                            </p>
-                            <Pagination className="w-auto">
-                                <PaginationContent>
-                                    <PaginationItem>
-                                        <PaginationPrevious
-                                            href={
-                                                martyrs.current_page > 1
-                                                    ? `/martyrs?page=${martyrs.current_page - 1}`
-                                                    : '#'
-                                            }
-                                            className={cn(
-                                                martyrs.current_page <= 1 &&
-                                                    'pointer-events-none opacity-50',
-                                            )}
-                                        />
-                                    </PaginationItem>
-                                    {/* Show first page */}
-                                    {martyrs.current_page > 3 && (
-                                        <>
-                                            <PaginationItem>
-                                                <PaginationLink href="/martyrs?page=1">
-                                                    1
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                            {martyrs.current_page > 4 && (
-                                                <PaginationItem>
-                                                    <PaginationEllipsis />
-                                                </PaginationItem>
-                                            )}
-                                        </>
+                        <div className="flex flex-col items-center justify-between gap-4 border-t pt-4 sm:flex-row">
+                            <div className="order-2 text-sm text-muted-foreground sm:order-1">
+                                {t('showing')}{' '}
+                                <span className="font-bold text-foreground">
+                                    {martyrs.from}
+                                </span>{' '}
+                                {t('to')}{' '}
+                                <span className="font-bold text-foreground">
+                                    {martyrs.to}
+                                </span>{' '}
+                                {t('of')}{' '}
+                                <span className="font-bold text-foreground">
+                                    {martyrs.total}
+                                </span>{' '}
+                                {t('records')}
+                            </div>
+                            <div className="order-1 flex items-center gap-2 sm:order-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                        router.get('/martyrs', {
+                                            page: martyrs.current_page - 1,
+                                            ...cleanFilters(localFilters),
+                                        })
+                                    }
+                                    disabled={martyrs.current_page === 1}
+                                >
+                                    {isRTL ? (
+                                        <ChevronRight className="ml-2 h-4 w-4" />
+                                    ) : (
+                                        <ChevronLeft className="mr-2 h-4 w-4" />
                                     )}
-                                    {/* Show pages around current */}
-                                    {Array.from(
-                                        {
-                                            length: Math.min(
-                                                5,
-                                                martyrs.last_page,
-                                            ),
-                                        },
-                                        (_, i) => {
-                                            const page = Math.max(
-                                                1,
-                                                Math.min(
-                                                    martyrs.last_page,
-                                                    martyrs.current_page -
-                                                        2 +
-                                                        i,
-                                                ),
-                                            );
-                                            return (
-                                                <PaginationItem key={page}>
-                                                    <PaginationLink
-                                                        href={`/martyrs?page=${page}`}
-                                                        isActive={
-                                                            page ===
-                                                            martyrs.current_page
-                                                        }
-                                                    >
-                                                        {page}
-                                                    </PaginationLink>
-                                                </PaginationItem>
-                                            );
-                                        },
+                                    {t('previous')}
+                                </Button>
+
+                                <div className="mx-2 flex items-center gap-1">
+                                    <Badge
+                                        variant="outline"
+                                        className="h-8 min-w-[32px] justify-center"
+                                    >
+                                        {martyrs.current_page}
+                                    </Badge>
+                                    <span className="text-muted-foreground">/</span>
+                                    <span className="text-sm font-medium">
+                                        {martyrs.last_page}
+                                    </span>
+                                </div>
+
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                        router.get('/martyrs', {
+                                            page: martyrs.current_page + 1,
+                                            ...cleanFilters(localFilters),
+                                        })
+                                    }
+                                    disabled={
+                                        martyrs.current_page ===
+                                        martyrs.last_page
+                                    }
+                                >
+                                    {t('next')}
+                                    {isRTL ? (
+                                        <ChevronLeft className="mr-2 h-4 w-4" />
+                                    ) : (
+                                        <ChevronRight className="ml-2 h-4 w-4" />
                                     )}
-                                    {/* Show last page */}
-                                    {martyrs.current_page <
-                                        martyrs.last_page - 2 && (
-                                        <>
-                                            {martyrs.current_page <
-                                                martyrs.last_page - 3 && (
-                                                <PaginationItem>
-                                                    <PaginationEllipsis />
-                                                </PaginationItem>
-                                            )}
-                                            <PaginationItem>
-                                                <PaginationLink
-                                                    href={`/martyrs?page=${martyrs.last_page}`}
-                                                >
-                                                    {martyrs.last_page}
-                                                </PaginationLink>
-                                            </PaginationItem>
-                                        </>
-                                    )}
-                                    <PaginationItem>
-                                        <PaginationNext
-                                            href={
-                                                martyrs.current_page <
-                                                martyrs.last_page
-                                                    ? `/martyrs?page=${martyrs.current_page + 1}`
-                                                    : '#'
-                                            }
-                                            className={cn(
-                                                martyrs.current_page >=
-                                                    martyrs.last_page &&
-                                                    'pointer-events-none opacity-50',
-                                            )}
-                                        />
-                                    </PaginationItem>
-                                </PaginationContent>
-                            </Pagination>
+                                </Button>
+                            </div>
                         </div>
                     )}
                 </div>

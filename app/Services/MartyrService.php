@@ -90,6 +90,10 @@ class MartyrService
             'branch_id',
             'agent_name',
             'agent_phone',
+            'employer_id',
+            'previous_employer_id',
+            'status',
+            'wife_status',
         ];
 
         foreach ($allowedFilters as $filter) {
@@ -109,11 +113,14 @@ class MartyrService
 
         // Apply death date filters
         if ($request->has('death_date_from') && $request->get('death_date_from')) {
-            $builder->where('death_date', '>=', $request->get('death_date_from'));
+            $years = array_map('trim', explode(',', $request->get('death_date_from')));
+            $builder->whereIn(\DB::raw('YEAR(death_date)'), $years);
         }
 
-        if ($request->has('death_date_to') && $request->get('death_date_to')) {
-            $builder->where('death_date', '<=', $request->get('death_date_to'));
+        // Apply decision date filters
+        if ($request->has('decision_date_from') && $request->get('decision_date_from')) {
+            $years = array_map('trim', explode(',', $request->get('decision_date_from')));
+            $builder->whereIn(\DB::raw('YEAR(decision_date)'), $years);
         }
 
         // Apply martyr decision filter
@@ -140,6 +147,7 @@ class MartyrService
             'employment_status_id',
             'created_at',
             'updated_at',
+            'status',
         ];
 
         if (in_array($sortField, $allowedSorts)) {
