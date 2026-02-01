@@ -165,4 +165,13 @@ describe('Martyrs Index Page', function () {
                 ->where('filters.date_to', '2024-12-31')
             );
     });
+
+    it('maintains per_page filter state across requests', function () {
+        get(route('martyrs.index', ['per_page' => '25']))
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page
+                ->component('Martyrs/Index')
+                ->where('filters.per_page', '25')
+            );
+    });
 });

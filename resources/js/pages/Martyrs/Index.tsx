@@ -237,6 +237,11 @@ export default function Index({
     const [isDeleting, setIsDeleting] = useState(false);
     const [filteredBranches, setFilteredBranches] = useState(branches);
 
+    // Update localFilters when filters prop changes
+    useEffect(() => {
+        setLocalFilters(prev => ({ ...prev, ...filters }));
+    }, [filters]);
+
     // Columns Configuration
     const availableColumns = useMemo(
         () => [

@@ -79,33 +79,91 @@ export interface Martyr {
     full_name: string;
     national_id: string;
     address?: string;
-    parents_status?: string;
-    marital_status?: string;
-    employment_status?: string;
+    parents_status_id?: number | null;
+    marital_status_id?: number | null;
+    employment_status_id?: number | null;
     children_count?: number;
+    wife_status?: string;
+    job_grade_id?: number | null;
+    employer_id?: number | null;
+    employer_location_id?: number | null;
+    has_previous_workplace?: boolean;
     previous_employer_id?: number | null;
     previous_employer_location_id?: number | null;
     military_number?: string;
-    military_rank?: string;
-    bank_name?: string;
+    military_rank_id?: number | null;
+    bank_id?: number | null;
+    branch_id?: number | null;
     bank_account_number?: string;
-    bank_branch?: string;
     agent_name?: string;
     agent_phone?: string;
     agent_relationship?: string;
     agent_passport_number?: string;
     profile_image?: string | null;
-
-    status?: 'draft' | 'pending' | 'approved' | 'rejected';
+    death_date?: string;
+    has_martyr_decision?: boolean;
+    decision_number?: string;
+    decision_date?: string;
+    status?: 'complete' | 'incomplete';
     deleted_at?: string | null;
-    military_rank_id?: number | null;
-    bank_id?: number | null;
-    branch_id?: number | null;
-    employment_status_id?: number | null;
-    parents_status_id?: number | null;
-    marital_status_id?: number | null;
     created_at?: string;
     updated_at?: string;
+
+    // Relationships
+    parents_status?: {
+        id: number;
+        name_ar: string;
+        name_en: string;
+    } | null;
+    marital_status?: {
+        id: number;
+        name_ar: string;
+        name_en: string;
+    } | null;
+    employment_status?: {
+        id: number;
+        name: string;
+    } | null;
+    job_grade?: {
+        id: number;
+        name_ar: string;
+        name_en: string;
+    } | null;
+    military_rank?: {
+        id: number;
+        name_ar: string;
+        name_en: string;
+    } | null;
+    bank?: {
+        id: number;
+        name_ar: string;
+        name_en: string;
+    } | null;
+    branch?: {
+        id: number;
+        name_ar: string;
+        name_en: string;
+    } | null;
+    employer?: {
+        id: number;
+        name_ar: string;
+        name_en: string;
+    } | null;
+    employerLocation?: {
+        id: number;
+        name_ar: string;
+        name_en: string;
+    } | null;
+    previousEmployer?: {
+        id: number;
+        name_ar: string;
+        name_en: string;
+    } | null;
+    previousEmployerLocation?: {
+        id: number;
+        name_ar: string;
+        name_en: string;
+    } | null;
 }
 
 export interface Compensation {

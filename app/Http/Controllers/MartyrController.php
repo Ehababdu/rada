@@ -28,7 +28,7 @@ class MartyrController extends Controller
 
         return Inertia::render('Martyrs/Index', [
             'martyrs' => $martyrs,
-            'filters' => $request->only(['search', 'marital_status_id', 'employment_status_id', 'bank_id', 'branch_id', 'death_date_from', 'death_date_to', 'has_martyr_decision', 'parents_status_id', 'sort', 'date_from', 'date_to', 'employer_id', 'previous_employer_id', 'decision_date_from', 'decision_date_to', 'status', 'wife_status']),
+            'filters' => $request->only(['search', 'marital_status_id', 'employment_status_id', 'bank_id', 'branch_id', 'death_date_from', 'death_date_to', 'has_martyr_decision', 'parents_status_id', 'sort', 'date_from', 'date_to', 'employer_id', 'previous_employer_id', 'decision_date_from', 'decision_date_to', 'status', 'wife_status', 'per_page']),
             'maritalStatuses' => \Illuminate\Support\Facades\Cache::remember('martyrs.marital_statuses', 60 * 60, fn () => \App\Models\MaritalStatus::select('id', 'name_ar', 'name_en')->get()),
             'employmentStatuses' => \Illuminate\Support\Facades\Cache::remember('martyrs.employment_statuses', 60 * 60, fn () => \App\Models\EmploymentStatus::select('id', 'name as name_ar', \DB::raw('NULL as name_en'))->get()),
             'banks' => \Illuminate\Support\Facades\Cache::remember('martyrs.banks', 60 * 60, fn () => \App\Models\Bank::select('id', 'name_ar', \DB::raw('NULL as name_en'))->get()),
