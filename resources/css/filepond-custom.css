@@ -127,3 +127,65 @@
     border-color: #ef4444;
     background: #451a1a;
 }
+
+/* Container centering and layout fixes */
+.filepond--root {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 720px; /* limit full width on large screens */
+    margin: 0.75rem auto; /* center horizontally with some vertical spacing */
+    padding: 0.25rem; /* small inner spacing so items don't touch edges */
+}
+
+.filepond--panel-root {
+    width: 100% !important;
+}
+
+/* Ensure items are centered and don't stretch awkwardly */
+.filepond--list-scroller,
+.filepond--list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.filepond--item {
+    width: calc(100% - 1rem);
+    max-width: 680px;
+    margin: 0; /* list container handles centering */
+}
+
+/* RTL and text alignment improvements */
+.filepond--root,
+.filepond--panel,
+.filepond--item {
+    direction: rtl; /* make FilePond respect RTL layout */
+}
+
+.filepond--file-meta,
+.filepond--file-info {
+    text-align: right; /* right align file meta for Arabic */
+}
+
+/* Error state polish: make error bar more compact and centered */
+.filepond--item[data-filepond-item-state="error"] {
+    background: linear-gradient(90deg, rgba(254,226,226,0.95), rgba(255,243,243,0.95));
+    border-color: #f87171;
+}
+
+.dark .filepond--item[data-filepond-item-state="error"] {
+    background: linear-gradient(90deg, rgba(76,0,0,0.6), rgba(51,6,6,0.6));
+}
+
+/* Make file action icons visually consistent in RTL */
+.filepond--file-action-button {
+    margin-inline-start: 0.5rem;
+    margin-inline-end: 0.5rem;
+}
+
+/* Small responsive tweak */
+@media (max-width: 640px) {
+    .filepond--root { padding: 0.25rem; max-width: 100%; }
+    .filepond--item { width: 100%; }
+}
