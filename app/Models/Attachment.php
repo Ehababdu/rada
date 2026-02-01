@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Attachment extends Model
+class Attachment extends Model implements HasMedia
 {
-    use HasFactory, Searchable;
+    use HasFactory, Searchable, InteractsWithMedia;
 
     protected $fillable = [
         'martyr_id',
@@ -20,6 +23,29 @@ class Attachment extends Model
         'file_size',
         'description',
     ];
+
+    protected $appends = ['file_url', 'formatted_file_size'];
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        
+        $this->registerMediaCollections();
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('attachments')
+            ->acceptsMimeTypes([
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'image/jpeg',
+                'image/png',
+                'image/jpg',
+            ])
+            ->singleFile();
+    }
 
     public function martyr(): BelongsTo
     {
@@ -36,9 +62,24 @@ class Attachment extends Model
         return $this->attachmentType?->label ?? $this->attachment_type;
     }
 
+    public function getFileUrlAttribute(): string
+    {
+        return $this->getFirstMediaUrl('attachments');
+    }
+
     public function getFormattedFileSizeAttribute(): string
     {
         $bytes = $this->file_size;
+        if (!$bytes) {
+            // Try to get size from media if available
+            $media = $this->getFirstMedia('attachments');
+            if ($media) {
+                $bytes = $media->size;
+            }
+        }
+        
+        if (!$bytes) return '0 B';
+        
         $units = ['B', 'KB', 'MB', 'GB'];
 
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {

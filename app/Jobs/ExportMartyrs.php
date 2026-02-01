@@ -17,15 +17,17 @@ class ExportMartyrs implements ShouldQueue
 
     protected $filters;
     protected $columns;
+    protected $ids;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(User $user, array $filters = [], array $columns = [])
+    public function __construct(User $user, array $filters = [], array $columns = [], array $ids = [])
     {
         $this->user = $user;
         $this->filters = $filters;
         $this->columns = $columns;
+        $this->ids = $ids;
     }
 
     /**
@@ -37,10 +39,10 @@ class ExportMartyrs implements ShouldQueue
         $path = 'exports/'.$fileName;
 
         // Queue the export job using the Excel queue (so that heavy export work happens on the queue worker)
-        Excel::queue(new MartyrsExport($this->filters, $this->columns ?? []), $path, 'public');
+        Excel::queue(new MartyrsExport($this->filters, $this->columns ?? [], $this->ids ?? []), $path, 'public');
 
-        // When queuing, the file might not exist immediately. We still provide a temporary URL (worker should generate the file soon).
-        $url = Storage::disk('public')->temporaryUrl($path, now()->addMinutes(60));
+        // For local development, use a regular URL instead of temporary URL
+        $url = Storage::disk('public')->url($path);
 
         $this->user->notify(new \App\Notifications\MartyrsExportReady($url));
     }

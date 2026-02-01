@@ -235,6 +235,7 @@ export default function Index({
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
     const [filteredBranches, setFilteredBranches] = useState(branches);
 
     // Update localFilters when filters prop changes
@@ -926,6 +927,12 @@ export default function Index({
             params.append('sync', '1');
             if (visibleColumns.length)
                 params.append('columns', visibleColumns.join(','));
+
+            // Add selected row IDs if any are selected
+            const selectedIds = Object.keys(selectedRows).filter(key => selectedRows[key]);
+            if (selectedIds.length > 0) {
+                params.append('ids', selectedIds.join(','));
+            }
 
             window.open(`/martyrs/export?${params.toString()}`, '_blank');
         } catch {
@@ -1895,6 +1902,9 @@ export default function Index({
                             }),
                             {},
                         )}
+                        enableRowSelection={true}
+                        rowSelection={selectedRows}
+                        onRowSelectionChange={setSelectedRows}
                     />
 
                     {/* Pagination */}

@@ -31,14 +31,14 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::resource('martyrs', MartyrController::class);
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::resource('martyrs', MartyrController::class);
     Route::post('martyrs/export', [MartyrController::class, 'export'])->middleware('throttle:5,1')->name('martyrs.export');
     Route::get('martyrs/export', [MartyrController::class, 'export'])->middleware('throttle:5,1')->name('martyrs.export.get');
-    Route::resource('martyrs', MartyrController::class);
+    Route::get('martyrs/export/latest', [MartyrController::class, 'latestExport'])->name('martyrs.export.latest');
+    Route::get('martyrs/export/status', [MartyrController::class, 'exportStatus'])->name('martyrs.export.status');
     Route::patch('martyrs/{martyr}/status', [MartyrController::class, 'updateStatus'])->name('martyrs.update-status');
     Route::resource('martyrs.attachments', AttachmentController::class);
     Route::resource('attachment-types', AttachmentTypeController::class);
@@ -69,9 +69,6 @@ Route::get('api/job-grades', [JobGradeController::class, 'apiIndex'])->name('api
 Route::get('api/parents-statuses', [ParentsStatusesController::class, 'index'])->name('api.parents-statuses.index');
 Route::get('api/marital-statuses', [MaritalStatusesController::class, 'index'])->name('api.marital-statuses.index');
 Route::get('api/permissions', [PermissionController::class, 'apiIndex'])->name('api.permissions.index');
-
-Route::get('martyrs/export/latest', [MartyrController::class, 'latestExport'])->name('martyrs.export.latest');
-Route::get('martyrs/export/status', [MartyrController::class, 'exportStatus'])->name('martyrs.export.status');
 
 require __DIR__.'/auth.php';
 require __DIR__.'/settings.php';

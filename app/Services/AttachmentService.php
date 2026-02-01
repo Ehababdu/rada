@@ -55,17 +55,32 @@ class AttachmentService
 
     public function createAttachment(Martyr $martyr, array $data, Request $request): Attachment
     {
-        $file = $request->file('file');
-        $path = $file->store('attachments', 'public');
-
-        return $martyr->attachments()->create([
+        $attachment = $martyr->attachments()->create([
             'attachment_type' => $data['attachment_type'],
-            'file_path' => $path,
-            'original_filename' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType(),
-            'file_size' => $file->getSize(),
             'description' => $data['description'] ?? null,
         ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            
+            $attachment->addMediaFromRequest('file')
+                ->usingName($file->getClientOriginalName())
+                ->usingFileName($file->getClientOriginalName())
+                ->toMediaCollection('attachments');
+
+            // Update file metadata
+            $media = $attachment->getFirstMedia('attachments');
+            if ($media) {
+                $attachment->update([
+                    'file_path' => $media->getPath(),
+                    'original_filename' => $media->name,
+                    'mime_type' => $media->mime_type,
+                    'file_size' => $media->size,
+                ]);
+            }
+        }
+
+        return $attachment;
     }
 
     public function updateAttachment(Attachment $attachment, array $data, Request $request): Attachment
@@ -76,16 +91,24 @@ class AttachmentService
         ];
 
         if ($request->hasFile('file')) {
-            // Delete old file
-            Storage::disk('public')->delete($attachment->file_path);
+            // Clear existing media
+            $attachment->clearMediaCollection('attachments');
 
+            // Add new file
             $file = $request->file('file');
-            $path = $file->store('attachments', 'public');
+            $attachment->addMediaFromRequest('file')
+                ->usingName($file->getClientOriginalName())
+                ->usingFileName($file->getClientOriginalName())
+                ->toMediaCollection('attachments');
 
-            $updateData['file_path'] = $path;
-            $updateData['original_filename'] = $file->getClientOriginalName();
-            $updateData['mime_type'] = $file->getMimeType();
-            $updateData['file_size'] = $file->getSize();
+            // Update file metadata
+            $media = $attachment->getFirstMedia('attachments');
+            if ($media) {
+                $updateData['file_path'] = $media->getPath();
+                $updateData['original_filename'] = $media->name;
+                $updateData['mime_type'] = $media->mime_type;
+                $updateData['file_size'] = $media->size;
+            }
         }
 
         $attachment->update($updateData);
@@ -95,8 +118,8 @@ class AttachmentService
 
     public function deleteAttachment(Attachment $attachment): void
     {
-        // Delete file from storage
-        Storage::disk('public')->delete($attachment->file_path);
+        // Delete media files
+        $attachment->clearMediaCollection('attachments');
 
         $attachment->delete();
     }

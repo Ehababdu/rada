@@ -51,6 +51,10 @@ interface DataTableProps<TData, TValue> {
   onColumnVisibilityChange?: (
     updaterOrValue: VisibilityState | ((old: VisibilityState) => VisibilityState)
   ) => void
+  // Row selection props
+  enableRowSelection?: boolean
+  rowSelection?: Record<string, boolean>
+  onRowSelectionChange?: (updaterOrValue: Record<string, boolean> | ((old: Record<string, boolean>) => Record<string, boolean>)) => void
 }
 
 export function DataTable<TData, TValue>({
@@ -69,6 +73,9 @@ export function DataTable<TData, TValue>({
   pageSizeOptions,
   columnVisibility: externalColumnVisibility,
   onColumnVisibilityChange: externalOnColumnVisibilityChange,
+  enableRowSelection = false,
+  rowSelection: externalRowSelection,
+  onRowSelectionChange: externalOnRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -84,15 +91,47 @@ export function DataTable<TData, TValue>({
     typeof externalOnColumnVisibilityChange !== 'undefined'
       ? externalOnColumnVisibilityChange
       : setInternalColumnVisibility
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [internalRowSelection, setInternalRowSelection] = React.useState({})
+  const rowSelection =
+    typeof externalRowSelection !== 'undefined'
+      ? externalRowSelection
+      : internalRowSelection
+  const setRowSelection =
+    typeof externalOnRowSelectionChange !== 'undefined'
+      ? externalOnRowSelectionChange
+      : setInternalRowSelection
 
   const table = useReactTable({
     data,
-    columns,
+    columns: enableRowSelection ? [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+      },
+      ...columns,
+    ] : columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    ...(enablePagination ? { getPaginationRowModel: getPaginationRowModel() } : {}),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -102,6 +141,10 @@ export function DataTable<TData, TValue>({
       columnFilters,
       columnVisibility,
       rowSelection,
+      ...(enablePagination ? { pagination: {
+        pageIndex: (currentPage || 1) - 1,
+        pageSize: pageSize || 10,
+      } } : {}),
     },
   })
 
@@ -159,7 +202,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={enableRowSelection ? columns.length + 1 : columns.length}
                   className="h-24 text-center"
                 >
                   No results.
@@ -172,6 +215,12 @@ export function DataTable<TData, TValue>({
       {showPagination && (
         <div className="flex items-center justify-between space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
+            {enableRowSelection && table.getFilteredSelectedRowModel().rows.length > 0 && (
+              <span className="mr-4">
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {table.getFilteredRowModel().rows.length} row(s) selected.
+              </span>
+            )}
             {enablePagination ? (
               `Showing ${((currentPage || 1) - 1) * (pageSize || 10) + 1} to ${Math.min((currentPage || 1) * (pageSize || 10), totalItems || 0)} of ${totalItems || 0} entries`
             ) : null}

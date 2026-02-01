@@ -152,18 +152,22 @@ class MartyrController extends Controller
         }
         $filters = $request->only(['search', 'marital_status_id', 'employment_status_id', 'bank_id', 'branch_id', 'death_date_from', 'death_date_to', 'has_martyr_decision', 'parents_status_id']);
         $columns = $request->input('columns', []);
+        $ids = $request->input('ids', []);
         // allow comma-separated string for sync downloads
         if (is_string($columns)) {
             $columns = array_filter(array_map('trim', explode(',', $columns)));
+        }
+        if (is_string($ids)) {
+            $ids = array_filter(array_map('trim', explode(',', $ids)));
         }
 
         // If client requested a synchronous download (e.g. ?sync=1), return the file directly.
         if ($request->boolean('sync')) {
             $fileName = 'martyrs_'.now()->format('Y-m-d_H-i-s').'.xlsx';
-            return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\MartyrsExport($filters, $columns), $fileName);
+            return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\MartyrsExport($filters, $columns, $ids), $fileName);
         }
 
-        \App\Jobs\ExportMartyrs::dispatch(auth()->user(), $filters, $columns);
+        \App\Jobs\ExportMartyrs::dispatch(auth()->user(), $filters, $columns, $ids);
 
         return back()->with('success', 'سيتم إرسال إشعار عند جاهزية التقرير.');
     }

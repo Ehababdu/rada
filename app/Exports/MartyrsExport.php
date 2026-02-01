@@ -11,11 +11,13 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
 {
     protected $filters;
     protected $columns;
+    protected $ids;
 
-    public function __construct($filters = [], $columns = [])
+    public function __construct($filters = [], $columns = [], $ids = [])
     {
         $this->filters = $filters;
         $this->columns = is_array($columns) ? $columns : (is_string($columns) ? array_filter(array_map('trim', explode(',', $columns))) : []);
+        $this->ids = is_array($ids) ? $ids : (is_string($ids) ? array_filter(array_map('trim', explode(',', $ids))) : []);
     }
 
     /**
@@ -25,47 +27,53 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
     {
         $query = Martyr::with(['parentsStatus', 'maritalStatus', 'employmentStatus', 'militaryRank', 'bank', 'branch']);
 
-        if (! empty($this->filters['search'])) {
-            $query->where('full_name', 'like', '%'.$this->filters['search'].'%')
-                ->orWhere('national_id', 'like', '%'.$this->filters['search'].'%');
-        }
-
-        // Apply advanced filters if provided
-        if (! empty($this->filters['marital_status_id'])) {
-            $query->where('marital_status_id', $this->filters['marital_status_id']);
-        }
-
-        if (! empty($this->filters['employment_status_id'])) {
-            $query->where('employment_status_id', $this->filters['employment_status_id']);
-        }
-
-        if (! empty($this->filters['bank_id'])) {
-            $query->where('bank_id', $this->filters['bank_id']);
-        }
-
-        if (! empty($this->filters['branch_id'])) {
-            $query->where('branch_id', $this->filters['branch_id']);
-        }
-
-        if (! empty($this->filters['parents_status_id'])) {
-            $query->where('parents_status_id', $this->filters['parents_status_id']);
-        }
-
-        if (! empty($this->filters['has_martyr_decision'])) {
-            $val = $this->filters['has_martyr_decision'];
-            if ($val === '1' || $val === 1 || $val === true) {
-                $query->where('has_martyr_decision', true);
-            } elseif ($val === '0' || $val === 0 || $val === 'false') {
-                $query->where('has_martyr_decision', false);
+        // If specific IDs are provided, only export those
+        if (!empty($this->ids)) {
+            $query->whereIn('id', $this->ids);
+        } else {
+            // Apply filters only if no specific IDs are provided
+            if (! empty($this->filters['search'])) {
+                $query->where('full_name', 'like', '%'.$this->filters['search'].'%')
+                    ->orWhere('national_id', 'like', '%'.$this->filters['search'].'%');
             }
-        }
 
-        if (! empty($this->filters['death_date_from'])) {
-            $query->whereDate('death_date', '>=', $this->filters['death_date_from']);
-        }
+            // Apply advanced filters if provided
+            if (! empty($this->filters['marital_status_id'])) {
+                $query->where('marital_status_id', $this->filters['marital_status_id']);
+            }
 
-        if (! empty($this->filters['death_date_to'])) {
-            $query->whereDate('death_date', '<=', $this->filters['death_date_to']);
+            if (! empty($this->filters['employment_status_id'])) {
+                $query->where('employment_status_id', $this->filters['employment_status_id']);
+            }
+
+            if (! empty($this->filters['bank_id'])) {
+                $query->where('bank_id', $this->filters['bank_id']);
+            }
+
+            if (! empty($this->filters['branch_id'])) {
+                $query->where('branch_id', $this->filters['branch_id']);
+            }
+
+            if (! empty($this->filters['parents_status_id'])) {
+                $query->where('parents_status_id', $this->filters['parents_status_id']);
+            }
+
+            if (! empty($this->filters['has_martyr_decision'])) {
+                $val = $this->filters['has_martyr_decision'];
+                if ($val === '1' || $val === 1 || $val === true) {
+                    $query->where('has_martyr_decision', true);
+                } elseif ($val === '0' || $val === 0 || $val === 'false') {
+                    $query->where('has_martyr_decision', false);
+                }
+            }
+
+            if (! empty($this->filters['death_date_from'])) {
+                $query->whereDate('death_date', '>=', $this->filters['death_date_from']);
+            }
+
+            if (! empty($this->filters['death_date_to'])) {
+                $query->whereDate('death_date', '<=', $this->filters['death_date_to']);
+            }
         }
         // Add other filters as needed
 

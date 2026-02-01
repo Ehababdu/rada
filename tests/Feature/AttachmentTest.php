@@ -50,9 +50,7 @@ class AttachmentTest extends TestCase
 
     public function test_user_can_create_attachment()
     {
-        Storage::fake('public');
-
-        $file = UploadedFile::fake()->create('test.pdf', 1000);
+        $file = UploadedFile::fake()->createWithContent('test.pdf', '%PDF-1.4 test content', 'application/pdf');
 
         $response = $this->post("/martyrs/{$this->martyr->id}/attachments", [
             'attachment_type' => 1,
@@ -66,10 +64,18 @@ class AttachmentTest extends TestCase
             'martyr_id' => $this->martyr->id,
             'attachment_type' => 1,
             'original_filename' => 'test.pdf',
+            'mime_type' => 'application/pdf',
             'description' => 'Test attachment description',
         ]);
 
-        Storage::disk('public')->assertExists('attachments/'.$file->hashName());
+        // Check that media was created
+        $attachment = \App\Models\Attachment::where('martyr_id', $this->martyr->id)->first();
+        $this->assertNotNull($attachment);
+        $this->assertTrue($attachment->hasMedia('attachments'));
+        $media = $attachment->getFirstMedia('attachments');
+        $this->assertNotNull($media);
+        $this->assertEquals('test.pdf', $media->name);
+        $this->assertEquals('application/pdf', $media->mime_type);
     }
 
     public function test_attachment_creation_validates_required_fields()
@@ -107,10 +113,8 @@ class AttachmentTest extends TestCase
 
     public function test_user_can_update_attachment()
     {
-        Storage::fake('public');
-
         $attachment = Attachment::factory()->forMartyr($this->martyr)->create();
-        $newFile = UploadedFile::fake()->create('updated.pdf', 2000);
+        $newFile = UploadedFile::fake()->createWithContent('updated.pdf', '%PDF-1.4 updated content', 'application/pdf');
 
         $response = $this->put("/martyrs/{$this->martyr->id}/attachments/{$attachment->id}", [
             'attachment_type' => 2,
@@ -123,8 +127,18 @@ class AttachmentTest extends TestCase
         $this->assertDatabaseHas('attachments', [
             'id' => $attachment->id,
             'attachment_type' => 2,
+            'original_filename' => 'updated.pdf',
+            'mime_type' => 'application/pdf',
             'description' => 'Updated description',
         ]);
+
+        // Check that old media was cleared and new media was added
+        $attachment->refresh();
+        $this->assertTrue($attachment->hasMedia('attachments'));
+        $media = $attachment->getFirstMedia('attachments');
+        $this->assertNotNull($media);
+        $this->assertEquals('updated.pdf', $media->name);
+        $this->assertEquals('application/pdf', $media->mime_type);
     }
 
     public function test_user_can_update_attachment_without_changing_file()
@@ -142,18 +156,13 @@ class AttachmentTest extends TestCase
             'id' => $attachment->id,
             'attachment_type' => 3,
             'description' => 'Updated description without file',
-            'file_path' => $attachment->file_path, // File should remain the same
         ]);
     }
 
     public function test_user_can_delete_attachment()
     {
-        Storage::fake('public');
-
         $attachment = Attachment::factory()->forMartyr($this->martyr)->create();
-
-        // Debug: check if attachment has file_path
-        $this->assertNotNull($attachment->file_path, 'Attachment file_path should not be null');
+        $mediaId = $attachment->getFirstMedia('attachments')?->id;
 
         $response = $this->delete("/martyrs/{$this->martyr->id}/attachments/{$attachment->id}");
 
@@ -163,7 +172,10 @@ class AttachmentTest extends TestCase
             'id' => $attachment->id,
         ]);
 
-        Storage::disk('public')->assertMissing($attachment->file_path);
+        // Check that media was also deleted
+        if ($mediaId) {
+            $this->assertDatabaseMissing('media', ['id' => $mediaId]);
+        }
     }
 
     public function test_user_cannot_delete_attachment_from_different_martyr()
