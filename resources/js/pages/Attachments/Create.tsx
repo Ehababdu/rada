@@ -65,8 +65,7 @@ export default function Create({ martyr, attachmentTypes }: Props) {
     };
 
     const handleFileUpdate = (fileItems: any[]) => {
-        // Set currently active file objects to state, matching official documentation
-        setFiles(fileItems.map(fileItem => fileItem.file));
+        setFiles(fileItems);
     };
 
     const handleAttachmentTypeChange = (value: string) => {
@@ -132,7 +131,7 @@ export default function Create({ martyr, attachmentTypes }: Props) {
 
         router.post(`/martyrs/${martyr.id}/attachments`, {
             attachment_type,
-            file: files.length > 0 ? files[0] : null,
+            file: files.length > 0 ? files[0].file : null,
             description,
         }, {
             onProgress: (progress: any) => {
@@ -237,9 +236,10 @@ export default function Create({ martyr, attachmentTypes }: Props) {
                                     onupdatefiles={handleFileUpdate}
                                     oninit={handleInit}
                                     allowMultiple={false}
+                                    allowReorder={true}
                                     maxFiles={1}
-                                    server="/api"
-                                    name="files"
+                                    server={null}
+                                    name="file"
                                     acceptedFileTypes={[
                                         'application/pdf',
                                         'application/msword',

@@ -156,6 +156,47 @@
     margin: 0; /* list container handles centering */
 }
 
+/* Ensure the panel centers its contents so the item doesn't span the full width */
+.filepond--panel-root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Make the visible item bar more compact and centered */
+.filepond--item .filepond--item-panel,
+.filepond--item .filepond--item-info {
+    width: 100%;
+}
+
+.filepond--item {
+    padding: 0.4rem 0.6rem;
+}
+
+/* Reduce the visual width of the error bar and keep nice rounding */
+.filepond--item[data-filepond-item-state="error"] {
+    width: auto;
+    max-width: 680px;
+    box-shadow: none;
+    padding-right: 1rem;
+    padding-left: 1rem;
+}
+
+/* Align filename overflow: ellipsis to avoid long names breaking layout */
+.filepond--file-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60%;
+}
+
+/* Ensure the retry icon and file size sit to the left in RTL but don't push the bar */
+.filepond--file-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 /* RTL and text alignment improvements */
 .filepond--root,
 .filepond--panel,

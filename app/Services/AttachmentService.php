@@ -63,20 +63,28 @@ class AttachmentService
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             
-            $attachment->addMediaFromRequest('file')
-                ->usingName($file->getClientOriginalName())
-                ->usingFileName($file->getClientOriginalName())
-                ->toMediaCollection('attachments');
+            try {
+                $attachment->addMediaFromRequest('file')
+                    ->usingName($file->getClientOriginalName())
+                    ->usingFileName($file->getClientOriginalName())
+                    ->toMediaCollection('attachments');
 
-            // Update file metadata
-            $media = $attachment->getFirstMedia('attachments');
-            if ($media) {
-                $attachment->update([
-                    'file_path' => $media->getPath(),
-                    'original_filename' => $media->name,
-                    'mime_type' => $media->mime_type,
-                    'file_size' => $media->size,
-                ]);
+                // Update file metadata
+                $media = $attachment->getFirstMedia('attachments');
+                if ($media) {
+                    $attachment->update([
+                        'file_path' => $media->getPath(),
+                        'original_filename' => $media->name,
+                        'mime_type' => $media->mime_type,
+                        'file_size' => $media->size,
+                    ]);
+                } else {
+                    $attachment->delete();
+                    throw new \Exception('Failed to store the file.');
+                }
+            } catch (\Exception $e) {
+                $attachment->delete();
+                throw $e;
             }
         }
 
