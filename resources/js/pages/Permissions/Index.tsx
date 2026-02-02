@@ -10,11 +10,12 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -26,6 +27,12 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { usePermissions } from '@/hooks/use-permissions';
 import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
@@ -40,15 +47,16 @@ import {
 import { type BreadcrumbItem, type PaginatedResponse } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import {
+    AlertTriangle,
     ChevronLeft,
     ChevronRight,
+    Edit,
     Eye,
+    FilterX,
+    Key,
     MoreHorizontal,
     Plus,
-    RotateCcw,
     Search,
-    Shield,
-    SquarePen,
     Trash2,
 } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -141,169 +149,207 @@ export default function Index({
     }, [flash, toast]);
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={t('permissions.title')} />
+        <TooltipProvider>
+            <AppLayout breadcrumbs={breadcrumbs}>
+                <Head title={t('permissions.title')} />
 
-            <div
-                className="mx-auto flex w-full max-w-7xl flex-col gap-6 p-6"
-                dir={isRTL ? 'rtl' : 'ltr'}
-            >
-                {/* Header Section */}
-                <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                    <div>
-                        <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
-                            <Shield className="h-6 w-6 text-primary" />
-                            {t('permissions.title')}
-                        </h1>
-                        <p className="text-muted-foreground">
-                            {t('permissions.description')}
-                        </p>
-                    </div>
-                    {can('canCreate') && (
-                        <Button asChild className="gap-2 shadow-sm">
-                            <Link href={permissionsCreate.url()}>
-                                <Plus className="h-4 w-4" />
-                                {t('permissions.create')}
-                            </Link>
-                        </Button>
-                    )}
-                </div>
-
-                <Card className="border border-none shadow-sm">
-                    <CardHeader className="mb-4 border-b pb-4">
-                        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                            <CardTitle className="text-lg font-semibold">
-                                {t('permissions.list')}
-                            </CardTitle>
-
-                            <div className="flex w-full items-center gap-2 md:w-auto">
-                                <div className="relative flex-1 md:w-72">
-                                    <Search
-                                        className={cn(
-                                            'absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground',
-                                            isRTL ? 'right-3' : 'left-3',
-                                        )}
-                                    />
-                                    <Input
-                                        placeholder={t('common.search')}
-                                        value={searchQuery}
-                                        onChange={handleSearchChange}
-                                        className={cn(
-                                            'bg-muted/50',
-                                            isRTL ? 'pr-9' : 'pl-9',
-                                        )}
-                                    />
-                                </div>
-                                {searchQuery && (
-                                    <Button
-                                        variant="ghost"
-                                        onClick={resetSearch}
-                                        size="icon"
-                                    >
-                                        <RotateCcw className="h-4 w-4" />
-                                    </Button>
-                                )}
+                <div
+                    className="space-y-6 p-6"
+                    dir={isRTL ? 'rtl' : 'ltr'}
+                >
+                    {/* Header Section - Unified Design */}
+                    <div className="flex flex-col gap-4 rounded-xl border bg-card p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="rounded-lg bg-primary/10 p-3 text-primary">
+                                <Key className="h-8 w-8" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-bold tracking-tight">
+                                    {t('permissions.title')}
+                                </h1>
+                                <p className="text-sm text-muted-foreground">
+                                    {t('permissions.description')}
+                                </p>
                             </div>
                         </div>
-                    </CardHeader>
+                        <div className="flex items-center gap-2">
+                            {can('canCreate') && (
+                                <Button
+                                    asChild
+                                    className="transition-all hover:scale-105"
+                                >
+                                    <Link href={permissionsCreate.url()}>
+                                        <Plus
+                                            className={cn(
+                                                'h-4 w-4',
+                                                isRTL ? 'ml-2' : 'mr-2',
+                                            )}
+                                        />
+                                        {t('permissions.create')}
+                                    </Link>
+                                </Button>
+                            )}
+                        </div>
+                    </div>
 
-                    <CardContent>
-                        <div className="overflow-hidden rounded-lg border">
-                            <Table>
-                                <TableHeader className="bg-muted/50">
+                    {/* Toolbar */}
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                        <div className="flex min-w-[300px] flex-1 items-center gap-2">
+                            {/* Search */}
+                            <div className="relative w-full max-w-sm">
+                                <Search
+                                    className={cn(
+                                        'absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground',
+                                        isRTL ? 'right-3' : 'left-3',
+                                    )}
+                                />
+                                <Input
+                                    placeholder={t('common.search')}
+                                    value={searchQuery}
+                                    onChange={handleSearchChange}
+                                    className={cn(
+                                        'transition-all focus:ring-2 focus:ring-primary/20',
+                                        isRTL ? 'pr-10' : 'pl-10',
+                                    )}
+                                />
+                            </div>
+
+                            {/* Clear Filters */}
+                            {searchQuery && (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={resetSearch}
+                                            className="text-muted-foreground"
+                                        >
+                                            <FilterX className="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{t('common.reset')}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Data Table */}
+                    <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+                        <Table>
+                            <TableHeader className="bg-muted/50">
+                                <TableRow>
+                                    <TableHead
+                                        className={cn(
+                                            'py-4',
+                                            isRTL ? 'text-right' : 'text-left',
+                                        )}
+                                    >
+                                        #
+                                    </TableHead>
+                                    <TableHead
+                                        className={cn(
+                                            'py-4',
+                                            isRTL ? 'text-right' : 'text-left',
+                                        )}
+                                    >
+                                        {t('permissions.name')}
+                                    </TableHead>
+                                    <TableHead
+                                        className={cn(
+                                            'py-4',
+                                            isRTL ? 'text-right' : 'text-left',
+                                        )}
+                                    >
+                                        {t('permissions.guard_name')}
+                                    </TableHead>
+                                    <TableHead
+                                        className={cn(
+                                            'py-4',
+                                            isRTL ? 'text-right' : 'text-left',
+                                        )}
+                                    >
+                                        {t('common.created_at')}
+                                    </TableHead>
+                                    <TableHead className="w-[80px]"></TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {permissions.data.length === 0 ? (
                                     <TableRow>
-                                        <TableHead
-                                            className={
-                                                isRTL
-                                                    ? 'text-right'
-                                                    : 'text-left'
-                                            }
+                                        <TableCell
+                                            colSpan={5}
+                                            className="h-64 text-center"
                                         >
-                                            {t('permissions.name')}
-                                        </TableHead>
-                                        <TableHead
-                                            className={
-                                                isRTL
-                                                    ? 'text-right'
-                                                    : 'text-left'
-                                            }
-                                        >
-                                            {t('permissions.guard_name')}
-                                        </TableHead>
-                                        <TableHead
-                                            className={
-                                                isRTL
-                                                    ? 'text-right'
-                                                    : 'text-left'
-                                            }
-                                        >
-                                            {t('common.created_at')}
-                                        </TableHead>
-                                        <TableHead className="w-[80px] text-center">
-                                            {t('common.actions')}
-                                        </TableHead>
+                                            <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                                                <Key className="h-12 w-12 opacity-10" />
+                                                <p className="text-lg font-medium">
+                                                    {t('no_results')}
+                                                </p>
+                                                <p className="text-sm">
+                                                    {t('common.no_data')}
+                                                </p>
+                                            </div>
+                                        </TableCell>
                                     </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {permissions.data.length === 0 ? (
-                                        <TableRow>
-                                            <TableCell
-                                                colSpan={4}
-                                                className="h-32 text-center text-muted-foreground"
-                                            >
-                                                {t('common.no_data')}
+                                ) : (
+                                    permissions.data.map((permission) => (
+                                        <TableRow
+                                            key={permission.id}
+                                            className="group transition-colors hover:bg-muted/30"
+                                        >
+                                            <TableCell>
+                                                <span className="font-mono text-xs text-muted-foreground">
+                                                    {permission.id}
+                                                </span>
                                             </TableCell>
-                                        </TableRow>
-                                    ) : (
-                                        permissions.data.map((permission) => (
-                                            <TableRow
-                                                key={permission.id}
-                                                className="transition-colors hover:bg-muted/30"
-                                            >
-                                                <TableCell className="font-mono text-sm font-medium">
-                                                    {permission.name}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge
-                                                        variant="outline"
-                                                        className="text-[10px] font-normal uppercase"
+                                            <TableCell className="font-mono text-sm font-medium">
+                                                {permission.name}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge
+                                                    variant="outline"
+                                                    className="text-[10px] font-normal uppercase"
+                                                >
+                                                    {permission.guard_name}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="text-sm text-muted-foreground">
+                                                {new Date(
+                                                    permission.created_at,
+                                                ).toLocaleDateString(
+                                                    isRTL ? 'ar-EG' : 'en-US',
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger
+                                                        asChild
                                                     >
-                                                        {permission.guard_name}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="text-sm text-muted-foreground">
-                                                    {new Date(
-                                                        permission.created_at,
-                                                    ).toLocaleDateString(
-                                                        isRTL
-                                                            ? 'ar-EG'
-                                                            : 'en-US',
-                                                    )}
-                                                </TableCell>
-                                                <TableCell className="text-center">
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger
-                                                            asChild
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8"
                                                         >
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-8 w-8"
-                                                            >
-                                                                <MoreHorizontal className="h-4 w-4" />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent
-                                                            align={
-                                                                isRTL
-                                                                    ? 'start'
-                                                                    : 'end'
-                                                            }
-                                                            className="w-40"
-                                                        >
-                                                            {can(
-                                                                'canViewDetails',
-                                                            ) && (
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent
+                                                        align={
+                                                            isRTL
+                                                                ? 'start'
+                                                                : 'end'
+                                                        }
+                                                        className="w-44"
+                                                    >
+                                                        <DropdownMenuLabel>
+                                                            {t('common.actions')}
+                                                        </DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        {can(
+                                                            'canViewDetails',
+                                                        ) && (
                                                                 <DropdownMenuItem
                                                                     asChild
                                                                 >
@@ -311,193 +357,219 @@ export default function Index({
                                                                         href={
                                                                             permissionsShow(
                                                                                 permission.id,
-                                                                            )
-                                                                                .url
+                                                                            ).url
                                                                         }
-                                                                        className="flex items-center"
+                                                                        className="flex cursor-pointer items-center"
                                                                     >
-                                                                        <Eye className="mr-2 h-4 w-4" />{' '}
+                                                                        <Eye
+                                                                            className={cn(
+                                                                                'h-4 w-4 text-muted-foreground',
+                                                                                isRTL
+                                                                                    ? 'ml-2'
+                                                                                    : 'mr-2',
+                                                                            )}
+                                                                        />
                                                                         {t(
                                                                             'common.view',
                                                                         )}
                                                                     </Link>
                                                                 </DropdownMenuItem>
                                                             )}
-                                                            {can(
-                                                                'canUpdate',
-                                                            ) && (
-                                                                <DropdownMenuItem
-                                                                    asChild
+                                                        {can('canUpdate') && (
+                                                            <DropdownMenuItem
+                                                                asChild
+                                                            >
+                                                                <Link
+                                                                    href={
+                                                                        permissionsEdit(
+                                                                            permission.id,
+                                                                        ).url
+                                                                    }
+                                                                    className="flex cursor-pointer items-center"
                                                                 >
-                                                                    <Link
-                                                                        href={
-                                                                            permissionsEdit(
-                                                                                permission.id,
-                                                                            )
-                                                                                .url
-                                                                        }
-                                                                        className="flex items-center"
-                                                                    >
-                                                                        <SquarePen className="mr-2 h-4 w-4" />{' '}
-                                                                        {t(
-                                                                            'common.edit',
+                                                                    <Edit
+                                                                        className={cn(
+                                                                            'h-4 w-4 text-muted-foreground',
+                                                                            isRTL
+                                                                                ? 'ml-2'
+                                                                                : 'mr-2',
                                                                         )}
-                                                                    </Link>
+                                                                    />
+                                                                    {t(
+                                                                        'common.edit',
+                                                                    )}
+                                                                </Link>
+                                                            </DropdownMenuItem>
+                                                        )}
+                                                        {can('canDelete') && (
+                                                            <>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem
+                                                                    onClick={() => {
+                                                                        setPermissionToDelete(
+                                                                            permission,
+                                                                        );
+                                                                        setDeleteDialogOpen(
+                                                                            true,
+                                                                        );
+                                                                    }}
+                                                                    className="cursor-pointer text-destructive focus:text-destructive"
+                                                                >
+                                                                    <Trash2
+                                                                        className={cn(
+                                                                            'h-4 w-4',
+                                                                            isRTL
+                                                                                ? 'ml-2'
+                                                                                : 'mr-2',
+                                                                        )}
+                                                                    />
+                                                                    {t(
+                                                                        'common.delete',
+                                                                    )}
                                                                 </DropdownMenuItem>
-                                                            )}
-                                                            {can(
-                                                                'canDelete',
-                                                            ) && (
-                                                                <>
-                                                                    <div className="my-1 h-px bg-muted" />
-                                                                    <DropdownMenuItem
-                                                                        onClick={() => {
-                                                                            setPermissionToDelete(
-                                                                                permission,
-                                                                            );
-                                                                            setDeleteDialogOpen(
-                                                                                true,
-                                                                            );
-                                                                        }}
-                                                                        className="text-red-600 focus:bg-red-50 focus:text-red-600"
-                                                                    >
-                                                                        <Trash2 className="mr-2 h-4 w-4" />{' '}
-                                                                        {t(
-                                                                            'common.delete',
-                                                                        )}
-                                                                    </DropdownMenuItem>
-                                                                </>
-                                                            )}
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
+                                                            </>
+                                                        )}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
 
-                        {/* Professional Pagination Section */}
-                        {permissions.last_page > 1 && (
-                            <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t pt-4 sm:flex-row">
-                                <p className="text-xs text-muted-foreground">
-                                    {t('common.showing')}{' '}
-                                    <span className="font-bold text-foreground">
-                                        {permissions.from}
-                                    </span>{' '}
-                                    {t('common.to')}{' '}
-                                    <span className="font-bold text-foreground">
-                                        {permissions.to}
-                                    </span>{' '}
-                                    {t('common.of')}{' '}
-                                    <span className="font-bold text-foreground">
-                                        {permissions.total}
-                                    </span>
-                                </p>
-                                <div className="flex items-center gap-1">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={
-                                            permissions.current_page === 1
-                                        }
-                                        onClick={() =>
-                                            router.get(
-                                                permissionsIndex.url(),
-                                                {
-                                                    search: searchQuery,
-                                                    page:
-                                                        permissions.current_page -
-                                                        1,
-                                                },
-                                                { preserveState: true },
-                                            )
-                                        }
-                                    >
-                                        {isRTL ? (
-                                            <ChevronRight className="h-4 w-4" />
-                                        ) : (
-                                            <ChevronLeft className="h-4 w-4" />
-                                        )}
-                                    </Button>
-                                    <div className="rounded-md border bg-primary/5 px-4 py-1.5 text-xs font-medium">
-                                        {t('common.page')}{' '}
-                                        {permissions.current_page} /{' '}
-                                        {permissions.last_page}
-                                    </div>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        disabled={
-                                            permissions.current_page ===
-                                            permissions.last_page
-                                        }
-                                        onClick={() =>
-                                            router.get(
-                                                permissionsIndex.url(),
-                                                {
-                                                    search: searchQuery,
-                                                    page:
-                                                        permissions.current_page +
-                                                        1,
-                                                },
-                                                { preserveState: true },
-                                            )
-                                        }
-                                    >
-                                        {isRTL ? (
-                                            <ChevronLeft className="h-4 w-4" />
-                                        ) : (
-                                            <ChevronRight className="h-4 w-4" />
-                                        )}
-                                    </Button>
-                                </div>
+                    {/* Pagination */}
+                    {permissions.last_page > 1 && (
+                        <div className="flex flex-col items-center justify-between gap-4 border-t pt-4 sm:flex-row">
+                            <div className="order-2 text-sm text-muted-foreground sm:order-1">
+                                {t('showing')}{' '}
+                                <span className="font-bold text-foreground">
+                                    {permissions.from}
+                                </span>{' '}
+                                {t('to')}{' '}
+                                <span className="font-bold text-foreground">
+                                    {permissions.to}
+                                </span>{' '}
+                                {t('of')}{' '}
+                                <span className="font-bold text-foreground">
+                                    {permissions.total}
+                                </span>{' '}
+                                {t('records')}
                             </div>
-                        )}
-                    </CardContent>
-                </Card>
+                            <div className="order-1 flex items-center gap-2 sm:order-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                        router.get(
+                                            permissionsIndex.url(),
+                                            {
+                                                search: searchQuery,
+                                                page:
+                                                    permissions.current_page -
+                                                    1,
+                                            },
+                                            { preserveState: true },
+                                        )
+                                    }
+                                    disabled={permissions.current_page === 1}
+                                >
+                                    {isRTL ? (
+                                        <ChevronRight className="ml-2 h-4 w-4" />
+                                    ) : (
+                                        <ChevronLeft className="mr-2 h-4 w-4" />
+                                    )}
+                                    {t('previous')}
+                                </Button>
 
-                {/* Delete Confirmation Dialog */}
-                <AlertDialog
-                    open={deleteDialogOpen}
-                    onOpenChange={setDeleteDialogOpen}
-                >
-                    <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>
-                                {t('common.confirm_delete')}
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                                {t('permissions.confirm_delete', {
-                                    name: permissionToDelete?.name,
-                                })}
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter
-                            className={cn(
-                                'gap-2',
-                                isRTL && 'sm:flex-row-reverse',
-                            )}
-                        >
-                            <AlertDialogCancel
-                                onClick={() => setDeleteDialogOpen(false)}
-                            >
-                                {t('common.cancel')}
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                                onClick={() =>
-                                    permissionToDelete &&
-                                    handleDelete(permissionToDelete)
-                                }
-                                className="border-none bg-red-600 text-white hover:bg-red-700"
-                            >
-                                {t('common.delete')}
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            </div>
-        </AppLayout>
+                                <div className="mx-2 flex items-center gap-1">
+                                    <Badge
+                                        variant="outline"
+                                        className="h-8 min-w-[32px] justify-center"
+                                    >
+                                        {permissions.current_page}
+                                    </Badge>
+                                    <span className="text-muted-foreground">
+                                        /
+                                    </span>
+                                    <span className="text-sm font-medium">
+                                        {permissions.last_page}
+                                    </span>
+                                </div>
+
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                        router.get(
+                                            permissionsIndex.url(),
+                                            {
+                                                search: searchQuery,
+                                                page:
+                                                    permissions.current_page +
+                                                    1,
+                                            },
+                                            { preserveState: true },
+                                        )
+                                    }
+                                    disabled={
+                                        permissions.current_page ===
+                                        permissions.last_page
+                                    }
+                                >
+                                    {t('next')}
+                                    {isRTL ? (
+                                        <ChevronLeft className="mr-2 h-4 w-4" />
+                                    ) : (
+                                        <ChevronRight className="ml-2 h-4 w-4" />
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Delete Confirmation Dialog */}
+                    <AlertDialog
+                        open={deleteDialogOpen}
+                        onOpenChange={setDeleteDialogOpen}
+                    >
+                        <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+                                    <AlertTriangle className="h-5 w-5" />
+                                    {t('common.confirm_delete')}
+                                </AlertDialogTitle>
+                                <AlertDialogDescription
+                                    className={cn(
+                                        isRTL ? 'text-right' : 'text-left',
+                                    )}
+                                >
+                                    {t('permissions.confirm_delete', {
+                                        name: permissionToDelete?.name,
+                                    })}
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter className="flex-row gap-2 sm:justify-end">
+                                <AlertDialogCancel
+                                    onClick={() => setDeleteDialogOpen(false)}
+                                >
+                                    {t('common.cancel')}
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={() =>
+                                        permissionToDelete &&
+                                        handleDelete(permissionToDelete)
+                                    }
+                                    className="bg-destructive text-white hover:bg-destructive/90"
+                                >
+                                    {t('common.delete')}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
+            </AppLayout>
+        </TooltipProvider>
     );
 }

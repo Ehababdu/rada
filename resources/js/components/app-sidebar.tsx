@@ -9,6 +9,8 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarRail,
+    SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { isUserSuperAdmin } from '@/lib/permissions';
 import { dashboard } from '@/routes';
@@ -36,6 +38,7 @@ import {
     GraduationCap,
     LayoutGrid,
     Lock,
+    Settings,
     Shield,
     UserCheck,
     Users,
@@ -43,6 +46,7 @@ import {
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import AppLogo from './app-logo';
+import { SearchCommand } from './search-command';
 
 const footerNavItems: NavItem[] = [
     //
@@ -61,6 +65,7 @@ export const AppSidebar = memo(function AppSidebar() {
     const navGroups = [
         {
             title: t('navigation.martyrs_management'),
+            icon: Users,
             items: [
                 {
                     title: t('navigation.martyrs'),
@@ -84,6 +89,7 @@ export const AppSidebar = memo(function AppSidebar() {
         },
         {
             title: t('navigation.employer'),
+            icon: Building,
             items: [
                 {
                     title: t('navigation.employers'),
@@ -109,6 +115,7 @@ export const AppSidebar = memo(function AppSidebar() {
         },
         {
             title: t('navigation.military_ranks'),
+            icon: Shield,
             items: [
                 {
                     title: t('navigation.military_ranks'),
@@ -126,9 +133,10 @@ export const AppSidebar = memo(function AppSidebar() {
         },
         {
             title: t('navigation.system_management'),
+            icon: Settings,
             items: [
                 {
-                    title: 'أنواع المرفقات',
+                    title: t('navigation.attachment_types') || 'أنواع المرفقات',
                     href:
                         attachmentTypesIndex.definition?.url ?? attachmentTypesIndex(),
                     icon: FileText,
@@ -201,7 +209,7 @@ export const AppSidebar = memo(function AppSidebar() {
 
     return (
         <Sidebar collapsible="icon" variant="inset" side={sidebarSide}>
-            <SidebarHeader>
+            <SidebarHeader className="border-b border-sidebar-border/50 pb-2">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
@@ -211,16 +219,23 @@ export const AppSidebar = memo(function AppSidebar() {
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
+                <div className="px-2 pb-2">
+                    <SearchCommand />
+                </div>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent className="scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/40">
                 <NavMain groups={filteredNavGroups} items={filteredStandaloneItems} />
             </SidebarContent>
 
-            <SidebarFooter>
+            <SidebarSeparator className="mx-3" />
+
+            <SidebarFooter className="border-t border-sidebar-border/50 pt-2">
                 <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
+
+            <SidebarRail />
         </Sidebar>
     );
 });

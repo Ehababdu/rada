@@ -1,6 +1,4 @@
-import { Button } from '@/components/ui/button';
 import {
-    Command,
     CommandDialog,
     CommandEmpty,
     CommandGroup,
@@ -8,88 +6,131 @@ import {
     CommandItem,
     CommandList,
 } from '@/components/ui/command';
-import { useToast } from '@/hooks/use-toast';
+import { usePermissions } from '@/hooks/use-permissions';
+import { dashboard } from '@/routes';
+import { index as attachmentTypesIndex } from '@/routes/attachment-types';
+import { index as banksIndex } from '@/routes/banks';
+import { index as compensationsIndex } from '@/routes/compensations';
+import { index as employersIndex } from '@/routes/employers';
+import { index as employmentStatusesIndex } from '@/routes/employment-statuses';
+import { index as jobGradesIndex } from '@/routes/job-grades';
+import { index as martyrsIndex } from '@/routes/martyrs';
+import { index as militaryRanksIndex } from '@/routes/military-ranks';
+import { index as permissionsIndex } from '@/routes/permissions';
+import { index as promotionsIndex } from '@/routes/promotions';
+import { index as rolesIndex } from '@/routes/roles';
+import { index as usersIndex } from '@/routes/users';
 import { router } from '@inertiajs/react';
-import { Search, User } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+    Award,
+    Briefcase,
+    Building,
+    Building2,
+    DollarSign,
+    FileText,
+    GraduationCap,
+    LayoutGrid,
+    Lock,
+    Search,
+    Settings,
+    Shield,
+    UserCheck,
+    Users,
+} from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface GlobalSearchProps {
-    className?: string;
-}
-
-export function GlobalSearch({ className }: GlobalSearchProps) {
+export function GlobalSearch() {
     const { t } = useTranslation();
-    const { toast } = useToast();
     const [open, setOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [instantSearchResults, setInstantSearchResults] = useState<Array<{
-        id: number;
-        full_name: string;
-        national_id: string;
-        military_number: string | null;
-        decision_number: string | null;
-    }>>([]);
-    const [isSearching, setIsSearching] = useState(false);
+    const { can } = usePermissions('martyrs'); // Generic permission check helper
 
-    const abortControllerRef = useRef<AbortController | null>(null);
-    const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    // Define all searchable system pages
+    const pages = useMemo(
+        () => [
+            {
+                title: t('dashboard'),
+                href: dashboard(),
+                icon: LayoutGrid,
+                group: t('navigation.system_management'),
+            },
+            {
+                title: t('navigation.martyrs'),
+                href: martyrsIndex(),
+                icon: Users,
+                group: t('navigation.martyrs_management'),
+            },
+            {
+                title: t('navigation.promotions'),
+                href: promotionsIndex(),
+                icon: Award,
+                group: t('navigation.martyrs_management'),
+            },
+            {
+                title: t('navigation.compensations'),
+                href: compensationsIndex(),
+                icon: DollarSign,
+                group: t('navigation.martyrs_management'),
+            },
+            {
+                title: t('navigation.employers'),
+                href: employersIndex(),
+                icon: Building,
+                group: t('navigation.employer'),
+            },
+            {
+                title: t('navigation.employment_statuses'),
+                href: employmentStatusesIndex(),
+                icon: Briefcase,
+                group: t('navigation.employer'),
+            },
+            {
+                title: t('navigation.job_grades'),
+                href: jobGradesIndex(),
+                icon: GraduationCap,
+                group: t('navigation.employer'),
+            },
+            {
+                title: t('navigation.military_ranks'),
+                href: militaryRanksIndex(),
+                icon: Shield,
+                group: t('navigation.military_ranks'),
+            },
+            {
+                title: t('navigation.banks'),
+                href: banksIndex(),
+                icon: Building2,
+                group: t('navigation.military_ranks'),
+            },
+            {
+                title: t('navigation.attachment_types'),
+                href: attachmentTypesIndex(),
+                icon: FileText,
+                group: t('navigation.system_management'),
+            },
+            {
+                title: t('navigation.users'),
+                href: usersIndex(),
+                icon: UserCheck,
+                group: t('navigation.system_management'),
+            },
+            {
+                title: t('navigation.permissions'),
+                href: permissionsIndex(),
+                icon: Lock,
+                group: t('navigation.system_management'),
+            },
+            {
+                title: t('navigation.roles'),
+                href: rolesIndex.url(),
+                icon: Shield,
+                group: t('navigation.system_management'),
+            },
+        ],
+        [t],
+    );
 
-    // Instant search function
-    const performInstantSearch = useCallback(async (query: string) => {
-        if (query.trim() === '') {
-            setInstantSearchResults([]);
-            return;
-        }
-
-        // Cancel previous request
-        if (abortControllerRef.current) {
-            abortControllerRef.current.abort();
-        }
-
-        // Create new abort controller
-        abortControllerRef.current = new AbortController();
-
-        setIsSearching(true);
-        try {
-            const response = await fetch(`/api/martyrs/search?q=${encodeURIComponent(query)}`, {
-                signal: abortControllerRef.current.signal,
-            });
-
-            if (!response.ok) {
-                if (response.status === 429) {
-                    // Rate limited - don't show error toast for this
-                    setInstantSearchResults([]);
-                    return;
-                }
-                throw new Error('Search failed');
-            }
-
-            const results = await response.json();
-            setInstantSearchResults(results);
-        } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                // Request was cancelled, ignore
-                return;
-            }
-
-            console.error('Search failed:', error);
-            setInstantSearchResults([]);
-
-            // Only show toast for non-rate-limit errors
-            if (!(error instanceof Response) || error.status !== 429) {
-                toast({
-                    title: t('search.error_title', 'خطأ في البحث'),
-                    description: t('search.error_description', 'حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى.'),
-                    variant: 'destructive',
-                });
-            }
-        } finally {
-            setIsSearching(false);
-        }
-    }, [toast, t]);
-
-    // Keyboard shortcut for global search
+    // Keyboard shortcut to open search
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
             if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -101,107 +142,62 @@ export function GlobalSearch({ className }: GlobalSearchProps) {
         return () => document.removeEventListener('keydown', down);
     }, []);
 
-    // Debounced search with longer delay
-    useEffect(() => {
-        // Clear previous timeout
-        if (debounceTimeoutRef.current) {
-            clearTimeout(debounceTimeoutRef.current);
-        }
-
-        // Only search if query is at least 2 characters
-        if (searchTerm.length < 2) {
-            setInstantSearchResults([]);
-            setIsSearching(false);
-            return;
-        }
-
-        debounceTimeoutRef.current = setTimeout(() => {
-            performInstantSearch(searchTerm);
-        }, 300); // Increased delay
-
-        return () => {
-            if (debounceTimeoutRef.current) {
-                clearTimeout(debounceTimeoutRef.current);
-            }
-        };
-    }, [searchTerm]);
-
-    // Cleanup on unmount
-    useEffect(() => {
-        return () => {
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-            if (debounceTimeoutRef.current) {
-                clearTimeout(debounceTimeoutRef.current);
-            }
-        };
-    }, []);
+    const runCommand = (command: () => void) => {
+        setOpen(false);
+        command();
+    };
 
     return (
         <>
-            <Button
-                variant="outline"
-                className={`relative h-8 w-full justify-start rounded-[0.5rem] bg-background text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64 ${className}`}
+            <button
                 onClick={() => setOpen(true)}
+                className="relative inline-flex h-9 w-full items-center justify-start whitespace-nowrap rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 sm:pr-12 md:w-32 lg:w-48"
             >
-                <Search className="mr-2 h-4 w-4" />
-                {t('search.placeholder', 'البحث في الشهداء...')}
-                <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                <span className="hidden lg:inline-flex">
+                    {t('search.placeholder', 'البحث...')}
+                </span>
+                <span className="inline-flex lg:hidden">
+                    {t('search.short_placeholder', 'بحث...')}
+                </span>
+                <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
                     <span className="text-xs">⌘</span>K
                 </kbd>
-            </Button>
-
+            </button>
             <CommandDialog open={open} onOpenChange={setOpen}>
                 <CommandInput
-                    placeholder={t('search.input_placeholder', 'ابحث عن شهيد...')}
-                    value={searchTerm}
-                    onValueChange={setSearchTerm}
+                    placeholder={t('search.input_placeholder', 'اكتب للبحث في الصفحات...')}
                 />
                 <CommandList>
                     <CommandEmpty>
-                        {isSearching ? (
-                            <div className="flex items-center justify-center py-6">
-                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                                <span className="ml-2">{t('search.searching', 'جاري البحث...')}</span>
-                            </div>
-                        ) : searchTerm.length < 2 ? (
-                            t('search.type_more', 'اكتب حرفين على الأقل...')
-                        ) : (
-                            t('search.no_results', 'لا توجد نتائج.')
-                        )}
+                        {t('search.no_results', 'لا توجد نتائج.')}
                     </CommandEmpty>
-                    {instantSearchResults.length > 0 && (
-                        <CommandGroup heading={t('martyrs.title', 'الشهداء')}>
-                            {instantSearchResults.map((martyr) => (
+                    {/* Group by category */}
+                    {Object.entries(
+                        pages.reduce((acc, page) => {
+                            if (!acc[page.group]) acc[page.group] = [];
+                            acc[page.group].push(page);
+                            return acc;
+                        }, {} as Record<string, typeof pages>),
+                    ).map(([group, groupPages]) => (
+                        <CommandGroup key={group} heading={group}>
+                            {groupPages.map((page) => (
                                 <CommandItem
-                                    key={martyr.id}
-                                    value={martyr.full_name}
+                                    key={page.href}
+                                    value={page.title}
                                     onSelect={() => {
-                                        router.visit(`/martyrs/${martyr.id}`);
-                                        setOpen(false);
-                                        setSearchTerm('');
-                                        setInstantSearchResults([]);
+                                        runCommand(() => router.visit(page.href));
                                     }}
-                                    className="flex items-center space-x-2"
+                                    className="gap-2"
                                 >
-                                    <User className="h-4 w-4 flex-shrink-0" />
-                                    <div className="flex flex-col min-w-0 flex-1">
-                                        <span className="font-medium truncate">{martyr.full_name}</span>
-                                        <div className="flex gap-4 text-sm text-muted-foreground">
-                                            <span>{t('martyrs.national_id')}: {martyr.national_id}</span>
-                                            {martyr.military_number && (
-                                                <span>{t('martyrs.military_number')}: {martyr.military_number}</span>
-                                            )}
-                                            {martyr.decision_number && (
-                                                <span>{t('martyrs.decision_number')}: {martyr.decision_number}</span>
-                                            )}
-                                        </div>
-                                    </div>
+                                    {page.icon && (
+                                        <page.icon className="h-4 w-4 shrink-0 opacity-50" />
+                                    )}
+                                    <span>{page.title}</span>
                                 </CommandItem>
                             ))}
                         </CommandGroup>
-                    )}
+                    ))}
                 </CommandList>
             </CommandDialog>
         </>

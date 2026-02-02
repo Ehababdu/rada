@@ -1,5 +1,18 @@
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
+import { Config, RouteParam } from 'ziggy-js';
+
+declare global {
+    function route(): {
+        current(name?: string, params?: RouteParam, config?: Config): boolean;
+    };
+    function route(
+        name: string,
+        params?: RouteParam,
+        absolute?: boolean,
+        config?: Config,
+    ): string;
+}
 
 export interface Auth {
     user: User;

@@ -9,20 +9,15 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
 import { usePermissions } from '@/hooks/use-permissions';
 import AppLayout from '@/layouts/app-layout';
+import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
+import { Paperclip, Plus } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -60,7 +55,8 @@ export default function Index({
     attachmentStats,
     filters,
 }: Props) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const isRTL = i18n.language === 'ar';
     const { can } = usePermissions('attachments');
     const canCreate = can('canCreate');
     const canDelete = can('canDelete');
@@ -150,25 +146,39 @@ export default function Index({
                 title={`${t('attachments.attachments')} - ${martyr.full_name}`}
             />
 
-            <div className="relative min-h-screen space-y-6 p-4 pt-6 md:p-8">
-                <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                    <div>
-                        <h2 className="text-3xl font-bold tracking-tight">
-                            {t('attachments.attachments')}
-                        </h2>
-                        <p className="text-muted-foreground">
-                            {t('attachments.attachments_for')}{' '}
-                            <span className="font-semibold text-foreground">
-                                {martyr.full_name}
-                            </span>
-                        </p>
+            <div
+                className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 p-6"
+                dir={isRTL ? 'rtl' : 'ltr'}
+            >
+                {/* Header Section */}
+                <div className="flex flex-col justify-between gap-4 rounded-xl border bg-card p-6 shadow-sm md:flex-row md:items-center">
+                    <div className="flex items-center gap-4">
+                        <div className="rounded-lg bg-primary/10 p-3 text-primary">
+                            <Paperclip className="h-8 w-8" />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                {t('attachments.attachments')}
+                            </h1>
+                            <p className="text-sm text-muted-foreground">
+                                {t('attachments.attachments_for')}{' '}
+                                <span className="font-semibold text-foreground">
+                                    {martyr.full_name}
+                                </span>
+                            </p>
+                        </div>
                     </div>
                     {canCreate && (
-                        <Button asChild className="shrink-0">
+                        <Button asChild className="shrink-0 shadow-sm">
                             <Link
                                 href={`/martyrs/${martyr.id}/attachments/create`}
                             >
-                                <Plus className="mr-2 h-4 w-4" />
+                                <Plus
+                                    className={cn(
+                                        'h-4 w-4',
+                                        isRTL ? 'ml-2' : 'mr-2',
+                                    )}
+                                />
                                 {t('attachments.add_attachment') ||
                                     'إضافة مرفق'}
                             </Link>
@@ -184,18 +194,9 @@ export default function Index({
                     canCreate={canCreate}
                 />
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>
-                            {t('attachments.attachments_list') ||
-                                'قائمة المرفقات'}
-                        </CardTitle>
-                        <CardDescription>
-                            {t('attachments.total_attachments')}:{' '}
-                            {attachments.total}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
+                {/* Data Table Section */}
+                <Card className="overflow-hidden border-none shadow-sm">
+                    <CardContent className="p-0">
                         <DataTable
                             columns={columns}
                             data={attachments.data}
@@ -263,7 +264,7 @@ export default function Index({
             </div>
 
             <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
                             {t('attachments.delete_attachment') || 'حذف المرفق'}
@@ -273,7 +274,9 @@ export default function Index({
                                 'هل أنت متأكد من حذف هذا المرفق؟ لا يمكن التراجع عن هذا الإجراء.'}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
+                    <AlertDialogFooter
+                        className={cn('gap-2', isRTL && 'sm:flex-row-reverse')}
+                    >
                         <AlertDialogCancel>
                             {t('common.cancel') || 'إلغاء'}
                         </AlertDialogCancel>

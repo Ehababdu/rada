@@ -20,14 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-    Command,
-    CommandDialog,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from '@/components/ui/command';
+
 import { DataTable } from '@/components/ui/data-table';
 import {
     Dialog,
@@ -136,9 +129,9 @@ interface Martyr {
     // Relations
     military_rank?: { id: number; name_ar: string; name_en: string } | null;
     job_grade?:
-        | { id: number; name_ar: string; name_en?: string }
-        | string
-        | null;
+    | { id: number; name_ar: string; name_en?: string }
+    | string
+    | null;
     bank?: { id: number; name_ar: string } | null;
     branch?: { id: number; name_ar: string } | null;
     employment_status?: {
@@ -265,46 +258,11 @@ export default function Index({
     const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
     const [filteredBranches, setFilteredBranches] = useState(branches);
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
-    const [isCommandOpen, setIsCommandOpen] = useState(false);
-    const [instantSearchResults, setInstantSearchResults] = useState<Array<{id: number, full_name: string, national_id: string}>>([]);
-    const [isSearching, setIsSearching] = useState(false);
+
 
     const isUserChange = useRef(false);
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const instantSearchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Instant search function
-    const performInstantSearch = useCallback(async (query: string) => {
-        if (query.trim() === '') {
-            setInstantSearchResults([]);
-            return;
-        }
-
-        setIsSearching(true);
-        try {
-            const response = await fetch(`/api/martyrs/search?q=${encodeURIComponent(query)}`);
-            const results = await response.json();
-            setInstantSearchResults(results);
-        } catch (error) {
-            console.error('Search failed:', error);
-            setInstantSearchResults([]);
-        } finally {
-            setIsSearching(false);
-        }
-    }, []);
-
-    // Keyboard shortcut for global search
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                setIsCommandOpen(true);
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, []);
 
     // Update localFilters when filters prop changes
     useEffect(() => {
@@ -434,12 +392,12 @@ export default function Index({
 
             ...(canViewAttachments
                 ? [
-                      {
-                          key: 'attachments',
-                          label: t('martyrs.attachments'),
-                          required: true,
-                      },
-                  ]
+                    {
+                        key: 'attachments',
+                        label: t('martyrs.attachments'),
+                        required: true,
+                    },
+                ]
                 : []),
             { key: 'actions', label: t('martyrs.actions'), required: true },
         ],
@@ -740,7 +698,7 @@ export default function Index({
                         ? isRTL
                             ? row.original.previous_employer.name_ar
                             : row.original.previous_employer.name_en ||
-                              row.original.previous_employer.name_ar
+                            row.original.previous_employer.name_ar
                         : '-',
             },
             {
@@ -752,7 +710,7 @@ export default function Index({
                         ? isRTL
                             ? row.original.previous_employer_location.name_ar
                             : row.original.previous_employer_location.name_en ||
-                              row.original.previous_employer_location.name_ar
+                            row.original.previous_employer_location.name_ar
                         : '-',
             },
             {
@@ -903,20 +861,20 @@ export default function Index({
             },
             ...(canViewAttachments
                 ? [
-                      {
-                          id: 'attachments',
-                          header: t('martyrs.attachments'),
-                          cell: ({ row }: { row: { original: Martyr } }) => (
-                              <Button variant="link" size="sm" asChild>
-                                  <Link
-                                      href={`/martyrs/${row.original.id}/attachments`}
-                                  >
-                                      {t('martyrs.view_attachments')}
-                                  </Link>
-                              </Button>
-                          ),
-                      },
-                  ]
+                    {
+                        id: 'attachments',
+                        header: t('martyrs.attachments'),
+                        cell: ({ row }: { row: { original: Martyr } }) => (
+                            <Button variant="link" size="sm" asChild>
+                                <Link
+                                    href={`/martyrs/${row.original.id}/attachments`}
+                                >
+                                    {t('martyrs.view_attachments')}
+                                </Link>
+                            </Button>
+                        ),
+                    },
+                ]
                 : []),
             {
                 id: 'actions',
@@ -1817,7 +1775,7 @@ export default function Index({
                                                                 htmlFor={`col-${col.key}`}
                                                                 className={cn(
                                                                     col.required &&
-                                                                        'text-muted-foreground italic',
+                                                                    'text-muted-foreground italic',
                                                                 )}
                                                             >
                                                                 {col.label}{' '}
@@ -1897,7 +1855,7 @@ export default function Index({
                                                                 htmlFor={`col-${col.key}`}
                                                                 className={cn(
                                                                     col.required &&
-                                                                        'text-muted-foreground italic',
+                                                                    'text-muted-foreground italic',
                                                                 )}
                                                             >
                                                                 {col.label}{' '}

@@ -59,6 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('permissions', PermissionController::class);
     Route::resource('roles', RoleController::class);
+    Route::get('api/search', [\App\Http\Controllers\Api\SearchController::class, 'search'])->name('api.search');
 });
 
 Route::get('api/military-ranks', [MilitaryRankController::class, 'apiIndex'])->name('api.military-ranks.index');
