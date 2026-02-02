@@ -42,26 +42,34 @@ class MartyrServiceTest extends TestCase
 
     public function test_get_martyrs_search_matches_related_fields()
     {
+        // Clear the search index to ensure test isolation
+        try {
+            \App\Models\Martyr::query()->unsearchable();
+        } catch (\Exception $e) {
+            // Ignore if clearing fails
+        }
+
         // Create related records
-        $parents = \App\Models\ParentsStatus::create(['name_ar' => 'في الحياة', 'name_en' => 'Alive']);
+        $parents = \App\Models\ParentsStatus::create(['name_ar' => 'على قيد الحياة', 'name_en' => 'Alive']);
         $marital = \App\Models\MaritalStatus::factory()->create();
         $employment = \App\Models\EmploymentStatus::factory()->create();
 
         // Create a martyr linked to parentsStatus with a distinctive string
         $martyr = Martyr::factory()->create([
-            'full_name' => 'أحمد مثال',
+            'full_name' => 'أحمد مثال فريد',
             'parents_status_id' => $parents->id,
             'employment_status_id' => $employment->id,
         ]);
+        $martyr->searchable(); // Make sure it's indexed immediately
 
         $request = new Request;
-        $request->merge(['search' => 'في الحياة']);
+        $request->merge(['search' => 'فريد']);
 
         $service = new MartyrService;
 
         $paginator = $service->getMartyrs($request);
 
         $this->assertEquals(1, $paginator->total());
-        $this->assertEquals('أحمد مثال', $paginator->items()[0]['full_name']);
+        $this->assertEquals('أحمد مثال فريد', $paginator->items()[0]['full_name']);
     }
 }

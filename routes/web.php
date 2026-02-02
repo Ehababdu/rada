@@ -44,6 +44,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('attachment-types', AttachmentTypeController::class);
     Route::resource('promotions', PromotionController::class);
     Route::post('promotions/{promotion}/confirm', [PromotionController::class, 'confirm'])->name('promotions.confirm');
+    Route::get('promotions/export', [PromotionController::class, 'export'])->name('promotions.export');
+    Route::get('promotions/export/latest', [PromotionController::class, 'latestExport'])->name('promotions.export.latest');
     Route::resource('compensations', CompensationController::class);
     Route::resource('employment-statuses', EmploymentStatusController::class);
     Route::resource('banks', BankController::class);

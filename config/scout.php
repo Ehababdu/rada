@@ -141,8 +141,32 @@ return [
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
             'martyrs' => [
-                'filterableAttributes' => ['parents_status', 'marital_status', 'employment_status', 'military_rank', 'bank_name'],
-                'sortableAttributes' => ['full_name', 'death_date'],
+                'filterableAttributes' => [
+                    'parents_status',
+                    'marital_status',
+                    'employment_status',
+                    'military_rank',
+                    'bank_name',
+                    'marital_status_id',
+                    'employment_status_id',
+                    'military_rank_id',
+                    'parents_status_id',
+                    'bank_id',
+                    'branch_id',
+                    'employer_id',
+                    'job_grade_id',
+                    'status'
+                ],
+                'sortableAttributes' => [
+                    'full_name',
+                    'death_date',
+                    'created_at',
+                    'updated_at',
+                    'national_id',
+                    'military_number',
+                    'decision_number',
+                    'children_count'
+                ],
             ],
         ],
     ],

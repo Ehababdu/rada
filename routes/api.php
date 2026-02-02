@@ -39,7 +39,7 @@ Route::get('/attachment-types', function (Request $request) {
     return response()->json($types);
 });
 
-Route::get('/martyrs/search', [MartyrController::class, 'search'])->middleware('throttle:10,1')->name('api.martyrs.search');
+Route::get('/martyrs/search', [MartyrController::class, 'search'])->middleware('throttle:60,1')->name('api.martyrs.search');
 Route::get('/martyrs', [MartyrController::class, 'apiIndex'])->middleware('throttle:20,1')->name('api.martyrs.index');
 
 Route::middleware('auth')->group(function () {

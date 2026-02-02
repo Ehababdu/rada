@@ -383,4 +383,52 @@ class PromotionController extends Controller
         return redirect()->route('promotions.index')
             ->with('success', 'تم حذف الترقية بنجاح');
     }
+
+    public function export(Request $request)
+    {
+        if (!auth()->user()->can('promotions.export')) {
+            abort(403, 'Unauthorized');
+        }
+        $filters = $request->only(['tab', 'search', 'martyr_id']);
+
+        // If client requested a synchronous download (e.g. ?sync=1), return the file directly.
+        if ($request->boolean('sync')) {
+            $fileName = 'promotions_'.now()->format('Y-m-d_H-i-s').'.xlsx';
+            return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\PromotionsExport($filters), $fileName);
+        }
+
+        \App\Jobs\ExportPromotions::dispatch(auth()->user(), $filters);
+
+        return back()->with('success', 'سيتم إرسال إشعار عند جاهزية التقرير.');
+    }
+
+    /**
+     * Redirect to the latest export file if exists.
+     */
+    public function latestExport()
+    {
+        $dir = storage_path('app/public/exports');
+
+        if (!is_dir($dir)) {
+            abort(404, 'No exports directory');
+        }
+
+        $files = array_values(array_filter(scandir($dir), function ($f) use ($dir) {
+            return is_file($dir.DIRECTORY_SEPARATOR.$f) && str_starts_with($f, 'promotions_');
+        }));
+
+        if (empty($files)) {
+            abort(404, 'No export files');
+        }
+
+        usort($files, function ($a, $b) use ($dir) {
+            return filemtime($dir.DIRECTORY_SEPARATOR.$b) <=> filemtime($dir.DIRECTORY_SEPARATOR.$a);
+        });
+
+        $latest = $files[0];
+
+        $publicUrl = url('storage/exports/'.$latest);
+
+        return redirect($publicUrl);
+    }
 }

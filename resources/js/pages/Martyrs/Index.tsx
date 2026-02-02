@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Shadcn UI Components
@@ -19,6 +19,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Command,
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/components/ui/command';
 import { DataTable } from '@/components/ui/data-table';
 import {
     Dialog,
@@ -56,6 +65,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
+import { Spinner } from '@/components/ui/spinner';
 import {
     Tooltip,
     TooltipContent,
@@ -85,6 +95,23 @@ import {
     Trash2,
     User,
 } from 'lucide-react';
+
+const MARITAL_STATUS_SINGLE = 1;
+
+// Helper functions for optimized rendering
+const getLocalizedName = (item: any, isRTL: boolean) => {
+    if (!item) return '-';
+    if (typeof item === 'string') return item;
+    return isRTL ? (item.name_ar ?? item.name_en ?? '-') : (item.name_en ?? item.name_ar ?? '-');
+};
+
+const getBankBranchName = (item: any) => {
+    return item?.name_ar || '-';
+};
+
+const getEmploymentStatusName = (item: any) => {
+    return item?.name || '-';
+};
 
 interface Martyr {
     id: number;
@@ -237,11 +264,57 @@ export default function Index({
     const [isDeleting, setIsDeleting] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
     const [filteredBranches, setFilteredBranches] = useState(branches);
+    const [searchTerm, setSearchTerm] = useState(filters.search || '');
+    const [isCommandOpen, setIsCommandOpen] = useState(false);
+    const [instantSearchResults, setInstantSearchResults] = useState<Array<{id: number, full_name: string, national_id: string}>>([]);
+    const [isSearching, setIsSearching] = useState(false);
+
+    const isUserChange = useRef(false);
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const instantSearchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Instant search function
+    const performInstantSearch = useCallback(async (query: string) => {
+        if (query.trim() === '') {
+            setInstantSearchResults([]);
+            return;
+        }
+
+        setIsSearching(true);
+        try {
+            const response = await fetch(`/api/martyrs/search?q=${encodeURIComponent(query)}`);
+            const results = await response.json();
+            setInstantSearchResults(results);
+        } catch (error) {
+            console.error('Search failed:', error);
+            setInstantSearchResults([]);
+        } finally {
+            setIsSearching(false);
+        }
+    }, []);
+
+    // Keyboard shortcut for global search
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                setIsCommandOpen(true);
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     // Update localFilters when filters prop changes
     useEffect(() => {
         setLocalFilters(prev => ({ ...prev, ...filters }));
     }, [filters]);
+
+    // Update searchTerm when filters.search changes
+    useEffect(() => {
+        setSearchTerm(filters.search || '');
+    }, [filters.search]);
 
     // Columns Configuration
     const availableColumns = useMemo(
@@ -254,7 +327,6 @@ export default function Index({
                 required: true,
             },
             { key: 'address', label: t('martyrs.address'), required: false },
-            { key: 'status', label: t('martyrs.status'), required: false },
             {
                 key: 'children_count',
                 label: t('martyrs.children_count'),
@@ -358,6 +430,7 @@ export default function Index({
                 label: t('martyrs.agent_relationship'),
                 required: false,
             },
+            { key: 'status', label: t('martyrs.status'), required: false },
 
             ...(canViewAttachments
                 ? [
@@ -466,9 +539,31 @@ export default function Index({
     }, [localFilters.bank_id, branches]);
 
     // Filter Logic
+    const triggerSearch = useCallback((search: string) => {
+        const cleaned = cleanFilters({ ...localFilters, search });
+        router.get('/martyrs', cleaned, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    }, [localFilters]);
+
+    const handleSearchChange = (value: string) => {
+        setSearchTerm(value);
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = setTimeout(
+            () => triggerSearch(value),
+            300, // Reduced from 400ms for better responsiveness
+        );
+    };
+
     const handleFilterChange = (key: keyof Filters, value: string) => {
+        if (key === 'search') {
+            handleSearchChange(value);
+            return;
+        }
         const newValue = value === 'all' ? '' : value;
         setLocalFilters((prev) => ({ ...prev, [key]: newValue }));
+        isUserChange.current = true;
     };
 
     const cleanFilters = (f: Filters) => {
@@ -482,17 +577,21 @@ export default function Index({
     };
 
     useEffect(() => {
-        const timeout = setTimeout(() => {
-            router.get('/martyrs', cleanFilters(localFilters), {
-                preserveState: true,
-                preserveScroll: true,
-            });
-        }, 300);
-        return () => clearTimeout(timeout);
+        if (isUserChange.current) {
+            isUserChange.current = false;
+            const cleaned = cleanFilters(localFilters);
+            if (Object.keys(cleaned).length > 0) {
+                router.get('/martyrs', cleaned, {
+                    preserveState: true,
+                    preserveScroll: true,
+                });
+            }
+        }
     }, [localFilters]);
 
     const clearFilters = () => {
         setLocalFilters({});
+        setSearchTerm('');
         router.get(
             '/martyrs',
             {},
@@ -579,51 +678,16 @@ export default function Index({
                     ),
             },
             {
-                id: 'status',
-                accessorKey: 'status',
-                header: t('martyrs.status'),
-                cell: ({ row }: { row: { original: Martyr } }) => {
-                    const status = row.original.status;
-                    const variants: Record<
-                        string,
-                        'default' | 'secondary' | 'destructive' | 'outline'
-                    > = {
-                        active: 'default',
-                        inactive: 'secondary',
-                        pending: 'outline',
-                        complete: 'default',
-                        incomplete: 'destructive',
-                    };
-                    return (
-                        <Badge variant={variants[status] || 'secondary'}>
-                            {t(`martyrs.status.${status}`) || status}
-                        </Badge>
-                    );
-                },
-            },
-            {
                 id: 'military_rank',
                 accessorKey: 'military_rank',
                 header: t('martyrs.military_rank'),
-                cell: ({ row }: { row: { original: Martyr } }) =>
-                    row.original.military_rank
-                        ? isRTL
-                            ? row.original.military_rank.name_ar
-                            : row.original.military_rank.name_en
-                        : '-',
+                cell: ({ row }: { row: { original: Martyr } }) => getLocalizedName(row.original.military_rank, isRTL),
             },
             {
                 id: 'job_grade',
                 accessorKey: 'job_grade',
                 header: t('martyrs.job_grade'),
-                cell: ({ row }: { row: { original: Martyr } }) => {
-                    const j = row.original.job_grade;
-                    if (!j) return '-';
-                    if (typeof j === 'string') return j;
-                    return isRTL
-                        ? (j.name_ar ?? j.name_en)
-                        : (j.name_en ?? j.name_ar);
-                },
+                cell: ({ row }: { row: { original: Martyr } }) => getLocalizedName(row.original.job_grade, isRTL),
             },
             {
                 id: 'children_count',
@@ -635,54 +699,37 @@ export default function Index({
                 id: 'marital_status',
                 accessorKey: 'marital_status',
                 header: t('martyrs.marital_status'),
-                cell: ({ row }: { row: { original: Martyr } }) =>
-                    row.original.marital_status
-                        ? isRTL
-                            ? row.original.marital_status.name_ar
-                            : row.original.marital_status.name_en
-                        : '-',
+                cell: ({ row }: { row: { original: Martyr } }) => getLocalizedName(row.original.marital_status, isRTL),
             },
             {
                 id: 'employment_status',
                 accessorKey: 'employment_status',
                 header: t('martyrs.employment_status'),
-                cell: ({ row }: { row: { original: Martyr } }) => row.original.employment_status?.name || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => getEmploymentStatusName(row.original.employment_status),
             },
             {
                 id: 'bank',
                 accessorKey: 'bank',
                 header: t('martyrs.bank'),
-                cell: ({ row }: { row: { original: Martyr } }) => row.original.bank?.name_ar || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => getBankBranchName(row.original.bank),
             },
             {
                 id: 'branch',
                 accessorKey: 'branch',
                 header: t('martyrs.branch'),
-                cell: ({ row }: { row: { original: Martyr } }) => row.original.branch?.name_ar || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => getBankBranchName(row.original.branch),
             },
             {
                 id: 'employer',
                 accessorKey: 'employer',
                 header: t('martyrs.employer'),
-                cell: ({ row }: { row: { original: Martyr } }) =>
-                    row.original.employer
-                        ? isRTL
-                            ? row.original.employer.name_ar
-                            : row.original.employer.name_en ||
-                              row.original.employer.name_ar
-                        : '-',
+                cell: ({ row }: { row: { original: Martyr } }) => getLocalizedName(row.original.employer, isRTL),
             },
             {
                 id: 'employer_location',
                 accessorKey: 'employer_location',
                 header: t('martyrs.employer_location'),
-                cell: ({ row }: { row: { original: Martyr } }) =>
-                    row.original.employer_location
-                        ? isRTL
-                            ? row.original.employer_location.name_ar
-                            : row.original.employer_location.name_en ||
-                              row.original.employer_location.name_ar
-                        : '-',
+                cell: ({ row }: { row: { original: Martyr } }) => getLocalizedName(row.original.employer_location, isRTL),
             },
             {
                 id: 'previous_employer',
@@ -739,20 +786,15 @@ export default function Index({
                 accessorKey: 'wife_status',
                 header: t('martyrs.wife_status'),
                 cell: ({ row }: { row: { original: Martyr } }) => {
-                    if (row.original.marital_status_id === 1)
-                        return <span className="text-muted-foreground">-</span>;
-                    return row.original.wife_status ? (
-                        <Badge
-                            variant={
-                                row.original.wife_status === 'متزوجة'
-                                    ? 'destructive'
-                                    : 'secondary'
-                            }
-                        >
-                            {row.original.wife_status}
+                    const { wife_status } = row.original;
+                    if (!wife_status || wife_status.trim() === '') {
+                        return '-';
+                    }
+                    const isMarried = wife_status === 'متزوجة';
+                    return (
+                        <Badge variant={isMarried ? 'destructive' : 'secondary'}>
+                            {wife_status}
                         </Badge>
-                    ) : (
-                        '-'
                     );
                 },
             },
@@ -779,13 +821,13 @@ export default function Index({
                 id: 'decision_date',
                 accessorKey: 'decision_date',
                 header: t('martyrs.decision_date'),
-                cell: ({ row }: { row: { original: Martyr } }) => row.original.decision_date || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => row.original.decision_date ? row.original.decision_date.split('T')[0] : '-',
             },
             {
                 id: 'death_date',
                 accessorKey: 'death_date',
                 header: t('martyrs.death_date'),
-                cell: ({ row }: { row: { original: Martyr } }) => row.original.death_date || '-',
+                cell: ({ row }: { row: { original: Martyr } }) => row.original.death_date ? row.original.death_date.split('T')[0] : '-',
             },
             {
                 id: 'agent_name',
@@ -835,6 +877,29 @@ export default function Index({
                             ? row.original.parents_status.name_ar
                             : row.original.parents_status.name_en
                         : '-',
+            },
+            {
+                id: 'status',
+                accessorKey: 'status',
+                header: t('martyrs.status'),
+                cell: ({ row }: { row: { original: Martyr } }) => {
+                    const status = row.original.status;
+                    const variants: Record<
+                        string,
+                        'default' | 'secondary' | 'destructive' | 'outline'
+                    > = {
+                        active: 'default',
+                        inactive: 'secondary',
+                        pending: 'outline',
+                        complete: 'default',
+                        incomplete: 'destructive',
+                    };
+                    return (
+                        <Badge variant={variants[status] || 'secondary'}>
+                            {t(`martyrs.status.${status}`) || status}
+                        </Badge>
+                    );
+                },
             },
             ...(canViewAttachments
                 ? [
@@ -960,38 +1025,53 @@ export default function Index({
                                 <h1 className="text-2xl font-bold tracking-tight">
                                     {t('martyrs.title')}
                                 </h1>
-                                <p className="text-sm text-muted-foreground">
-                                    {t('martyrs.description', { count: martyrs.total })}
-                                </p>
                             </div>
                         </div>
-                        {canCreate && (
-                            <Button asChild className="transition-all hover:scale-105">
-                                <Link href="/martyrs/create">
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    {t('martyrs.create')}
-                                </Link>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setIsCommandOpen(true)}
+                                className="hidden md:flex"
+                            >
+                                <Search className="mr-2 h-4 w-4" />
+                                {t('search') || 'Search'}
+                                <kbd className="pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                                    <span className="text-xs">⌘</span>K
+                                </kbd>
                             </Button>
-                        )}
+                            {canCreate && (
+                                <Button asChild className="transition-all hover:scale-105">
+                                    <Link href="/martyrs/create">
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        {t('martyrs.create')}
+                                    </Link>
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Toolbar */}
                     <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-                        {/* Search and Per Page */}
+                        {/* Search */}
                         <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center md:w-auto">
                             <div className="relative w-full sm:w-72">
                                 <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     placeholder={t('martyrs.search_placeholder')}
                                     className="bg-background pl-9 transition-all focus:ring-2 focus:ring-primary/20"
-                                    value={localFilters.search || ''}
+                                    value={searchTerm}
                                     onChange={(e) =>
-                                        handleFilterChange('search', e.target.value)
+                                        handleSearchChange(e.target.value)
                                     }
                                 />
                             </div>
+                        </div>
+
+                        <div className="flex w-full flex-wrap items-center gap-2 md:w-auto">
+                            {/* Per Page */}
                             <Select
-                                value={localFilters.per_page || martyrs.per_page.toString()}
+                                value={localFilters.per_page || '10'}
                                 onValueChange={(value) => handleFilterChange('per_page', value)}
                             >
                                 <SelectTrigger className="w-20">
@@ -1002,11 +1082,11 @@ export default function Index({
                                     <SelectItem value="25">25</SelectItem>
                                     <SelectItem value="50">50</SelectItem>
                                     <SelectItem value="100">100</SelectItem>
+                                    <SelectItem value="all">الكل</SelectItem>
+
                                 </SelectContent>
                             </Select>
-                        </div>
 
-                        <div className="flex w-full flex-wrap items-center gap-2 md:w-auto">
                             {/* Filters Sheet */}
                             <Sheet
                                 open={isFiltersOpen}
@@ -2032,6 +2112,55 @@ export default function Index({
                     </AlertDialogContent>
                 </AlertDialog>
             </AppLayout>
+
+            {/* Global Search Command */}
+            <Command className="rounded-lg border shadow-md">
+                <CommandDialog open={isCommandOpen} onOpenChange={setIsCommandOpen}>
+                    <CommandInput
+                        placeholder={t('martyrs.search_martyrs') || 'Search martyrs...'}
+                        onValueChange={(value) => {
+                            if (instantSearchTimeoutRef.current) {
+                                clearTimeout(instantSearchTimeoutRef.current);
+                            }
+                            instantSearchTimeoutRef.current = setTimeout(() => {
+                                performInstantSearch(value);
+                            }, 200);
+                        }}
+                    />
+                    <CommandList>
+                        <CommandEmpty>
+                            {isSearching ? (
+                                <div className="flex items-center justify-center py-6">
+                                    <Spinner className="h-4 w-4" />
+                                    <span className="ml-2">{t('searching') || 'Searching...'}</span>
+                                </div>
+                            ) : (
+                                t('no_results') || 'No results found.'
+                            )}
+                        </CommandEmpty>
+                        {instantSearchResults.length > 0 && (
+                            <CommandGroup heading={t('martyrs.title') || 'Martyrs'}>
+                                {instantSearchResults.map((martyr) => (
+                                    <CommandItem
+                                        key={martyr.id}
+                                        onSelect={() => {
+                                            router.visit(`/martyrs/${martyr.id}`);
+                                            setIsCommandOpen(false);
+                                        }}
+                                        className="flex items-center space-x-2"
+                                    >
+                                        <User className="h-4 w-4" />
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">{martyr.full_name}</span>
+                                            <span className="text-sm text-muted-foreground">{martyr.national_id}</span>
+                                        </div>
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        )}
+                    </CommandList>
+                </CommandDialog>
+            </Command>
         </TooltipProvider>
     );
 }

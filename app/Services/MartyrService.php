@@ -12,69 +12,33 @@ class MartyrService
     public function getMartyrs(Request $request): LengthAwarePaginator
     {
         $search = $request->get('search', '');
-        $perPage = $request->get('per_page', 15);
+        $perPage = $request->get('per_page', 10);
 
-        $builder = Martyr::with(['militaryRank', 'bank', 'branch', 'employmentStatus', 'maritalStatus', 'parentsStatus', 'jobGrade', 'employer', 'employerLocation', 'previousEmployer', 'previousEmployerLocation']);
+        // Start with base query
+        $query = Martyr::query();
 
+        // Apply search if provided
         if ($search) {
             $searchTerm = trim($search);
-            // إزالة الحركات والتشكيل من البحث لتحسين النتائج
-            $searchTerm = preg_replace('/[\x{064B}-\x{065F}]/u', '', $searchTerm);
 
-            $builder->where(function ($query) use ($searchTerm) {
-                // البحث في الاسم الكامل كاملاً أولاً
-                $query->where('full_name', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('agent_name', 'LIKE', "%{$searchTerm}%");
+            // Split search term into words for partial name matching
+            $searchWords = array_filter(explode(' ', $searchTerm));
 
-                // البحث في كلمات منفصلة في الاسم الكامل
-                $searchWords = explode(' ', $searchTerm);
-                if (count($searchWords) > 1) {
-                    foreach ($searchWords as $word) {
-                        $word = trim($word);
-                        if (empty($word) || mb_strlen($word, 'UTF-8') < 2) {
-                            continue;
+            if (!empty($searchWords)) {
+                // For multiple words, find records that contain ALL words (AND logic)
+                $validWords = array_filter($searchWords, function($word) {
+                    return mb_strlen($word) >= 2; // Only words with at least 2 characters
+                });
+
+                if (!empty($validWords)) {
+                    $query->where(function($q) use ($validWords) {
+                        foreach ($validWords as $word) {
+                            // Search for each word in the full_name field using LIKE
+                            $q->where('full_name', 'LIKE', '%' . $word . '%');
                         }
-
-                        $query->orWhere('full_name', 'LIKE', "%{$word}%")
-                            ->orWhere('agent_name', 'LIKE', "%{$word}%");
-                    }
+                    });
                 }
-
-                // البحث في الحقول الأخرى
-                $query->orWhere('national_id', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('address', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('military_number', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('bank_account_number', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('agent_phone', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('agent_relationship', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('agent_passport_number', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('decision_number', 'LIKE', "%{$searchTerm}%");
-
-                // Search in related model names (parents, marital, employment, rank, bank)
-                $query->orWhereHas('parentsStatus', function ($q) use ($searchTerm) {
-                    $q->where('name_ar', 'like', "%{$searchTerm}%")
-                        ->orWhere('name_en', 'like', "%{$searchTerm}%");
-                });
-
-                $query->orWhereHas('maritalStatus', function ($q) use ($searchTerm) {
-                    $q->where('name_ar', 'like', "%{$searchTerm}%")
-                        ->orWhere('name_en', 'like', "%{$searchTerm}%");
-                });
-
-                $query->orWhereHas('employmentStatus', function ($q) use ($searchTerm) {
-                    $q->where('name', 'like', "%{$searchTerm}%");
-                });
-
-                $query->orWhereHas('militaryRank', function ($q) use ($searchTerm) {
-                    $q->where('name_ar', 'like', "%{$searchTerm}%")
-                        ->orWhere('name_en', 'like', "%{$searchTerm}%");
-                });
-
-                $query->orWhereHas('bank', function ($q) use ($searchTerm) {
-                    $q->where('name_ar', 'like', "%{$searchTerm}%")
-                        ->orWhere('name_en', 'like', "%{$searchTerm}%");
-                });
-            });
+            }
         }
 
         // Apply filters
@@ -98,34 +62,34 @@ class MartyrService
 
         foreach ($allowedFilters as $filter) {
             if ($request->has($filter) && $request->get($filter)) {
-                $builder->where($filter, $request->get($filter));
+                $query->where($filter, $request->get($filter));
             }
         }
 
         // Apply date filters
         if ($request->has('date_from') && $request->get('date_from')) {
-            $builder->where('created_at', '>=', $request->get('date_from'));
+            $query->where('created_at', '>=', $request->get('date_from'));
         }
 
         if ($request->has('date_to') && $request->get('date_to')) {
-            $builder->where('created_at', '<=', $request->get('date_to'));
+            $query->where('created_at', '<=', $request->get('date_to'));
         }
 
         // Apply death date filters
         if ($request->has('death_date_from') && $request->get('death_date_from')) {
             $years = array_map('trim', explode(',', $request->get('death_date_from')));
-            $builder->whereIn(\DB::raw('YEAR(death_date)'), $years);
+            $query->whereIn(\DB::raw('YEAR(death_date)'), $years);
         }
 
         // Apply decision date filters
         if ($request->has('decision_date_from') && $request->get('decision_date_from')) {
             $years = array_map('trim', explode(',', $request->get('decision_date_from')));
-            $builder->whereIn(\DB::raw('YEAR(decision_date)'), $years);
+            $query->whereIn(\DB::raw('YEAR(decision_date)'), $years);
         }
 
         // Apply martyr decision filter
         if ($request->has('has_martyr_decision') && $request->get('has_martyr_decision') !== '') {
-            $builder->where('has_martyr_decision', $request->get('has_martyr_decision') === '1');
+            $query->where('has_martyr_decision', $request->get('has_martyr_decision') === '1');
         }
 
         // Apply sorting
@@ -151,12 +115,27 @@ class MartyrService
         ];
 
         if (in_array($sortField, $allowedSorts)) {
-            $builder->orderBy($sortField, $direction);
+            $query->orderBy($sortField, $direction);
         } else {
-            $builder->orderBy('created_at', 'desc');
+            $query->orderBy('created_at', 'desc');
         }
 
-        $paginator = $builder->paginate($perPage)->appends($request->query());
+        $paginator = $query->paginate($perPage, ['*'], 'page', $request->get('page', 1))->appends($request->query());
+
+        // Optimize relationship loading - only load what's needed for the table
+        $paginator->load([
+            'militaryRank:id,name_ar,name_en',
+            'bank:id,name_ar',
+            'branch:id,name_ar',
+            'employmentStatus:id,name',
+            'maritalStatus:id,name_ar,name_en',
+            'parentsStatus:id,name_ar,name_en',
+            'jobGrade:id,name_ar,name_en',
+            'employer:id,name_ar,name_en',
+            'employerLocation:id,name_ar,name_en',
+            'previousEmployer:id,name_ar,name_en',
+            'previousEmployerLocation:id,name_ar,name_en'
+        ]);
 
         return $paginator;
     }
@@ -217,7 +196,7 @@ class MartyrService
     /**
      * Search martyrs with Scout (Meilisearch) for faster results.
      */
-    public function searchMartyrs(string $query, int $limit = 10)
+    public function searchMartyrs(string $query, int $limit = 10, array $filters = [])
     {
         $query = trim($query);
 
@@ -225,61 +204,79 @@ class MartyrService
             return collect([]);
         }
 
-        // Skip Scout in testing environment to avoid index issues
-        if (app()->environment('testing')) {
-            $searchTerm = '%'.$query.'%';
-            $results = Martyr::where('full_name', 'like', $searchTerm)
-                ->orWhere('national_id', 'like', $searchTerm)
-                ->take($limit)
-                ->get();
-
-            return $results->map(function ($martyr) {
-                return [
-                    'id' => $martyr->id,
-                    'full_name' => $martyr->full_name,
-                    'national_id' => $martyr->national_id,
-                ];
-            });
-        }
-
-        \Log::info('Using Scout search');
         try {
-            // Use Scout for search
-            $results = Martyr::search($query)->take($limit)->get();
+            // Use the same search logic as getMartyrs for consistency
+            $searchTerm = trim($query);
 
-            // Return only needed fields
-            return $results->map(function ($martyr) {
-                // Handle both model instances and arrays (Scout database driver returns arrays)
-                if (is_array($martyr)) {
-                    return [
-                        'id' => $martyr['id'],
-                        'full_name' => $martyr['full_name'],
-                        'national_id' => $martyr['national_id'],
-                    ];
+            // Split search term into words for partial name matching
+            $searchWords = array_filter(explode(' ', $searchTerm));
+
+            $searchQuery = Martyr::query();
+
+            // Apply search if provided
+            if (!empty($searchWords)) {
+                // For multiple words, find records that contain ALL words (AND logic)
+                $validWords = array_filter($searchWords, function($word) {
+                    return mb_strlen($word) >= 2; // Only words with at least 2 characters
+                });
+
+                if (!empty($validWords)) {
+                    $searchQuery->where(function($q) use ($validWords) {
+                        foreach ($validWords as $word) {
+                            // Search for each word in the full_name field using LIKE
+                            $q->where('full_name', 'LIKE', '%' . $word . '%');
+                        }
+                    });
                 }
+            }
 
+            $results = $searchQuery->take($limit)->get();
+
+            return $results->map(function ($martyr) {
                 return [
                     'id' => $martyr->id,
                     'full_name' => $martyr->full_name,
                     'national_id' => $martyr->national_id,
+                    'military_number' => $martyr->military_number,
+                    'decision_number' => $martyr->decision_number,
                 ];
             });
         } catch (\Exception $e) {
-            \Log::info('Scout failed, falling back to database search: '.$e->getMessage());
-            // Fall back to regular database search if Scout fails
-            $searchTerm = '%'.$query.'%';
-            $results = Martyr::where('full_name', 'like', $searchTerm)
-                ->orWhere('national_id', 'like', $searchTerm)
-                ->take($limit)
-                ->get();
+            \Log::error('Search failed, falling back to simple search: ' . $e->getMessage());
 
-            return $results->map(function ($martyr) {
-                return [
-                    'id' => $martyr->id,
-                    'full_name' => $martyr->full_name,
-                    'national_id' => $martyr->national_id,
-                ];
-            });
+            // Fallback to simple LIKE search
+            return $this->fallbackSearch($query, $limit);
         }
+    }
+
+    private function buildMeiliFilters(array $filters): string
+    {
+        $meiliFilters = [];
+
+        foreach ($filters as $field => $value) {
+            if ($value) {
+                $meiliFilters[] = "{$field} = {$value}";
+            }
+        }
+
+        return implode(' AND ', $meiliFilters);
+    }
+
+    private function fallbackSearch(string $query, int $limit)
+    {
+        $searchTerm = '%' . $query . '%';
+
+        return Martyr::where(function ($q) use ($searchTerm) {
+            $q->where('full_name', 'LIKE', $searchTerm)
+              ->orWhere('national_id', 'LIKE', $searchTerm)
+              ->orWhere('military_number', 'LIKE', $searchTerm)
+              ->orWhere('decision_number', 'LIKE', $searchTerm);
+        })->take($limit)->get()->map(function ($martyr) {
+            return [
+                'id' => $martyr->id,
+                'full_name' => $martyr->full_name,
+                'national_id' => $martyr->national_id,
+            ];
+        });
     }
 }

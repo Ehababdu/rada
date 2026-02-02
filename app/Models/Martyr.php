@@ -11,6 +11,61 @@ class Martyr extends Model
 {
     use HasFactory, Searchable, SoftDeletes;
 
+    protected static function bootScout()
+    {
+        static::creatingIndex(function ($meilisearch, $indexName) {
+            $meilisearch->updateSortableAttributes([
+                'death_date',
+                'full_name',
+                'created_at',
+                'updated_at',
+                'national_id',
+                'military_number',
+                'decision_number',
+            ]);
+
+            // تحسين البحث والعرض
+            $meilisearch->updateSearchableAttributes([
+                'full_name',
+                'national_id',
+                'military_number',
+                'decision_number',
+                'address',
+                'bank_account_number',
+                'agent_name',
+                'agent_phone',
+                'employer_name',
+                'military_rank',
+                'job_grade',
+                'employment_status',
+                'marital_status',
+                'parents_status',
+                'bank_name',
+            ]);
+
+            $meilisearch->updateDisplayedAttributes([
+                'id',
+                'full_name',
+                'national_id',
+                'military_number',
+                'decision_number',
+            ]);
+
+            $meilisearch->updateFilterableAttributes([
+                'national_id',
+                'marital_status_id',
+                'employment_status_id',
+                'parents_status_id',
+                'bank_id',
+                'branch_id',
+                'employer_id',
+                'military_rank_id',
+                'job_grade_id',
+                'status',
+            ]);
+        });
+    }
+
     protected $fillable = [
         'full_name',
         'national_id',
@@ -175,23 +230,38 @@ class Martyr extends Model
 
     /**
      * Get the indexable data array for the model.
-     */
+     */    public function shouldBeSearchable()
+    {
+        return true;
+    }
     public function toSearchableArray(): array
     {
         return [
             'id' => $this->id,
             'full_name' => $this->full_name,
             'national_id' => $this->national_id,
-            'address' => $this->address,
-            'parents_status' => $this->parentsStatus?->name_ar,
-            'marital_status' => $this->maritalStatus?->name_ar,
-            'employment_status' => $this->employmentStatus?->name_ar,
-            'job_grade' => $this->jobGrade?->name_ar,
             'military_number' => $this->military_number,
-            'military_rank' => $this->militaryRank?->name_ar,
-            'bank_name' => $this->bank?->name_ar,
+            'decision_number' => $this->decision_number,
+            'address' => $this->address,
+            'bank_account_number' => $this->bank_account_number,
             'agent_name' => $this->agent_name,
             'agent_phone' => $this->agent_phone,
+            'agent_relationship' => $this->agent_relationship,
+            'agent_passport_number' => $this->agent_passport_number,
+            'employer_name' => $this->employer?->name_ar,
+            'previous_employer_name' => $this->previousEmployer?->name_ar,
+            'military_rank' => $this->militaryRank?->name_ar,
+            'job_grade' => $this->jobGrade?->name_ar,
+            'employment_status' => $this->employmentStatus?->name_ar,
+            'marital_status' => $this->maritalStatus?->name_ar,
+            'parents_status' => $this->parentsStatus?->name_ar,
+            'bank_name' => $this->bank?->name_ar,
+            'status' => $this->status,
+            'wife_status' => $this->wife_status,
+            'children_count' => $this->children_count,
+            'death_date' => $this->death_date?->format('Y-m-d'),
+            'created_at' => $this->created_at?->format('Y-m-d'),
+            'updated_at' => $this->updated_at?->format('Y-m-d'),
         ];
     }
 }

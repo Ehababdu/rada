@@ -2,7 +2,6 @@ import { Head, Link, router } from '@inertiajs/react';
 import {
     ColumnDef,
     SortingState,
-    VisibilityState,
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
@@ -13,15 +12,17 @@ import {
     CheckCircle,
     Download,
     Eye,
+    Filter,
     MoreHorizontal,
     Plus,
+    Search,
     Shield,
     Sparkles,
     SquarePen,
     Trash2,
     UserCheck,
 } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -38,6 +39,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Combobox from '@/components/ui/combobox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -45,7 +58,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import { DataTable } from '@/components/ui/data-table';
 import {
     Table,
     TableBody,
@@ -54,6 +67,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { usePermissions } from '@/hooks/use-permissions';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
@@ -166,7 +180,8 @@ const StatCard = ({
 
 // --- Main Component ---
 export default function Index({ promotions, martyrs, filters }: Props) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const isRTL = i18n.language === 'ar';
     const { can } = usePermissions('promotions');
 
     const canViewDetails = can('canViewDetails');
@@ -182,17 +197,27 @@ export default function Index({ promotions, martyrs, filters }: Props) {
     const [search, setSearch] = useState(filters.search || '');
     const [martyrId, setMartyrId] = useState(filters.martyr_id || '');
     const [sorting, setSorting] = useState<SortingState>([]);
-    const [columnVisibility, setColumnVisibility] = useState<
-        Record<TabKey, VisibilityState>
-    >({
-        employees: { description: false },
-        military: { description: false },
-    });
     const [deletePromotion, setDeletePromotion] = useState<PromotionRow | null>(
         null,
     );
     const [confirmPromotion, setConfirmPromotion] =
         useState<PromotionRow | null>(null);
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
+    // Debounced search
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (search !== filters.search) {
+                router.get(
+                    '/promotions',
+                    { search, martyr_id: martyrId, page: 1 },
+                    { preserveState: true },
+                );
+            }
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [search, martyrId, filters.search, router]);
 
     const partitioned = useMemo(() => {
         const employees: PromotionRow[] = [];
@@ -472,114 +497,81 @@ export default function Index({ promotions, martyrs, filters }: Props) {
     const table = useReactTable({
         data: activeData,
         columns,
-        state: { sorting, columnVisibility: columnVisibility[activeTab] },
+        state: { sorting },
         onSortingChange: setSorting,
-        onColumnVisibilityChange: (updater) => {
-            const next =
-                typeof updater === 'function'
-                    ? updater(columnVisibility[activeTab])
-                    : updater;
-            setColumnVisibility((prev) => ({ ...prev, [activeTab]: next }));
-        },
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
     });
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={t('promotions.title')} />
+        <TooltipProvider>
+            <AppLayout breadcrumbs={breadcrumbs}>
+                <Head title={t('promotions.title')} />
 
-            <div className="space-y-6 pb-8">
-                {/* Header Stats Card */}
-                <Card className="mx-4 mt-6 overflow-hidden border-0 bg-slate-900 text-white shadow-xl md:mx-8">
-                    <CardContent className="p-6">
-                        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-xs font-bold tracking-widest text-amber-400 uppercase">
-                                    <Sparkles className="h-4 w-4" />{' '}
-                                    {t('promotions.title')}
-                                </div>
-                                <h1 className="text-2xl font-black">
-                                    {t('promotions.promotion_details') ||
-                                        'إدارة الترقيات'}
-                                </h1>
-                                <p className="max-w-md text-sm text-slate-400">
-                                    نظام تتبع الاستحقاقات الدورية للموظفين
-                                    والعسكريين.
-                                </p>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                                <StatCard
-                                    label="الإجمالي"
-                                    value={stats.total}
-                                    icon={<Sparkles className="h-4 w-4" />}
-                                />
-                                <StatCard
-                                    label="موظفين"
-                                    value={stats.employees}
-                                    icon={<UserCheck className="h-4 w-4" />}
-                                />
-                                <StatCard
-                                    label="عسكريين"
-                                    value={stats.military}
-                                    icon={<Shield className="h-4 w-4" />}
-                                />
-                                <StatCard
-                                    label="متأخرة"
-                                    value={stats.overdue}
-                                    icon={<AlertCircle className="h-4 w-4" />}
-                                    tone="danger"
-                                />
-                            </div>
+                <div className="space-y-6 p-6">
+                {/* Header Stats / Info */}
+                <div className="flex flex-col gap-4 rounded-xl border bg-card p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="rounded-lg bg-primary/10 p-3 text-primary">
+                            <Sparkles className="h-8 w-8" />
                         </div>
-                    </CardContent>
-                </Card>
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                {t('promotions.title')}
+                            </h1>
+                            <p className="text-sm text-muted-foreground">
+                                {t('promotions.promotion_details') ||
+                                    'إدارة الترقيات'}
+                            </p>
+                        </div>
+                    </div>
+                    {canCreate && (
+                        <Button asChild className="transition-all hover:scale-105">
+                            <Link href="/promotions/create">
+                                <Plus className="mr-2 h-4 w-4" />
+                                {t('promotions.create')}
+                            </Link>
+                        </Button>
+                    )}
+                </div>
 
-                {/* Filters */}
-                <Card className="mx-4 md:mx-8">
-                    <CardContent className="pt-6">
-                        <form
-                            onSubmit={handleFilterSubmit}
-                            className="flex flex-wrap items-end gap-4"
-                        >
-                            <div className="min-w-[250px] flex-1 space-y-2">
-                                <label className="text-xs font-bold text-muted-foreground uppercase">
-                                    {t('search')}
-                                </label>
-                                <Input
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    placeholder="الاسم أو الرقم الوطني..."
-                                />
-                            </div>
-                            <div className="min-w-[250px] flex-1 space-y-2">
-                                <label className="text-xs font-bold text-muted-foreground uppercase">
-                                    {t('promotions.martyr')}
-                                </label>
-                                <Combobox
-                                    value={martyrId}
-                                    onChange={setMartyrId}
-                                    options={martyrOptions}
-                                    placeholder="اختر الشهيد..."
-                                />
-                            </div>
-                            <div className="flex gap-2">
-                                <Button type="submit">{t('search')}</Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={clearFilters}
-                                >
-                                    {t('clear')}
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                {/* Stats Cards */}
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                    <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-4 shadow-sm">
+                        <Sparkles className="mb-2 h-6 w-6 text-primary" />
+                        <div className="text-2xl font-bold">{stats.total}</div>
+                        <div className="text-xs text-muted-foreground">الإجمالي</div>
+                    </div>
+                    <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-4 shadow-sm">
+                        <UserCheck className="mb-2 h-6 w-6 text-primary" />
+                        <div className="text-2xl font-bold">{stats.employees}</div>
+                        <div className="text-xs text-muted-foreground">موظفين</div>
+                    </div>
+                    <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-4 shadow-sm">
+                        <Shield className="mb-2 h-6 w-6 text-primary" />
+                        <div className="text-2xl font-bold">{stats.military}</div>
+                        <div className="text-xs text-muted-foreground">عسكريين</div>
+                    </div>
+                    <div className="flex flex-col items-center justify-center rounded-xl border bg-card p-4 shadow-sm border-red-200 bg-red-50">
+                        <AlertCircle className="mb-2 h-6 w-6 text-red-600" />
+                        <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
+                        <div className="text-xs text-red-600">متأخرة</div>
+                    </div>
+                </div>
 
-                {/* Tabs & Table */}
-                <div className="space-y-4 px-4 md:px-8">
-                    <div className="flex items-center justify-between">
+                {/* Toolbar */}
+                <div className="flex flex-col items-start justify-between gap-4 px-4 md:px-8 md:flex-row md:items-center">
+                    {/* Search & Tabs */}
+                    <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center md:flex-1">
+                        <div className="relative w-full sm:w-72 md:flex-1">
+                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                placeholder="الاسم أو الرقم الوطني..."
+                                className="w-full bg-background pl-9 transition-all focus:ring-2 focus:ring-primary/20"
+                                value={search}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                            />
+                        </div>
                         <div className="flex rounded-lg bg-muted p-1">
                             <Button
                                 variant={
@@ -608,87 +600,175 @@ export default function Index({ promotions, martyrs, filters }: Props) {
                                 {EMPLOYEE_LABEL}
                             </Button>
                         </div>
-                        <div className="flex gap-2">
-                            {canCreate && (
-                                <Link href="/promotions/create">
-                                    <Button size="sm">
-                                        <Plus className="ml-2 h-4 w-4" />{' '}
-                                        {t('promotions.add_promotion') ||
-                                            'إضافة ترقية'}
-                                    </Button>
-                                </Link>
-                            )}
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                    /* logic for export */
-                                }}
-                            >
-                                <Download className="ml-2 h-4 w-4" /> تصدير
-                            </Button>
-                        </div>
                     </div>
 
-                    <Card className="border-muted shadow-sm">
-                        <CardContent className="p-0">
-                            <Table>
-                                <TableHeader className="bg-muted/50">
-                                    {table.getHeaderGroups().map((hg) => (
-                                        <TableRow key={hg.id}>
-                                            {hg.headers.map((h) => (
-                                                <TableHead
-                                                    key={h.id}
-                                                    className="text-right font-bold text-slate-700"
-                                                >
-                                                    {flexRender(
-                                                        h.column.columnDef
-                                                            .header,
-                                                        h.getContext(),
-                                                    )}
-                                                </TableHead>
-                                            ))}
-                                        </TableRow>
-                                    ))}
-                                </TableHeader>
-                                <TableBody>
-                                    {table.getRowModel().rows.length ? (
-                                        table.getRowModel().rows.map((row) => (
-                                            <TableRow
-                                                key={row.id}
-                                                className="transition-colors hover:bg-muted/30"
+                    <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:justify-end">
+                        {/* Filters Sheet */}
+                        <Sheet
+                            open={isFiltersOpen}
+                            onOpenChange={setIsFiltersOpen}
+                        >
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <SheetTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            title="الفلاتر المتقدمة"
+                                            className="transition-colors hover:bg-accent"
+                                        >
+                                            <Filter className="h-4 w-4" />
+                                        </Button>
+                                    </SheetTrigger>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>الفلاتر المتقدمة</p>
+                                </TooltipContent>
+                            </Tooltip>
+                            <SheetContent
+                                side={isRTL ? 'left' : 'right'}
+                                className="w-full p-0 sm:max-w-md"
+                            >
+                                <SheetHeader className="border-b p-6">
+                                    <SheetTitle>الفلاتر المتقدمة</SheetTitle>
+                                    <SheetDescription>
+                                        قم بتطبيق فلاتر متقدمة للبحث عن الترقيات
+                                    </SheetDescription>
+                                </SheetHeader>
+                                <ScrollArea className="h-[calc(100vh-10rem)] p-6">
+                                    <div className="grid gap-6">
+                                        {/* Filters Fields */}
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <Label>الشهيد</Label>
+                                                <Combobox
+                                                    value={martyrId}
+                                                    onChange={setMartyrId}
+                                                    options={martyrOptions}
+                                                    placeholder="اختر الشهيد..."
+                                                />
+                                            </div>
+                                        </div>
+                                        <Separator />
+                                        <div className="flex gap-2">
+                                            <Button
+                                                onClick={() => {
+                                                    handleFilterSubmit();
+                                                    setIsFiltersOpen(false);
+                                                }}
+                                                className="flex-1"
                                             >
-                                                {row
-                                                    .getVisibleCells()
-                                                    .map((cell) => (
-                                                        <TableCell
+                                                تطبيق الفلاتر
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                onClick={() => {
+                                                    clearFilters();
+                                                    setIsFiltersOpen(false);
+                                                }}
+                                                className="flex-1"
+                                            >
+                                                مسح الفلاتر
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </ScrollArea>
+                            </SheetContent>
+                        </Sheet>
+
+                        {/* Export Button */}
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() =>
+                                        router.get('/promotions/export', {
+                                            tab: activeTab,
+                                            search,
+                                            martyr_id: martyrId,
+                                        })
+                                    }
+                                    className="transition-colors hover:bg-accent"
+                                >
+                                    <Download className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>تصدير إلى Excel</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                </div>
+
+                {/* Table */}
+                <div className="flex flex-col gap-4">
+                    <div data-slot="card" className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 border-muted shadow-sm">
+                        <div data-slot="card-content" className="p-0">
+                            <div data-slot="table-container" className="relative w-full overflow-x-auto">
+                                <table data-slot="table" className="w-full caption-bottom text-sm">
+                                    <thead data-slot="table-header" className="[&_tr]:border-b bg-muted/50">
+                                        {table.getHeaderGroups().map((headerGroup) => (
+                                            <tr
+                                                key={headerGroup.id}
+                                                data-slot="table-row"
+                                                className="hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors"
+                                            >
+                                                {headerGroup.headers.map((header) => (
+                                                    <th
+                                                        key={header.id}
+                                                        data-slot="table-head"
+                                                        className="h-10 px-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] text-right font-bold text-slate-700"
+                                                    >
+                                                        {header.isPlaceholder
+                                                            ? null
+                                                            : flexRender(
+                                                                  header.column.columnDef.header,
+                                                                  header.getContext()
+                                                              )}
+                                                    </th>
+                                                ))}
+                                            </tr>
+                                        ))}
+                                    </thead>
+                                    <tbody data-slot="table-body" className="[&_tr:last-child]:border-0">
+                                        {table.getRowModel().rows?.length ? (
+                                            table.getRowModel().rows.map((row) => (
+                                                <tr
+                                                    key={row.id}
+                                                    data-slot="table-row"
+                                                    className="hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors"
+                                                >
+                                                    {row.getVisibleCells().map((cell) => (
+                                                        <td
                                                             key={cell.id}
-                                                            className="py-4 text-right"
+                                                            data-slot="table-cell"
+                                                            className="p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]"
                                                         >
                                                             {flexRender(
-                                                                cell.column
-                                                                    .columnDef
-                                                                    .cell,
-                                                                cell.getContext(),
+                                                                cell.column.columnDef.cell,
+                                                                cell.getContext()
                                                             )}
-                                                        </TableCell>
+                                                        </td>
                                                     ))}
-                                            </TableRow>
-                                        ))
-                                    ) : (
-                                        <TableRow>
-                                            <TableCell
-                                                colSpan={columns.length}
-                                                className="h-32 text-center text-muted-foreground"
-                                            >
-                                                لا توجد بيانات متاحة حالياً
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr data-slot="table-row" className="hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors">
+                                                <td
+                                                    data-slot="table-cell"
+                                                    className="p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] h-32 text-center text-muted-foreground"
+                                                    colSpan={columns.length}
+                                                >
+                                                    لا توجد بيانات متاحة حالياً
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Pagination */}
                     {promotions.last_page > 1 && (
@@ -791,7 +871,8 @@ export default function Index({ promotions, martyrs, filters }: Props) {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </AppLayout>
+            </AppLayout>
+        </TooltipProvider>
     );
 }
 

@@ -73,6 +73,20 @@ services:
     networks:
       - app-network
 
+  # خدمة Meilisearch للبحث
+  meilisearch:
+    image: getmeili/meilisearch:v1.8
+    container_name: laravel_meilisearch
+    restart: unless-stopped
+    ports:
+      - "7700:7700"
+    environment:
+      MEILI_MASTER_KEY: 'masterKey'
+    volumes:
+      - meilidata:/meili_data
+    networks:
+      - app-network
+
   # واجهة إدارة قاعدة البيانات
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
@@ -90,6 +104,7 @@ services:
 
 volumes:
   dbdata:
+  meilidata:
 
 networks:
   app-network:

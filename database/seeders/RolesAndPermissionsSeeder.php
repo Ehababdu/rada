@@ -49,6 +49,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Additional permissions
         $additionalPermissions = [
             'martyrs.export',
+            'promotions.export',
             'manage job grades',
             'dashboard.view',
             'settings.view',
@@ -76,9 +77,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'martyrs.view',
             'martyrs.create',
             'martyrs.edit',
+            'martyrs.export',
             'promotions.view',
             'promotions.create',
             'promotions.edit',
+            'promotions.export',
             'compensations.view',
             'compensations.create',
             'compensations.edit',
