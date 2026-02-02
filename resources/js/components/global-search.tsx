@@ -176,7 +176,24 @@ export function GlobalSearch() {
         router.visit(href);
     };
 
-    const displayResults = query ? results : basePages;
+    const displayResults = useMemo(() => {
+        const lowerQuery = query.toLowerCase().trim();
+        if (!lowerQuery) return basePages;
+
+        const filteredBase = basePages.filter(
+            (page) =>
+                page.title.toLowerCase().includes(lowerQuery) ||
+                page.group.toLowerCase().includes(lowerQuery),
+        );
+
+        // Filter API results to avoid duplicates if they were already found in basePages
+        const uniqueAPIResults = results.filter((apiItem) => {
+            const apiLink = apiItem.route ? route(apiItem.route) : apiItem.href;
+            return !filteredBase.some((baseItem) => baseItem.href === apiLink);
+        });
+
+        return [...filteredBase, ...uniqueAPIResults];
+    }, [query, results, basePages]);
 
     return (
         <>
