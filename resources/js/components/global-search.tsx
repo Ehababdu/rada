@@ -6,7 +6,7 @@ import {
     CommandItem,
     CommandList,
 } from '@/components/ui/command';
-import { usePermissions } from '@/hooks/use-permissions';
+import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { index as attachmentTypesIndex } from '@/routes/attachment-types';
 import { index as banksIndex } from '@/routes/banks';
@@ -21,6 +21,7 @@ import { index as promotionsIndex } from '@/routes/promotions';
 import { index as rolesIndex } from '@/routes/roles';
 import { index as usersIndex } from '@/routes/users';
 import { router } from '@inertiajs/react';
+import axios from 'axios';
 import {
     Award,
     Briefcase,
@@ -28,11 +29,9 @@ import {
     Building2,
     DollarSign,
     FileText,
-    GraduationCap,
     LayoutGrid,
     Lock,
     Search,
-    Settings,
     Shield,
     UserCheck,
     Users,
@@ -40,90 +39,95 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export function GlobalSearch() {
-    const { t } = useTranslation();
-    const [open, setOpen] = useState(false);
-    const { can } = usePermissions('martyrs'); // Generic permission check helper
+const iconMap: Record<string, any> = {
+    LayoutGrid,
+    Users,
+    Award,
+    DollarSign,
+    Building,
+    Briefcase,
+    GraduationCap: LayoutGrid,
+    Shield,
+    Building2,
+    FileText,
+    UserCheck,
+    Lock,
+};
 
-    // Define all searchable system pages
-    const pages = useMemo(
+interface SearchResult {
+    id: number | string;
+    title: string;
+    route?: string;
+    href?: string;
+    group: string;
+    icon: string;
+}
+
+export function GlobalSearch() {
+    const { t, i18n } = useTranslation();
+    const isRTL = i18n.language === 'ar';
+    const [open, setOpen] = useState(false);
+    const [query, setQuery] = useState('');
+    const [results, setResults] = useState<SearchResult[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    // Static fallback pages for empty search
+    const basePages = useMemo(
         () => [
             {
+                id: 'p1',
                 title: t('dashboard'),
-                href: dashboard(),
-                icon: LayoutGrid,
+                href: dashboard().url,
+                icon: 'LayoutGrid',
                 group: t('navigation.system_management'),
             },
             {
+                id: 'p2',
                 title: t('navigation.martyrs'),
-                href: martyrsIndex(),
-                icon: Users,
+                href: martyrsIndex().url,
+                icon: 'Users',
                 group: t('navigation.martyrs_management'),
             },
             {
+                id: 'p3',
                 title: t('navigation.promotions'),
-                href: promotionsIndex(),
-                icon: Award,
+                href: promotionsIndex().url,
+                icon: 'Award',
                 group: t('navigation.martyrs_management'),
             },
             {
+                id: 'p4',
                 title: t('navigation.compensations'),
-                href: compensationsIndex(),
-                icon: DollarSign,
+                href: compensationsIndex().url,
+                icon: 'DollarSign',
                 group: t('navigation.martyrs_management'),
             },
             {
+                id: 'p5',
                 title: t('navigation.employers'),
-                href: employersIndex(),
-                icon: Building,
+                href: employersIndex().url,
+                icon: 'Building',
                 group: t('navigation.employer'),
             },
             {
-                title: t('navigation.employment_statuses'),
-                href: employmentStatusesIndex(),
-                icon: Briefcase,
-                group: t('navigation.employer'),
-            },
-            {
-                title: t('navigation.job_grades'),
-                href: jobGradesIndex(),
-                icon: GraduationCap,
-                group: t('navigation.employer'),
-            },
-            {
-                title: t('navigation.military_ranks'),
-                href: militaryRanksIndex(),
-                icon: Shield,
-                group: t('navigation.military_ranks'),
-            },
-            {
-                title: t('navigation.banks'),
-                href: banksIndex(),
-                icon: Building2,
-                group: t('navigation.military_ranks'),
-            },
-            {
-                title: t('navigation.attachment_types'),
-                href: attachmentTypesIndex(),
-                icon: FileText,
-                group: t('navigation.system_management'),
-            },
-            {
+                id: 'p11',
                 title: t('navigation.users'),
-                href: usersIndex(),
-                icon: UserCheck,
+                href: usersIndex().url,
+                icon: 'UserCheck',
                 group: t('navigation.system_management'),
             },
             {
+                id: 'p12',
                 title: t('navigation.permissions'),
-                href: permissionsIndex(),
-                icon: Lock,
+                href: permissionsIndex().url,
+                icon: 'Lock',
                 group: t('navigation.system_management'),
             },
             {
+                id: 'p13',
                 title: t('navigation.roles'),
-                href: rolesIndex.url(),
-                icon: Shield,
+                href: rolesIndex().url,
+                icon: 'Shield',
                 group: t('navigation.system_management'),
             },
         ],
@@ -142,63 +146,108 @@ export function GlobalSearch() {
         return () => document.removeEventListener('keydown', down);
     }, []);
 
-    const runCommand = (command: () => void) => {
+    // Fetch results from Meilisearch via Laravel API
+    useEffect(() => {
+        const fetchResults = async () => {
+            if (!query) {
+                setResults([]);
+                return;
+            }
+
+            setLoading(true);
+            try {
+                const response = await axios.get(route('api.search'), {
+                    params: { q: query },
+                });
+                setResults(response.data);
+            } catch (error) {
+                console.error('Search failed:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const timer = setTimeout(fetchResults, 300);
+        return () => clearTimeout(timer);
+    }, [query]);
+
+    const handleSelect = (href: string) => {
         setOpen(false);
-        command();
+        router.visit(href);
     };
+
+    const displayResults = query ? results : basePages;
 
     return (
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="relative inline-flex h-9 w-full items-center justify-start whitespace-nowrap rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 sm:pr-12 md:w-32 lg:w-48"
+                className="relative inline-flex h-9 w-full items-center justify-start whitespace-nowrap rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 sm:pr-12 md:w-40 lg:w-64"
             >
-                <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-                <span className="hidden lg:inline-flex">
-                    {t('search.placeholder', 'البحث...')}
+                <Search
+                    className={cn(
+                        'h-4 w-4 shrink-0 opacity-50',
+                        isRTL ? 'ml-2' : 'mr-2',
+                    )}
+                />
+                <span className="inline-flex">
+                    {t('search.placeholder', 'البحث في صفحات النظام...')}
                 </span>
-                <span className="inline-flex lg:hidden">
-                    {t('search.short_placeholder', 'بحث...')}
-                </span>
-                <kbd className="pointer-events-none absolute right-1.5 top-1.5 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                <kbd
+                    className={cn(
+                        'pointer-events-none absolute top-1.5 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex',
+                        isRTL ? 'left-1.5' : 'right-1.5',
+                    )}
+                >
                     <span className="text-xs">⌘</span>K
                 </kbd>
             </button>
-            <CommandDialog open={open} onOpenChange={setOpen}>
-                <CommandInput
-                    placeholder={t('search.input_placeholder', 'اكتب للبحث في الصفحات...')}
-                />
-                <CommandList>
-                    <CommandEmpty>
-                        {t('search.no_results', 'لا توجد نتائج.')}
-                    </CommandEmpty>
-                    {/* Group by category */}
-                    {Object.entries(
-                        pages.reduce((acc, page) => {
-                            if (!acc[page.group]) acc[page.group] = [];
-                            acc[page.group].push(page);
-                            return acc;
-                        }, {} as Record<string, typeof pages>),
-                    ).map(([group, groupPages]) => (
-                        <CommandGroup key={group} heading={group}>
-                            {groupPages.map((page) => (
-                                <CommandItem
-                                    key={page.href}
-                                    value={page.title}
-                                    onSelect={() => {
-                                        runCommand(() => router.visit(page.href));
-                                    }}
-                                    className="gap-2"
-                                >
-                                    {page.icon && (
-                                        <page.icon className="h-4 w-4 shrink-0 opacity-50" />
-                                    )}
-                                    <span>{page.title}</span>
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-                    ))}
-                </CommandList>
+            <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
+                <div dir={isRTL ? 'rtl' : 'ltr'}>
+                    <CommandInput
+                        placeholder={t('search.input_placeholder', 'اكتب للبحث...')}
+                        onValueChange={setQuery}
+                    />
+                    <CommandList>
+                        {query && displayResults.length === 0 && (
+                            <CommandEmpty>
+                                {loading ? t('loading', 'جاري البحث...') : t('search.no_results', 'لا توجد نتائج.')}
+                            </CommandEmpty>
+                        )}
+
+                        {Object.entries(
+                            displayResults.reduce((acc, result) => {
+                                const groupName = result.group || t('navigation.other', 'أخرى');
+                                if (!acc[groupName]) acc[groupName] = [];
+                                acc[groupName].push(result);
+                                return acc;
+                            }, {} as Record<string, any[]>),
+                        ).map(([group, groupResults]) => (
+                            <CommandGroup key={group} heading={group}>
+                                {groupResults.map((result) => {
+                                    const IconComponent = iconMap[result.icon] || LayoutGrid;
+                                    const href = result.route ? route(result.route) : (result.href || '');
+                                    return (
+                                        <CommandItem
+                                            key={result.id}
+                                            value={result.title}
+                                            onSelect={() => handleSelect(href)}
+                                            className="flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <IconComponent className="h-4 w-4 shrink-0 opacity-50" />
+                                            <div className="flex flex-col">
+                                                <span>{result.title}</span>
+                                                <span className="text-xs text-muted-foreground">
+                                                    {group}
+                                                </span>
+                                            </div>
+                                        </CommandItem>
+                                    );
+                                })}
+                            </CommandGroup>
+                        ))}
+                    </CommandList>
+                </div>
             </CommandDialog>
         </>
     );

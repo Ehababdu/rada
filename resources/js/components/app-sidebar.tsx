@@ -46,7 +46,6 @@ import {
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import AppLogo from './app-logo';
-import { SearchCommand } from './search-command';
 
 const footerNavItems: NavItem[] = [
     //
@@ -219,9 +218,6 @@ export const AppSidebar = memo(function AppSidebar() {
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
-                <div className="px-2 pb-2">
-                    <SearchCommand />
-                </div>
             </SidebarHeader>
 
             <SidebarContent className="scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/40">

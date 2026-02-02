@@ -19,8 +19,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-
 import { DataTable } from '@/components/ui/data-table';
 import {
     Dialog,
@@ -986,18 +984,6 @@ export default function Index({
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setIsCommandOpen(true)}
-                                className="hidden md:flex"
-                            >
-                                <Search className="mr-2 h-4 w-4" />
-                                {t('search') || 'Search'}
-                                <kbd className="pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                                    <span className="text-xs">⌘</span>K
-                                </kbd>
-                            </Button>
                             {canCreate && (
                                 <Button asChild className="transition-all hover:scale-105">
                                     <Link href="/martyrs/create">
@@ -2070,55 +2056,6 @@ export default function Index({
                     </AlertDialogContent>
                 </AlertDialog>
             </AppLayout>
-
-            {/* Global Search Command */}
-            <Command className="rounded-lg border shadow-md">
-                <CommandDialog open={isCommandOpen} onOpenChange={setIsCommandOpen}>
-                    <CommandInput
-                        placeholder={t('martyrs.search_martyrs') || 'Search martyrs...'}
-                        onValueChange={(value) => {
-                            if (instantSearchTimeoutRef.current) {
-                                clearTimeout(instantSearchTimeoutRef.current);
-                            }
-                            instantSearchTimeoutRef.current = setTimeout(() => {
-                                performInstantSearch(value);
-                            }, 200);
-                        }}
-                    />
-                    <CommandList>
-                        <CommandEmpty>
-                            {isSearching ? (
-                                <div className="flex items-center justify-center py-6">
-                                    <Spinner className="h-4 w-4" />
-                                    <span className="ml-2">{t('searching') || 'Searching...'}</span>
-                                </div>
-                            ) : (
-                                t('no_results') || 'No results found.'
-                            )}
-                        </CommandEmpty>
-                        {instantSearchResults.length > 0 && (
-                            <CommandGroup heading={t('martyrs.title') || 'Martyrs'}>
-                                {instantSearchResults.map((martyr) => (
-                                    <CommandItem
-                                        key={martyr.id}
-                                        onSelect={() => {
-                                            router.visit(`/martyrs/${martyr.id}`);
-                                            setIsCommandOpen(false);
-                                        }}
-                                        className="flex items-center space-x-2"
-                                    >
-                                        <User className="h-4 w-4" />
-                                        <div className="flex flex-col">
-                                            <span className="font-medium">{martyr.full_name}</span>
-                                            <span className="text-sm text-muted-foreground">{martyr.national_id}</span>
-                                        </div>
-                                    </CommandItem>
-                                ))}
-                            </CommandGroup>
-                        )}
-                    </CommandList>
-                </CommandDialog>
-            </Command>
         </TooltipProvider>
     );
 }
