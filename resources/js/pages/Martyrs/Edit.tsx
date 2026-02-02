@@ -279,6 +279,7 @@ const FormSection = ({
 
 interface Martyr {
     id: number;
+    file_number: string;
     full_name: string;
     national_id: string;
     address: string;
@@ -371,6 +372,7 @@ export default function Edit({
     ];
 
     const { data, setData, post, put, processing, errors } = useForm<{
+        file_number: string;
         full_name: string;
         national_id: string;
         address: string;
@@ -402,6 +404,7 @@ export default function Edit({
         profile_image: File | undefined;
         agent_passport_number: string | null;
     }>({
+        file_number: martyr.file_number,
         full_name: martyr.full_name,
         national_id: martyr.national_id,
         address: martyr.address,
@@ -728,6 +731,24 @@ export default function Edit({
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Basic Information */}
                     <FormSection title={t('martyrs.basic_info')}>
+                        <FormField
+                            icon={FileText}
+                            label={t('martyrs.file_number')}
+                            placeholder={t('martyrs.enter_file_number')}
+                            error={errors.file_number}
+                        >
+                            <Input
+                                id="file_number"
+                                value={data.file_number}
+                                onChange={(e) =>
+                                    setData('file_number', e.target.value)
+                                }
+                                placeholder={t('martyrs.enter_file_number')}
+                                className="w-full"
+                                required
+                            />
+                        </FormField>
+
                         <FormField
                             icon={User}
                             label={t('martyrs.full_name')}

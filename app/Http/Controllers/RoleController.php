@@ -29,7 +29,7 @@ class RoleController extends Controller
             ->paginate(15);
 
         return Inertia::render('Roles/Index', [
-            'paginatedRoles' => $roles,
+            'roles' => $roles,
             'filters' => $request->only(['search']),
         ]);
     }

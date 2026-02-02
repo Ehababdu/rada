@@ -72,4 +72,64 @@ class MartyrServiceTest extends TestCase
         $this->assertEquals(1, $paginator->total());
         $this->assertEquals('أحمد مثال فريد', $paginator->items()[0]['full_name']);
     }
+
+    public function test_get_martyrs_search_by_national_id()
+    {
+        // Create a martyr with a specific national ID
+        $martyr = Martyr::factory()->create([
+            'full_name' => 'محمد عبدالله الهاشمي تابون',
+            'national_id' => '119930049098',
+        ]);
+
+        $request = new Request;
+        $request->merge(['search' => '119930049098']);
+
+        $service = new MartyrService;
+
+        $paginator = $service->getMartyrs($request);
+
+        $this->assertEquals(1, $paginator->total());
+        $this->assertEquals('محمد عبدالله الهاشمي تابون', $paginator->items()[0]['full_name']);
+        $this->assertEquals('119930049098', $paginator->items()[0]['national_id']);
+    }
+
+    public function test_get_martyrs_search_by_military_number()
+    {
+        // Create a martyr with a specific military number
+        $martyr = Martyr::factory()->create([
+            'full_name' => 'أحمد محمد علي',
+            'military_number' => '69817455',
+        ]);
+
+        $request = new Request;
+        $request->merge(['search' => '69817455']);
+
+        $service = new MartyrService;
+
+        $paginator = $service->getMartyrs($request);
+
+        $this->assertEquals(1, $paginator->total());
+        $this->assertEquals('أحمد محمد علي', $paginator->items()[0]['full_name']);
+        $this->assertEquals('69817455', $paginator->items()[0]['military_number']);
+    }
+
+    public function test_get_martyrs_search_by_phone_number()
+    {
+        // Create a martyr with a specific phone number
+        $martyr = Martyr::factory()->create([
+            'full_name' => 'فاطمة أحمد حسن',
+            'agent_phone' => '0916299469',
+        ]);
+
+        $request = new Request;
+        $request->merge(['search' => '0916299469']);
+
+        $service = new MartyrService;
+
+        $paginator = $service->getMartyrs($request);
+
+        $this->assertEquals(1, $paginator->total());
+        $this->assertEquals('فاطمة أحمد حسن', $paginator->items()[0]['full_name']);
+        $this->assertEquals('0916299469', $paginator->items()[0]['agent_phone']);
+    }
 }

@@ -71,6 +71,7 @@ class MartyrTest extends TestCase
         $branchId = \App\Models\Branch::where('bank_id', $bankId)->first()->id;
 
         $data = [
+            'file_number' => 'FILE-001',
             'full_name' => 'الاسم الكامل',
             'national_id' => '123456789012',
             'address' => 'العنوان الرئيسي',
@@ -100,6 +101,7 @@ class MartyrTest extends TestCase
 
         // Check that martyr was created with correct data
         $this->assertDatabaseHas('martyrs', [
+            'file_number' => 'FILE-001',
             'full_name' => 'الاسم الكامل',
             'national_id' => '123456789012',
             'address' => 'العنوان الرئيسي',
@@ -161,6 +163,7 @@ class MartyrTest extends TestCase
         $this->assertDatabaseHas('martyrs', ['id' => $martyr->id]);
 
         $data = [
+            'file_number' => 'FILE-002',
             'full_name' => 'الاسم المحدث',
             'national_id' => '222222222222',
             'address' => 'العنوان المحدث',

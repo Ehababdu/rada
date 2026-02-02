@@ -44,6 +44,7 @@ class MartyrFactory extends Factory
         }
 
         return [
+            'file_number' => $this->faker->unique()->numerify('FILE-####'),
             'full_name' => $this->faker->randomElement([
                 $this->faker->name(),
                 'محمد أحمد علي',

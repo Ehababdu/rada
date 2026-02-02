@@ -106,6 +106,7 @@ const getEmploymentStatusName = (item: any) => {
 
 interface Martyr {
     id: number;
+    file_number: string | null;
     full_name: string;
     national_id: string;
     address: string;
@@ -271,8 +272,9 @@ export default function Index({
     // Columns Configuration
     const availableColumns = useMemo(
         () => [
-            { key: 'id', label: 'ID', required: true },
+            { key: '#', label: '#', required: true },
             { key: 'full_name', label: t('martyrs.full_name'), required: true },
+            { key: 'file_number', label: t('martyrs.file_number'), required: true },
             {
                 key: 'national_id',
                 label: t('martyrs.national_id'),
@@ -406,7 +408,7 @@ export default function Index({
     const basicKeys = useMemo(() =>
         availableColumns
             .filter((col) =>
-                ['id', 'full_name', 'national_id', 'military_rank', 'job_grade', 'marital_status', 'employment_status', 'employer', 'has_martyr_decision', 'agent_name', 'military_number', ...(canViewAttachments ? ['attachments'] : [])].includes(col.key),
+                ['#', 'file_number', 'full_name', 'national_id', 'military_rank', 'job_grade', 'marital_status', 'employment_status', 'employer', 'has_martyr_decision', 'agent_name', 'military_number', ...(canViewAttachments ? ['attachments'] : [])].includes(col.key),
             )
             .map((c) => c.key),
         [availableColumns, canViewAttachments],
@@ -551,12 +553,12 @@ export default function Index({
     const columns = useMemo<ColumnDef<Martyr>[]>(
         () => [
             {
-                id: 'id',
-                accessorKey: 'id',
+                id: '#',
+                accessorKey: '#',
                 header: '#',
-                cell: ({ row }: { row: { original: Martyr } }) => (
+                cell: ({ row }: { row: { index: number } }) => (
                     <span className="font-mono text-xs text-muted-foreground">
-                        {row.original.id}
+                        {row.index + 1}
                     </span>
                 ),
             },
@@ -599,6 +601,16 @@ export default function Index({
                                 {row.original.full_name}
                             </Link>
                         </div>
+                    </div>
+                ),
+            },
+            {
+                id: 'file_number',
+                accessorKey: 'file_number',
+                header: t('martyrs.file_number'),
+                cell: ({ row }: { row: { original: Martyr } }) => (
+                    <div className="font-medium text-sm">
+                        {row.original.file_number || '-'}
                     </div>
                 ),
             },

@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 
 interface Martyr {
     id: number;
+    file_number: string;
     full_name: string;
     national_id: string;
     address: string;
@@ -283,6 +284,12 @@ export default function Show({ martyr }: Props) {
                 <div className="space-y-6">
                     {/* Personal Information */}
                     <InfoCard title={t('martyrs.personal_info')} icon={User}>
+                        <InfoField
+                            label={t('martyrs.file_number')}
+                            value={martyr.file_number}
+                            icon={FileText}
+                            noDataText={t('martyrs.no_data')}
+                        />
                         <InfoField
                             label={t('martyrs.full_name')}
                             value={martyr.full_name}

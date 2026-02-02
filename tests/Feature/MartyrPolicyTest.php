@@ -50,6 +50,7 @@ class MartyrPolicyTest extends TestCase
         $this->actingAs($user);
 
         $data = [
+            'file_number' => 'FILE-003',
             'full_name' => 'محمد علي',
             'national_id' => '123456789012',
             'address' => 'عنوان',

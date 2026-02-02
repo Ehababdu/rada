@@ -4,13 +4,17 @@ import { initReactI18next } from 'react-i18next';
 // Import translation files
 import arCommon from './locales/ar/common.json';
 import enCommon from './locales/en/common.json';
+import arRoles from './locales/ar/roles.json';
+import enRoles from './locales/en/roles.json';
 
 const resources = {
     en: {
         common: enCommon,
+        roles: enRoles,
     },
     ar: {
         common: arCommon,
+        roles: arRoles,
         // martyrs: arMartyrs,
         // promotions: arPromotions,
     },
@@ -23,7 +27,7 @@ i18n.use(initReactI18next).init({
     resources,
     lng: 'ar', // Force Arabic
     fallbackLng: 'en',
-    ns: ['common'], // Add other namespaces as needed
+    ns: ['common', 'roles'], // Add other namespaces as needed
     defaultNS: 'common',
     detection: {
         order: ['localStorage'],

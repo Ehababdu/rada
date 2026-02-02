@@ -284,6 +284,7 @@ export default function Create({
     ];
 
     const { data, setData, post, processing, errors } = useForm<{
+        file_number: string;
         full_name: string;
         national_id: string;
         address: string;
@@ -314,6 +315,7 @@ export default function Create({
         agent_passport_number: string | null;
         job_grade_id: number | null;
     }>({
+        file_number: '',
         full_name: '',
         national_id: '',
         address: '',
@@ -476,6 +478,23 @@ export default function Create({
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Basic Information */}
                     <FormSection title={t('martyrs.basic_info')}>
+                        <FormField
+                            icon={FileText}
+                            label={t('martyrs.file_number')}
+                            placeholder={t('martyrs.enter_file_number')}
+                            error={errors.file_number}
+                        >
+                            <Input
+                                id="file_number"
+                                value={data.file_number}
+                                onChange={(e) =>
+                                    setData('file_number', e.target.value)
+                                }
+                                placeholder={t('martyrs.enter_file_number')}
+                                className="w-full"
+                            />
+                        </FormField>
+
                         <FormField
                             icon={User}
                             label={t('martyrs.full_name')}

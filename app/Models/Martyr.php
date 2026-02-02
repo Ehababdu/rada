@@ -67,6 +67,7 @@ class Martyr extends Model
     }
 
     protected $fillable = [
+        'file_number',
         'full_name',
         'national_id',
         'address',

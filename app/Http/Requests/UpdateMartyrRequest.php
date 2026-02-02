@@ -25,6 +25,7 @@ class UpdateMartyrRequest extends FormRequest
     {
         // Sanitize and normalize input data
         $this->merge([
+            'file_number' => $this->file_number ? trim($this->file_number) : null,
             'full_name' => $this->full_name ? trim($this->full_name) : null,
             'national_id' => $this->national_id ? preg_replace('/\s+/', '', $this->national_id) : null,
             'address' => $this->address ? trim($this->address) : null,
@@ -55,6 +56,7 @@ class UpdateMartyrRequest extends FormRequest
 
         return [
             // Basic Information (Required)
+            'file_number' => ['required', 'string', 'max:50', 'unique:martyrs,file_number,'.$martyrId],
             'full_name' => ['required', 'string', 'min:3', 'max:255', 'regex:/^[\p{Arabic}\s]+$/u'],
             'national_id' => ['required', 'string', 'digits:12', 'unique:martyrs,national_id,'.$martyrId],
             'address' => ['required', 'string', 'min:5', 'max:500'],

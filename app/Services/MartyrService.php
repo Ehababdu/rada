@@ -21,22 +21,46 @@ class MartyrService
         if ($search) {
             $searchTerm = trim($search);
 
-            // Split search term into words for partial name matching
-            $searchWords = array_filter(explode(' ', $searchTerm));
+            // Search logic for numeric terms:
+            // 1. If starts with '09' → search in agent_phone field only (Syrian phone numbers)
+            // 2. If numeric but not phone → search in military_number, national_id, and agent_phone fields
+            // 3. If text → search in full_name field with word matching
 
-            if (!empty($searchWords)) {
-                // For multiple words, find records that contain ALL words (AND logic)
-                $validWords = array_filter($searchWords, function($word) {
-                    return mb_strlen($word) >= 2; // Only words with at least 2 characters
+            // If it's a phone number (starts with 09), search phone field only
+            if (is_numeric($searchTerm) && str_starts_with($searchTerm, '09')) {
+                // Search by agent phone - supports partial matching
+                $query->where('agent_phone', 'LIKE', '%' . $searchTerm . '%');
+            }
+            // If it's a number, search in all numeric fields
+            elseif (is_numeric($searchTerm)) {
+                $query->where(function($q) use ($searchTerm) {
+                    // Search by military number - supports partial matching
+                    $q->orWhere('military_number', 'LIKE', '%' . $searchTerm . '%');
+                    // Search by national ID - supports partial matching
+                    $q->orWhere('national_id', 'LIKE', '%' . $searchTerm . '%');
+                    // Also search in phone field for partial matches
+                    $q->orWhere('agent_phone', 'LIKE', '%' . $searchTerm . '%');
+                    // Search by file number - supports partial matching
+                    $q->orWhere('file_number', 'LIKE', '%' . $searchTerm . '%');
                 });
+            } else {
+                // Split search term into words for partial name matching
+                $searchWords = array_filter(explode(' ', $searchTerm));
 
-                if (!empty($validWords)) {
-                    $query->where(function($q) use ($validWords) {
-                        foreach ($validWords as $word) {
-                            // Search for each word in the full_name field using LIKE
-                            $q->where('full_name', 'LIKE', '%' . $word . '%');
-                        }
+                if (!empty($searchWords)) {
+                    // For multiple words, find records that contain ALL words (AND logic)
+                    $validWords = array_filter($searchWords, function($word) {
+                        return mb_strlen($word) >= 2; // Only words with at least 2 characters
                     });
+
+                    if (!empty($validWords)) {
+                        $query->where(function($q) use ($validWords) {
+                            foreach ($validWords as $word) {
+                                // Search for each word in the full_name field using LIKE
+                                $q->where('full_name', 'LIKE', '%' . $word . '%');
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -58,6 +82,7 @@ class MartyrService
             'previous_employer_id',
             'status',
             'wife_status',
+            'file_number',
         ];
 
         foreach ($allowedFilters as $filter) {
@@ -112,6 +137,7 @@ class MartyrService
             'created_at',
             'updated_at',
             'status',
+            'file_number',
         ];
 
         if (in_array($sortField, $allowedSorts)) {

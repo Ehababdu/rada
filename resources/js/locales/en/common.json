@@ -1,6 +1,7 @@
 {
     "actions": "Actions",
     "active": "Active",
+    "role_deleted_successfully": "Role deleted successfully",
     "add_attachment": "Add Attachment",
     "columns": "Show Columns",
     "rows": "rows",
@@ -317,6 +318,8 @@
         "from": "From",
         "fullName": "Full Name",
         "full_name": "Full Name",
+        "file_number": "File Number",
+        "enter_file_number": "Enter File Number",
         "has_parents": "Has Parents",
         "id": "ID",
         "loading": "Loading martyrs...",
