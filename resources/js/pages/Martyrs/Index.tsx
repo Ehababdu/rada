@@ -255,22 +255,18 @@ export default function Index({
     const [isDeleting, setIsDeleting] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
     const [filteredBranches, setFilteredBranches] = useState(branches);
-    const [searchTerm, setSearchTerm] = useState(filters.search || '');
-
 
     const isUserChange = useRef(false);
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-
-    // Update localFilters when filters prop changes
+    // Update localFilters when filters prop changes (from server)
     useEffect(() => {
-        setLocalFilters(prev => ({ ...prev, ...filters }));
+        // Deep compare/check to prevent loop
+        const filtersChanged = JSON.stringify(localFilters) !== JSON.stringify(filters);
+        if (filtersChanged) {
+            setLocalFilters(filters);
+        }
     }, [filters]);
-
-    // Update searchTerm when filters.search changes
-    useEffect(() => {
-        setSearchTerm(filters.search || '');
-    }, [filters.search]);
 
     // Columns Configuration
     const availableColumns = useMemo(
@@ -500,25 +496,22 @@ export default function Index({
         router.get('/martyrs', cleaned, {
             preserveState: true,
             preserveScroll: true,
+            replace: true,
         });
     }, [localFilters]);
 
     const handleSearchChange = (value: string) => {
-        setSearchTerm(value);
         if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
         searchTimeoutRef.current = setTimeout(
             () => triggerSearch(value),
-            300, // Reduced from 400ms for better responsiveness
+            400,
         );
     };
 
     const handleFilterChange = (key: keyof Filters, value: string) => {
-        if (key === 'search') {
-            handleSearchChange(value);
-            return;
-        }
         const newValue = value === 'all' ? '' : value;
-        setLocalFilters((prev) => ({ ...prev, [key]: newValue }));
+        const newFilters = { ...localFilters, [key]: newValue };
+        setLocalFilters(newFilters);
         isUserChange.current = true;
     };
 
@@ -547,7 +540,6 @@ export default function Index({
 
     const clearFilters = () => {
         setLocalFilters({});
-        setSearchTerm('');
         router.get(
             '/martyrs',
             {},
@@ -1004,7 +996,7 @@ export default function Index({
                                 <Input
                                     placeholder={t('martyrs.search_placeholder')}
                                     className="bg-background pl-9 transition-all focus:ring-2 focus:ring-primary/20"
-                                    value={searchTerm}
+                                    defaultValue={filters.search || ''}
                                     onChange={(e) =>
                                         handleSearchChange(e.target.value)
                                     }
