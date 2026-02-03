@@ -29,7 +29,9 @@ export function MartyrsDeleteDialog({
         <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>{t('martyrs.confirm_delete')}</AlertDialogTitle>
+                    <AlertDialogTitle>
+                        {t('martyrs.confirm_delete')}
+                    </AlertDialogTitle>
                     <AlertDialogDescription className="text-destructive">
                         {t('martyrs.delete_warning_message') ||
                             'This action cannot be undone. This will permanently delete the martyr record.'}

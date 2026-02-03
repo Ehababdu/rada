@@ -75,9 +75,7 @@ export function getUserPermissions(
 
     // Collect permission names from shared props or embedded user relations
     const userPermissions: string[] =
-        auth.permissions ||
-        auth.user?.permissions?.map((p) => p.name) ||
-        [];
+        auth.permissions || auth.user?.permissions?.map((p) => p.name) || [];
 
     // Collect role names from shared props or embedded user relations
     const userRoles: string[] =

@@ -2,7 +2,7 @@ import { usePermissions } from '@/hooks/use-permissions';
 import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router } from '@inertiajs/react';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Shadcn UI Components
@@ -19,6 +19,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { DataTable } from '@/components/ui/data-table';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -38,9 +39,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import {
-    ScrollArea,
-} from '@/components/ui/scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
     Select,
     SelectContent,
@@ -56,8 +55,12 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { DataTable } from '@/components/ui/data-table';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 // Icons
 import {
@@ -72,9 +75,7 @@ import {
     UserCircle,
 } from 'lucide-react';
 
-import {
-    ColumnDef,
-} from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 
 // --- Interfaces ---
 interface Compensation {
@@ -296,7 +297,9 @@ export default function Index({
                             {t('compensations.title')}
                         </h1>
                         <p className="text-muted-foreground">
-                            {t('compensations.description', { count: compensations.total })}
+                            {t('compensations.description', {
+                                count: compensations.total,
+                            })}
                         </p>
                     </div>
 
@@ -306,7 +309,9 @@ export default function Index({
                         <div className="relative w-full md:w-72">
                             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                             <Input
-                                placeholder={t('compensations.search_placeholder')}
+                                placeholder={t(
+                                    'compensations.search_placeholder',
+                                )}
                                 className="bg-background pl-9"
                                 value={localFilters.search || ''}
                                 onChange={(e) =>
@@ -327,14 +332,20 @@ export default function Index({
                                             <Button
                                                 variant="outline"
                                                 size="icon"
-                                                title={t('compensations.filters.advanced')}
+                                                title={t(
+                                                    'compensations.filters.advanced',
+                                                )}
                                             >
                                                 <Filter className="h-4 w-4" />
                                             </Button>
                                         </SheetTrigger>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <p>{t('compensations.filters.advanced')}</p>
+                                        <p>
+                                            {t(
+                                                'compensations.filters.advanced',
+                                            )}
+                                        </p>
                                     </TooltipContent>
                                 </Tooltip>
                                 <SheetContent
@@ -343,10 +354,14 @@ export default function Index({
                                 >
                                     <SheetHeader className="border-b p-6">
                                         <SheetTitle>
-                                            {t('compensations.filters.advanced')}
+                                            {t(
+                                                'compensations.filters.advanced',
+                                            )}
                                         </SheetTitle>
                                         <SheetDescription>
-                                            {t('compensations.filters.advanced_description')}
+                                            {t(
+                                                'compensations.filters.advanced_description',
+                                            )}
                                         </SheetDescription>
                                     </SheetHeader>
                                     <ScrollArea className="h-[calc(100vh-10rem)] p-6">
@@ -356,11 +371,14 @@ export default function Index({
                                                 {/* Martyr Filter */}
                                                 <div className="space-y-2">
                                                     <Label>
-                                                        {t('compensations.filter_by_martyr')}
+                                                        {t(
+                                                            'compensations.filter_by_martyr',
+                                                        )}
                                                     </Label>
                                                     <Select
                                                         value={
-                                                            localFilters.martyr_id || 'all'
+                                                            localFilters.martyr_id ||
+                                                            'all'
                                                         }
                                                         onValueChange={(v) =>
                                                             handleFilterChange(
@@ -371,20 +389,30 @@ export default function Index({
                                                     >
                                                         <SelectTrigger>
                                                             <SelectValue
-                                                                placeholder={t('compensations.all_martyrs')}
+                                                                placeholder={t(
+                                                                    'compensations.all_martyrs',
+                                                                )}
                                                             />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectItem value="all">
-                                                                {t('compensations.all_martyrs')}
+                                                                {t(
+                                                                    'compensations.all_martyrs',
+                                                                )}
                                                             </SelectItem>
                                                             {martyrs.map(
                                                                 (m) => (
                                                                     <SelectItem
-                                                                        key={m.id}
-                                                                        value={String(m.id)}
+                                                                        key={
+                                                                            m.id
+                                                                        }
+                                                                        value={String(
+                                                                            m.id,
+                                                                        )}
                                                                     >
-                                                                        {m.full_name}
+                                                                        {
+                                                                            m.full_name
+                                                                        }
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -395,11 +423,14 @@ export default function Index({
                                                 {/* Parents Status */}
                                                 <div className="space-y-2">
                                                     <Label>
-                                                        {t('martyrs.parents_status')}
+                                                        {t(
+                                                            'martyrs.parents_status',
+                                                        )}
                                                     </Label>
                                                     <Select
                                                         value={
-                                                            localFilters.parents_status_id || 'all'
+                                                            localFilters.parents_status_id ||
+                                                            'all'
                                                         }
                                                         onValueChange={(v) =>
                                                             handleFilterChange(
@@ -410,7 +441,9 @@ export default function Index({
                                                     >
                                                         <SelectTrigger>
                                                             <SelectValue
-                                                                placeholder={t('all')}
+                                                                placeholder={t(
+                                                                    'all',
+                                                                )}
                                                             />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -420,8 +453,12 @@ export default function Index({
                                                             {parentsStatuses.map(
                                                                 (s) => (
                                                                     <SelectItem
-                                                                        key={s.id}
-                                                                        value={String(s.id)}
+                                                                        key={
+                                                                            s.id
+                                                                        }
+                                                                        value={String(
+                                                                            s.id,
+                                                                        )}
                                                                     >
                                                                         {isRTL
                                                                             ? s.name_ar
@@ -436,11 +473,14 @@ export default function Index({
                                                 {/* Employment Status */}
                                                 <div className="space-y-2">
                                                     <Label>
-                                                        {t('martyrs.employment_status')}
+                                                        {t(
+                                                            'martyrs.employment_status',
+                                                        )}
                                                     </Label>
                                                     <Select
                                                         value={
-                                                            localFilters.employment_status_id || 'all'
+                                                            localFilters.employment_status_id ||
+                                                            'all'
                                                         }
                                                         onValueChange={(v) =>
                                                             handleFilterChange(
@@ -451,7 +491,9 @@ export default function Index({
                                                     >
                                                         <SelectTrigger>
                                                             <SelectValue
-                                                                placeholder={t('all')}
+                                                                placeholder={t(
+                                                                    'all',
+                                                                )}
                                                             />
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -461,8 +503,12 @@ export default function Index({
                                                             {employmentStatuses.map(
                                                                 (s) => (
                                                                     <SelectItem
-                                                                        key={s.id}
-                                                                        value={String(s.id)}
+                                                                        key={
+                                                                            s.id
+                                                                        }
+                                                                        value={String(
+                                                                            s.id,
+                                                                        )}
                                                                     >
                                                                         {s.name}
                                                                     </SelectItem>
@@ -530,7 +576,11 @@ export default function Index({
                                                     ? `/compensations?page=${compensations.current_page - 1}`
                                                     : '#'
                                             }
-                                            className={compensations.current_page <= 1 ? 'pointer-events-none opacity-50' : ''}
+                                            className={
+                                                compensations.current_page <= 1
+                                                    ? 'pointer-events-none opacity-50'
+                                                    : ''
+                                            }
                                         />
                                     </PaginationItem>
                                     {/* Show first page */}
@@ -551,21 +601,29 @@ export default function Index({
                                     {/* Show pages around current */}
                                     {Array.from(
                                         {
-                                            length: Math.min(5, compensations.last_page),
+                                            length: Math.min(
+                                                5,
+                                                compensations.last_page,
+                                            ),
                                         },
                                         (_, i) => {
                                             const page = Math.max(
                                                 1,
                                                 Math.min(
                                                     compensations.last_page,
-                                                    compensations.current_page - 2 + i,
+                                                    compensations.current_page -
+                                                        2 +
+                                                        i,
                                                 ),
                                             );
                                             return (
                                                 <PaginationItem key={page}>
                                                     <PaginationLink
                                                         href={`/compensations?page=${page}`}
-                                                        isActive={page === compensations.current_page}
+                                                        isActive={
+                                                            page ===
+                                                            compensations.current_page
+                                                        }
                                                     >
                                                         {page}
                                                     </PaginationLink>
@@ -574,15 +632,19 @@ export default function Index({
                                         },
                                     )}
                                     {/* Show last page */}
-                                    {compensations.current_page < compensations.last_page - 2 && (
+                                    {compensations.current_page <
+                                        compensations.last_page - 2 && (
                                         <>
-                                            {compensations.current_page < compensations.last_page - 3 && (
+                                            {compensations.current_page <
+                                                compensations.last_page - 3 && (
                                                 <PaginationItem>
                                                     <PaginationEllipsis />
                                                 </PaginationItem>
                                             )}
                                             <PaginationItem>
-                                                <PaginationLink href={`/compensations?page=${compensations.last_page}`}>
+                                                <PaginationLink
+                                                    href={`/compensations?page=${compensations.last_page}`}
+                                                >
                                                     {compensations.last_page}
                                                 </PaginationLink>
                                             </PaginationItem>
@@ -591,11 +653,17 @@ export default function Index({
                                     <PaginationItem>
                                         <PaginationNext
                                             href={
-                                                compensations.current_page < compensations.last_page
+                                                compensations.current_page <
+                                                compensations.last_page
                                                     ? `/compensations?page=${compensations.current_page + 1}`
                                                     : '#'
                                             }
-                                            className={compensations.current_page >= compensations.last_page ? 'pointer-events-none opacity-50' : ''}
+                                            className={
+                                                compensations.current_page >=
+                                                compensations.last_page
+                                                    ? 'pointer-events-none opacity-50'
+                                                    : ''
+                                            }
                                         />
                                     </PaginationItem>
                                 </PaginationContent>
@@ -605,7 +673,10 @@ export default function Index({
                 </div>
 
                 {/* Delete Alert Dialog */}
-                <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+                <AlertDialog
+                    open={!!deleteId}
+                    onOpenChange={(open) => !open && setDeleteId(null)}
+                >
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>
@@ -628,7 +699,9 @@ export default function Index({
                                                 {
                                                     onSuccess: () => {
                                                         toast({
-                                                            title: t('compensations.deleted'),
+                                                            title: t(
+                                                                'compensations.deleted',
+                                                            ),
                                                             variant: 'default',
                                                         });
                                                         setDeleteId(null);

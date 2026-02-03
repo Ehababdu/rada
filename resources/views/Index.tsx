@@ -1435,51 +1435,60 @@ export default React.memo(function Index({
                                 <TableHeader>
                                     {table
                                         .getHeaderGroups()
-                                        .map((headerGroup: HeaderGroup<Martyr>) => (
-                                            <TableRow key={headerGroup.id}>
-                                                {headerGroup.headers.map(
-                                                    (header: Header<Martyr, unknown>) => (
-                                                        <TableHead
-                                                            key={header.id}
-                                                            className={`text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400 ${
-                                                                tablePadding ===
-                                                                'compact'
-                                                                    ? 'px-2 py-2'
-                                                                    : 'px-4 py-3'
-                                                            }`}
-                                                        >
-                                                            {header.isPlaceholder ? null : (
-                                                                <div
-                                                                    className="flex cursor-pointer items-center gap-1 select-none"
-                                                                    onClick={header.column.getToggleSortingHandler()}
-                                                                >
-                                                                    {flexRender(
-                                                                        header
-                                                                            .column
-                                                                            .columnDef
-                                                                            .header,
-                                                                        header.getContext(),
-                                                                    )}
-                                                                    {header.column.getCanSort() &&
-                                                                        ({
-                                                                            asc: (
-                                                                                <ArrowUp className="h-4 w-4" />
-                                                                            ),
-                                                                            desc: (
-                                                                                <ArrowDown className="h-4 w-4" />
-                                                                            ),
-                                                                        }[
-                                                                            header.column.getIsSorted() as string
-                                                                        ] ?? (
-                                                                            <ArrowUpDown className="h-4 w-4 opacity-50" />
-                                                                        ))}
-                                                                </div>
-                                                            )}
-                                                        </TableHead>
-                                                    ),
-                                                )}
-                                            </TableRow>
-                                        ))}
+                                        .map(
+                                            (
+                                                headerGroup: HeaderGroup<Martyr>,
+                                            ) => (
+                                                <TableRow key={headerGroup.id}>
+                                                    {headerGroup.headers.map(
+                                                        (
+                                                            header: Header<
+                                                                Martyr,
+                                                                unknown
+                                                            >,
+                                                        ) => (
+                                                            <TableHead
+                                                                key={header.id}
+                                                                className={`text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400 ${
+                                                                    tablePadding ===
+                                                                    'compact'
+                                                                        ? 'px-2 py-2'
+                                                                        : 'px-4 py-3'
+                                                                }`}
+                                                            >
+                                                                {header.isPlaceholder ? null : (
+                                                                    <div
+                                                                        className="flex cursor-pointer items-center gap-1 select-none"
+                                                                        onClick={header.column.getToggleSortingHandler()}
+                                                                    >
+                                                                        {flexRender(
+                                                                            header
+                                                                                .column
+                                                                                .columnDef
+                                                                                .header,
+                                                                            header.getContext(),
+                                                                        )}
+                                                                        {header.column.getCanSort() &&
+                                                                            ({
+                                                                                asc: (
+                                                                                    <ArrowUp className="h-4 w-4" />
+                                                                                ),
+                                                                                desc: (
+                                                                                    <ArrowDown className="h-4 w-4" />
+                                                                                ),
+                                                                            }[
+                                                                                header.column.getIsSorted() as string
+                                                                            ] ?? (
+                                                                                <ArrowUpDown className="h-4 w-4 opacity-50" />
+                                                                            ))}
+                                                                    </div>
+                                                                )}
+                                                            </TableHead>
+                                                        ),
+                                                    )}
+                                                </TableRow>
+                                            ),
+                                        )}
                                 </TableHeader>
                                 <TableBody>
                                     {isLoading ? (
@@ -1501,24 +1510,34 @@ export default React.memo(function Index({
                                                 >
                                                     {row
                                                         .getVisibleCells()
-                                                        .map((cell: Cell<Martyr, unknown>) => (
-                                                            <TableCell
-                                                                key={cell.id}
-                                                                className={`text-sm text-gray-900 dark:text-gray-100 ${
-                                                                    tablePadding ===
-                                                                    'compact'
-                                                                        ? 'px-2 py-2'
-                                                                        : 'px-4 py-3'
-                                                                }`}
-                                                            >
-                                                                {flexRender(
-                                                                    cell.column
-                                                                        .columnDef
-                                                                        .cell,
-                                                                    cell.getContext(),
-                                                                )}
-                                                            </TableCell>
-                                                        ))}
+                                                        .map(
+                                                            (
+                                                                cell: Cell<
+                                                                    Martyr,
+                                                                    unknown
+                                                                >,
+                                                            ) => (
+                                                                <TableCell
+                                                                    key={
+                                                                        cell.id
+                                                                    }
+                                                                    className={`text-sm text-gray-900 dark:text-gray-100 ${
+                                                                        tablePadding ===
+                                                                        'compact'
+                                                                            ? 'px-2 py-2'
+                                                                            : 'px-4 py-3'
+                                                                    }`}
+                                                                >
+                                                                    {flexRender(
+                                                                        cell
+                                                                            .column
+                                                                            .columnDef
+                                                                            .cell,
+                                                                        cell.getContext(),
+                                                                    )}
+                                                                </TableCell>
+                                                            ),
+                                                        )}
                                                 </TableRow>
                                             ))
                                     ) : (

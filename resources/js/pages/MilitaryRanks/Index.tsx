@@ -439,9 +439,8 @@ export default function Index({ militaryRanks, filters }: Props) {
                                                 column.toggleVisibility(!!v)
                                             }
                                         >
-                                            {t(
-                                                `military_ranks.${column.id}`,
-                                            ) || column.id}
+                                            {t(`military_ranks.${column.id}`) ||
+                                                column.id}
                                         </DropdownMenuCheckboxItem>
                                     ))}
                             </DropdownMenuContent>
@@ -467,10 +466,10 @@ export default function Index({ militaryRanks, filters }: Props) {
                                                 {header.isPlaceholder
                                                     ? null
                                                     : flexRender(
-                                                        header.column
-                                                            .columnDef.header,
-                                                        header.getContext(),
-                                                    )}
+                                                          header.column
+                                                              .columnDef.header,
+                                                          header.getContext(),
+                                                      )}
                                             </TableHead>
                                         ))}
                                     </TableRow>

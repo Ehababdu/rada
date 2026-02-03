@@ -148,51 +148,58 @@ export default function Index({
     const searchTimeoutRef = useRef<NodeJS.Timeout>(null);
 
     // Function to update data from server
-    const updateData = useCallback((params: {
-        page?: number;
-        per_page?: number;
-        sort?: string;
-        filter?: Record<string, string>;
-    }) => {
-        const effectivePage =
-            params.page !== undefined ? params.page : pageIndex + 1;
-        const effectivePerPage =
-            params.per_page !== undefined ? params.per_page : pageSize;
+    const updateData = useCallback(
+        (params: {
+            page?: number;
+            per_page?: number;
+            sort?: string;
+            filter?: Record<string, string>;
+        }) => {
+            const effectivePage =
+                params.page !== undefined ? params.page : pageIndex + 1;
+            const effectivePerPage =
+                params.per_page !== undefined ? params.per_page : pageSize;
 
-        let effectiveSort = '';
-        if (params.sort) {
-            effectiveSort = params.sort;
-        } else if (sortBy) {
-            effectiveSort = sortDirection === 'desc' ? `-${sortBy}` : sortBy;
-        }
+            let effectiveSort = '';
+            if (params.sort) {
+                effectiveSort = params.sort;
+            } else if (sortBy) {
+                effectiveSort =
+                    sortDirection === 'desc' ? `-${sortBy}` : sortBy;
+            }
 
-        const query: Record<string, unknown> = {
-            page: effectivePage,
-            per_page: effectivePerPage,
-            ...(effectiveSort && { sort: effectiveSort }),
-            ...(searchQuery && { search: searchQuery }),
-            ...(roleFilter && { role: roleFilter }),
-            ...params.filter,
-        };
+            const query: Record<string, unknown> = {
+                page: effectivePage,
+                per_page: effectivePerPage,
+                ...(effectiveSort && { sort: effectiveSort }),
+                ...(searchQuery && { search: searchQuery }),
+                ...(roleFilter && { role: roleFilter }),
+                ...params.filter,
+            };
 
-        router.visit('/users', {
-            data: query,
-            preserveState: true,
-            preserveScroll: true,
-            only: ['users', 'filters'],
-        });
-    }, [pageIndex, pageSize, sortBy, sortDirection, searchQuery, roleFilter]);
+            router.visit('/users', {
+                data: query,
+                preserveState: true,
+                preserveScroll: true,
+                only: ['users', 'filters'],
+            });
+        },
+        [pageIndex, pageSize, sortBy, sortDirection, searchQuery, roleFilter],
+    );
 
     // Debounced search
-    const debouncedSearch = useCallback((value: string) => {
-        setSearchQuery(value);
-        if (searchTimeoutRef.current) {
-            clearTimeout(searchTimeoutRef.current);
-        }
-        searchTimeoutRef.current = setTimeout(() => {
-            updateData({ filter: value ? { search: value } : {} });
-        }, 300);
-    }, [updateData]);
+    const debouncedSearch = useCallback(
+        (value: string) => {
+            setSearchQuery(value);
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+            searchTimeoutRef.current = setTimeout(() => {
+                updateData({ filter: value ? { search: value } : {} });
+            }, 300);
+        },
+        [updateData],
+    );
 
     // Reset search
     const resetSearch = useCallback(() => {
@@ -211,37 +218,36 @@ export default function Index({
     }, []);
 
     // Helper function for sortable header
-    const SortableHeader = useCallback(({
-        columnId,
-        label,
-    }: {
-        columnId: string;
-        label: string;
-    }) => (
-        <Button
-            variant="ghost"
-            onClick={() => {
-                if (sortBy === columnId) {
-                    setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-                } else {
-                    setSortBy(columnId);
-                    setSortDirection('asc');
-                }
-            }}
-            className="h-auto p-0 font-semibold"
-        >
-            {label}
-            {sortBy === columnId ? (
-                sortDirection === 'asc' ? (
-                    <ArrowUp className="ml-2 h-4 w-4" />
+    const SortableHeader = useCallback(
+        ({ columnId, label }: { columnId: string; label: string }) => (
+            <Button
+                variant="ghost"
+                onClick={() => {
+                    if (sortBy === columnId) {
+                        setSortDirection(
+                            sortDirection === 'asc' ? 'desc' : 'asc',
+                        );
+                    } else {
+                        setSortBy(columnId);
+                        setSortDirection('asc');
+                    }
+                }}
+                className="h-auto p-0 font-semibold"
+            >
+                {label}
+                {sortBy === columnId ? (
+                    sortDirection === 'asc' ? (
+                        <ArrowUp className="ml-2 h-4 w-4" />
+                    ) : (
+                        <ArrowDown className="ml-2 h-4 w-4" />
+                    )
                 ) : (
-                    <ArrowDown className="ml-2 h-4 w-4" />
-                )
-            ) : (
-                <ArrowUpDown className="ml-2 h-4 w-4" />
-            )}
-        </Button>
-    ), [sortBy, sortDirection]);
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                )}
+            </Button>
+        ),
+        [sortBy, sortDirection],
+    );
 
     const handleDelete = (user: User) => {
         setUserToDelete(user);
@@ -309,15 +315,21 @@ export default function Index({
                     }
                     return (
                         <div className="flex flex-wrap gap-1">
-                            {roles.map((role: { id: number; name: string; display_name?: string }) => (
-                                <Badge
-                                    key={role.id}
-                                    variant="secondary"
-                                    className="text-xs"
-                                >
-                                    {role.display_name || role.name}
-                                </Badge>
-                            ))}
+                            {roles.map(
+                                (role: {
+                                    id: number;
+                                    name: string;
+                                    display_name?: string;
+                                }) => (
+                                    <Badge
+                                        key={role.id}
+                                        variant="secondary"
+                                        className="text-xs"
+                                    >
+                                        {role.display_name || role.name}
+                                    </Badge>
+                                ),
+                            )}
                         </div>
                     );
                 },
@@ -509,9 +521,9 @@ export default function Index({
                             <Select
                                 value={
                                     roleFilter &&
-                                        roles.some(
-                                            (role) => role.name === roleFilter,
-                                        )
+                                    roles.some(
+                                        (role) => role.name === roleFilter,
+                                    )
                                         ? roleFilter
                                         : 'all'
                                 }
@@ -623,10 +635,10 @@ export default function Index({
                                                 {header.isPlaceholder
                                                     ? null
                                                     : flexRender(
-                                                        header.column
-                                                            .columnDef.header,
-                                                        header.getContext(),
-                                                    )}
+                                                          header.column
+                                                              .columnDef.header,
+                                                          header.getContext(),
+                                                      )}
                                             </TableHead>
                                         ))}
                                     </TableRow>

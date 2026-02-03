@@ -132,15 +132,19 @@ export default function Index({ alerts, filters }: Props) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const echoInstance = (window as typeof window & { Echo?: any }).Echo;
-        const channel = echoInstance?.private?.(`alerts.${auth.user.id}`)
+        const channel = echoInstance
+            ?.private?.(`alerts.${auth.user.id}`)
             ?.listen('.alert.created', (e: Alert) => {
-                setRealTimeAlerts(prev => [e, ...prev]);
-                toast({
-                    title: e.title,
-                    description: e.message,
-                }, {
-                    duration: 5000,
-                });
+                setRealTimeAlerts((prev) => [e, ...prev]);
+                toast(
+                    {
+                        title: e.title,
+                        description: e.message,
+                    },
+                    {
+                        duration: 5000,
+                    },
+                );
             });
 
         return () => {
@@ -150,19 +154,24 @@ export default function Index({ alerts, filters }: Props) {
 
     // Combine real-time alerts with paginated alerts
     const allAlerts = useMemo(() => {
-        const existingIds = new Set(alerts.data.map(alert => alert.id));
-        const filteredRealTime = realTimeAlerts.filter(alert => !existingIds.has(alert.id));
+        const existingIds = new Set(alerts.data.map((alert) => alert.id));
+        const filteredRealTime = realTimeAlerts.filter(
+            (alert) => !existingIds.has(alert.id),
+        );
         return [...filteredRealTime, ...alerts.data];
     }, [alerts.data, realTimeAlerts]);
 
     // Search Logic
-    const performSearch = useCallback((params: Record<string, string | number | boolean>) => {
-        router.get('/alerts', params, {
-            preserveState: true,
-            replace: true,
-            preserveScroll: true,
-        });
-    }, []);
+    const performSearch = useCallback(
+        (params: Record<string, string | number | boolean>) => {
+            router.get('/alerts', params, {
+                preserveState: true,
+                replace: true,
+                preserveScroll: true,
+            });
+        },
+        [],
+    );
 
     const handleSearchInput = (value: string) => {
         setSearchTerm(value);
@@ -181,7 +190,12 @@ export default function Index({ alerts, filters }: Props) {
         if (deleteId) {
             router.delete(`/alerts/${deleteId}`, {
                 onSuccess: () => {
-                    toast({ title: t('alert_deleted_successfully', 'تم حذف التنبيه بنجاح') });
+                    toast({
+                        title: t(
+                            'alert_deleted_successfully',
+                            'تم حذف التنبيه بنجاح',
+                        ),
+                    });
                     setDeleteId(null);
                 },
                 onFinish: () => setDeleteId(null),
@@ -189,31 +203,64 @@ export default function Index({ alerts, filters }: Props) {
         }
     };
 
-    const markAsRead = useCallback((id: number) => {
-        router.post(`/alerts/${id}/mark-as-read`, {}, {
-            onSuccess: () => {
-                toast({ title: t('alert_marked_as_read', 'تم تحديد التنبيه كمقروء') });
-                router.reload({ only: ['alerts'] });
-            },
-        });
-    }, [t, toast]);
+    const markAsRead = useCallback(
+        (id: number) => {
+            router.post(
+                `/alerts/${id}/mark-as-read`,
+                {},
+                {
+                    onSuccess: () => {
+                        toast({
+                            title: t(
+                                'alert_marked_as_read',
+                                'تم تحديد التنبيه كمقروء',
+                            ),
+                        });
+                        router.reload({ only: ['alerts'] });
+                    },
+                },
+            );
+        },
+        [t, toast],
+    );
 
-    const markAsUnread = useCallback((id: number) => {
-        router.post(`/alerts/${id}/mark-as-unread`, {}, {
-            onSuccess: () => {
-                toast({ title: t('alert_marked_as_unread', 'تم تحديد التنبيه كغير مقروء') });
-                router.reload({ only: ['alerts'] });
-            },
-        });
-    }, [t, toast]);
+    const markAsUnread = useCallback(
+        (id: number) => {
+            router.post(
+                `/alerts/${id}/mark-as-unread`,
+                {},
+                {
+                    onSuccess: () => {
+                        toast({
+                            title: t(
+                                'alert_marked_as_unread',
+                                'تم تحديد التنبيه كغير مقروء',
+                            ),
+                        });
+                        router.reload({ only: ['alerts'] });
+                    },
+                },
+            );
+        },
+        [t, toast],
+    );
 
     const markAllAsRead = () => {
-        router.post('/alerts/mark-all-as-read', {}, {
-            onSuccess: () => {
-                toast({ title: t('all_alerts_marked_as_read', 'تم تحديد جميع التنبيهات كمقروءة') });
-                router.reload({ only: ['alerts'] });
+        router.post(
+            '/alerts/mark-all-as-read',
+            {},
+            {
+                onSuccess: () => {
+                    toast({
+                        title: t(
+                            'all_alerts_marked_as_read',
+                            'تم تحديد جميع التنبيهات كمقروءة',
+                        ),
+                    });
+                    router.reload({ only: ['alerts'] });
+                },
             },
-        });
+        );
     };
 
     const getTypeIcon = (type: string) => {
@@ -260,8 +307,10 @@ export default function Index({ alerts, filters }: Props) {
                     <div className="flex items-center gap-2">
                         {getTypeIcon(info.row.original.type)}
                         <div>
-                            <span className="font-semibold">{info.getValue()}</span>
-                            <p className="text-xs text-muted-foreground line-clamp-2">
+                            <span className="font-semibold">
+                                {info.getValue()}
+                            </span>
+                            <p className="line-clamp-2 text-xs text-muted-foreground">
                                 {info.row.original.message}
                             </p>
                         </div>
@@ -273,13 +322,15 @@ export default function Index({ alerts, filters }: Props) {
                 cell: (info) => (
                     <Badge
                         variant="outline"
-                        className={cn(
-                            'gap-1',
-                            getTypeColor(info.getValue()),
-                        )}
+                        className={cn('gap-1', getTypeColor(info.getValue()))}
                     >
                         {getTypeIcon(info.getValue())}
-                        {String(t(`alerts.types.${info.getValue()}`, info.getValue()))}
+                        {String(
+                            t(
+                                `alerts.types.${info.getValue()}`,
+                                info.getValue(),
+                            ),
+                        )}
                     </Badge>
                 ),
             }),
@@ -353,7 +404,9 @@ export default function Index({ alerts, filters }: Props) {
                             {!info.row.original.is_read && (
                                 <DropdownMenuItem
                                     className="cursor-pointer"
-                                    onClick={() => markAsRead(info.row.original.id)}
+                                    onClick={() =>
+                                        markAsRead(info.row.original.id)
+                                    }
                                 >
                                     <CheckCircle2
                                         className={cn(
@@ -367,7 +420,9 @@ export default function Index({ alerts, filters }: Props) {
                             {info.row.original.is_read && (
                                 <DropdownMenuItem
                                     className="cursor-pointer"
-                                    onClick={() => markAsUnread(info.row.original.id)}
+                                    onClick={() =>
+                                        markAsUnread(info.row.original.id)
+                                    }
                                 >
                                     <Bell
                                         className={cn(
@@ -375,7 +430,10 @@ export default function Index({ alerts, filters }: Props) {
                                             isRTL ? 'ml-2' : 'mr-2',
                                         )}
                                     />
-                                    {t('alerts.mark_as_unread', 'تحديد كغير مقروء')}
+                                    {t(
+                                        'alerts.mark_as_unread',
+                                        'تحديد كغير مقروء',
+                                    )}
                                 </DropdownMenuItem>
                             )}
                             <DropdownMenuSeparator />
@@ -415,10 +473,7 @@ export default function Index({ alerts, filters }: Props) {
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Head title={t('alerts.title', 'التنبيهات')} />
 
-                <div
-                    className="space-y-6 p-6"
-                    dir={isRTL ? 'rtl' : 'ltr'}
-                >
+                <div className="space-y-6 p-6" dir={isRTL ? 'rtl' : 'ltr'}>
                     {/* Header Section - Unified Design */}
                     <div className="flex flex-col gap-4 rounded-xl border bg-card p-6 shadow-sm md:flex-row md:items-center md:justify-between">
                         <div className="flex items-center gap-4">
@@ -430,7 +485,10 @@ export default function Index({ alerts, filters }: Props) {
                                     {t('alerts.title', 'التنبيهات')}
                                 </h1>
                                 <p className="text-sm text-muted-foreground">
-                                    {t('alerts.manage_alerts', 'إدارة التنبيهات والإشعارات')}
+                                    {t(
+                                        'alerts.manage_alerts',
+                                        'إدارة التنبيهات والإشعارات',
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -446,7 +504,10 @@ export default function Index({ alerts, filters }: Props) {
                                         isRTL ? 'ml-2' : 'mr-2',
                                     )}
                                 />
-                                {t('alerts.mark_all_as_read', 'تحديد الكل كمقروء')}
+                                {t(
+                                    'alerts.mark_all_as_read',
+                                    'تحديد الكل كمقروء',
+                                )}
                             </Button>
                         </div>
                     </div>
@@ -463,7 +524,10 @@ export default function Index({ alerts, filters }: Props) {
                                     )}
                                 />
                                 <Input
-                                    placeholder={t('alerts.search_alerts', 'البحث في التنبيهات...')}
+                                    placeholder={t(
+                                        'alerts.search_alerts',
+                                        'البحث في التنبيهات...',
+                                    )}
                                     value={searchTerm}
                                     onChange={(e) =>
                                         handleSearchInput(e.target.value)
@@ -487,7 +551,10 @@ export default function Index({ alerts, filters }: Props) {
                             >
                                 <SelectTrigger className="w-[180px]">
                                     <SelectValue
-                                        placeholder={t('alerts.all_types', 'جميع الأنواع')}
+                                        placeholder={t(
+                                            'alerts.all_types',
+                                            'جميع الأنواع',
+                                        )}
                                     />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -521,7 +588,10 @@ export default function Index({ alerts, filters }: Props) {
                             >
                                 <SelectTrigger className="w-[180px]">
                                     <SelectValue
-                                        placeholder={t('alerts.all_status', 'جميع الحالات')}
+                                        placeholder={t(
+                                            'alerts.all_status',
+                                            'جميع الحالات',
+                                        )}
                                     />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -589,7 +659,10 @@ export default function Index({ alerts, filters }: Props) {
                                                 column.toggleVisibility(!!v)
                                             }
                                         >
-                                            {t(`alerts.${column.id}`, column.id)}
+                                            {t(
+                                                `alerts.${column.id}`,
+                                                column.id,
+                                            )}
                                         </DropdownMenuCheckboxItem>
                                     ))}
                             </DropdownMenuContent>
@@ -617,7 +690,7 @@ export default function Index({ alerts, filters }: Props) {
                                                         className={cn(
                                                             'flex items-center gap-2 select-none',
                                                             header.column.getCanSort() &&
-                                                            'cursor-pointer',
+                                                                'cursor-pointer',
                                                         )}
                                                         onClick={header.column.getToggleSortingHandler()}
                                                     >
@@ -644,7 +717,8 @@ export default function Index({ alerts, filters }: Props) {
                                             key={row.id}
                                             className={cn(
                                                 'group transition-colors hover:bg-muted/30',
-                                                !row.original.is_read && 'bg-blue-50/50 dark:bg-blue-950/20'
+                                                !row.original.is_read &&
+                                                    'bg-blue-50/50 dark:bg-blue-950/20',
                                             )}
                                         >
                                             {row
@@ -672,10 +746,16 @@ export default function Index({ alerts, filters }: Props) {
                                             <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
                                                 <Bell className="h-12 w-12 opacity-10" />
                                                 <p className="text-lg font-medium">
-                                                    {t('no_results', 'لا توجد نتائج')}
+                                                    {t(
+                                                        'no_results',
+                                                        'لا توجد نتائج',
+                                                    )}
                                                 </p>
                                                 <p className="text-sm">
-                                                    {t('alerts.no_alerts', 'لا توجد تنبيهات')}
+                                                    {t(
+                                                        'alerts.no_alerts',
+                                                        'لا توجد تنبيهات',
+                                                    )}
                                                 </p>
                                             </div>
                                         </TableCell>
@@ -689,7 +769,7 @@ export default function Index({ alerts, filters }: Props) {
                     {alerts.last_page > 1 && (
                         <div className="flex flex-col items-center justify-between gap-4 border-t pt-4 sm:flex-row">
                             <div className="order-2 text-sm text-muted-foreground sm:order-1">
-                                {t('showing', 'عرض')} {' '}
+                                {t('showing', 'عرض')}{' '}
                                 <span className="font-bold text-foreground">
                                     {alerts.from}
                                 </span>{' '}
@@ -771,22 +851,33 @@ export default function Index({ alerts, filters }: Props) {
                             <AlertDialogHeader>
                                 <AlertDialogTitle className="flex items-center gap-2 text-destructive">
                                     <AlertTriangle className="h-5 w-5" />
-                                    {t('confirm_delete_alert', 'تأكيد حذف التنبيه')}
+                                    {t(
+                                        'confirm_delete_alert',
+                                        'تأكيد حذف التنبيه',
+                                    )}
                                 </AlertDialogTitle>
                                 <AlertDialogDescription
                                     className={cn(
                                         isRTL ? 'text-right' : 'text-left',
                                     )}
                                 >
-                                    {t('are_you_sure_delete', 'هل أنت متأكد من الحذف؟')}
+                                    {t(
+                                        'are_you_sure_delete',
+                                        'هل أنت متأكد من الحذف؟',
+                                    )}
                                     <br />
                                     <span className="mt-2 inline-block text-xs font-semibold text-muted-foreground">
-                                        {t('alerts.delete_warning', 'سيتم حذف هذا التنبيه نهائياً.')}
+                                        {t(
+                                            'alerts.delete_warning',
+                                            'سيتم حذف هذا التنبيه نهائياً.',
+                                        )}
                                     </span>
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter className="flex-row gap-2 sm:justify-end">
-                                <AlertDialogCancel>{t('cancel', 'إلغاء')}</AlertDialogCancel>
+                                <AlertDialogCancel>
+                                    {t('cancel', 'إلغاء')}
+                                </AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={confirmDelete}
                                     className="bg-destructive text-white hover:bg-destructive/90"

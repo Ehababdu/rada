@@ -50,7 +50,9 @@ export function MultiSelectFilter<TData>({
                 newSet.add(value);
             }
             const filterValues = Array.from(newSet);
-            column?.setFilterValue(filterValues.length ? filterValues : undefined);
+            column?.setFilterValue(
+                filterValues.length ? filterValues : undefined,
+            );
             return newSet;
         });
     };

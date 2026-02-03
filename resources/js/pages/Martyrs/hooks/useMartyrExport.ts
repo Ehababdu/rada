@@ -14,7 +14,9 @@ export function useMartyrExport({
     visibleColumns,
     selectedRows,
 }: UseMartyrExportProps) {
-    const [latestExportAvailable, setLatestExportAvailable] = useState<boolean | null>(null);
+    const [latestExportAvailable, setLatestExportAvailable] = useState<
+        boolean | null
+    >(null);
     const [latestExportUrl, setLatestExportUrl] = useState<string | null>(null);
 
     useEffect(() => {
@@ -59,7 +61,9 @@ export function useMartyrExport({
                 params.append('columns', visibleColumns.join(','));
 
             // Add selected row IDs if any are selected
-            const selectedIds = Object.keys(selectedRows).filter(key => selectedRows[key]);
+            const selectedIds = Object.keys(selectedRows).filter(
+                (key) => selectedRows[key],
+            );
             if (selectedIds.length > 0) {
                 params.append('ids', selectedIds.join(','));
             }

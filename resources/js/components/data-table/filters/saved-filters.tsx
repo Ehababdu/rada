@@ -1,6 +1,6 @@
+import { Column, Table } from '@tanstack/react-table';
 import { Bookmark, BookmarkCheck, Trash2 } from 'lucide-react';
 import * as React from 'react';
-import { Column, Table } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -52,10 +52,17 @@ export function SavedFilters<TData>({
             try {
                 const parsed = JSON.parse(saved);
                 setSavedFilters(
-                    parsed.map((filter: { id: string; name: string; filters: Record<string, unknown>; createdAt: string }) => ({
-                        ...filter,
-                        createdAt: new Date(filter.createdAt),
-                    })),
+                    parsed.map(
+                        (filter: {
+                            id: string;
+                            name: string;
+                            filters: Record<string, unknown>;
+                            createdAt: string;
+                        }) => ({
+                            ...filter,
+                            createdAt: new Date(filter.createdAt),
+                        }),
+                    ),
                 );
             } catch (error) {
                 console.error('Failed to load saved filters:', error);
@@ -112,7 +119,10 @@ export function SavedFilters<TData>({
 
     const hasActiveFilters = table
         .getAllColumns()
-        .some((column: Column<TData, unknown>) => column.getFilterValue() !== undefined);
+        .some(
+            (column: Column<TData, unknown>) =>
+                column.getFilterValue() !== undefined,
+        );
 
     return (
         <>

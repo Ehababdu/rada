@@ -1,13 +1,19 @@
 import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
-import React, { useState, useCallback, useMemo, startTransition } from 'react';
+import { startTransition, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Shadcn UI Components
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 // Icons
@@ -56,7 +62,9 @@ export default function Index({
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
 
     // Table state
-    const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
+    const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>(
+        {},
+    );
     const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
@@ -79,10 +87,13 @@ export default function Index({
     } = useMartyrDelete();
 
     // Memoized callbacks to prevent unnecessary re-renders
-    const handleDeleteClick = useCallback((id: number) => {
-        setDeletingId(id);
-        setDeleteOpen(true);
-    }, [setDeletingId, setDeleteOpen]);
+    const handleDeleteClick = useCallback(
+        (id: number) => {
+            setDeletingId(id);
+            setDeleteOpen(true);
+        },
+        [setDeletingId, setDeleteOpen],
+    );
 
     const {
         availableColumns,
@@ -113,16 +124,13 @@ export default function Index({
         return visibility;
     }, [availableColumns, visibleColumns]);
 
-    const {
-        latestExportAvailable,
-        latestExportUrl,
-        handleExport,
-    } = useMartyrExport({
-        cleanFilters,
-        localFilters,
-        visibleColumns,
-        selectedRows,
-    });
+    const { latestExportAvailable, latestExportUrl, handleExport } =
+        useMartyrExport({
+            cleanFilters,
+            localFilters,
+            visibleColumns,
+            selectedRows,
+        });
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -165,8 +173,12 @@ export default function Index({
                                 additionalKeys={additionalKeys}
                                 areAllBasicSelected={areAllBasicSelected}
                                 areSomeBasicSelected={areSomeBasicSelected}
-                                areAllAdditionalSelected={areAllAdditionalSelected}
-                                areSomeAdditionalSelected={areSomeAdditionalSelected}
+                                areAllAdditionalSelected={
+                                    areAllAdditionalSelected
+                                }
+                                areSomeAdditionalSelected={
+                                    areSomeAdditionalSelected
+                                }
                                 isRTL={isRTL}
                             />
                         </div>
@@ -179,7 +191,9 @@ export default function Index({
                             <div className="relative w-full sm:w-72">
                                 <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
-                                    placeholder={t('martyrs.search_placeholder')}
+                                    placeholder={t(
+                                        'martyrs.search_placeholder',
+                                    )}
                                     className="bg-background pl-9 transition-all focus:ring-2 focus:ring-primary/20"
                                     value={searchTerm}
                                     onChange={(e) => {
@@ -194,7 +208,9 @@ export default function Index({
                             {/* Per Page */}
                             <Select
                                 value={localFilters.per_page || '10'}
-                                onValueChange={(value: string) => handleFilterChange('per_page', value)}
+                                onValueChange={(value: string) =>
+                                    handleFilterChange('per_page', value)
+                                }
                             >
                                 <SelectTrigger className="w-20">
                                     <SelectValue />
@@ -246,7 +262,7 @@ export default function Index({
                     {martyrs.last_page > 1 && (
                         <div className="flex flex-col items-center justify-between gap-4 border-t pt-4 sm:flex-row">
                             <div className="order-2 text-sm text-muted-foreground sm:order-1">
-                                {t('showing')} {' '}
+                                {t('showing')}{' '}
                                 <span className="font-bold text-foreground">
                                     {martyrs.from}
                                 </span>{' '}
@@ -267,9 +283,12 @@ export default function Index({
                                     onClick={() =>
                                         router.get('/martyrs', {
                                             page: martyrs.current_page - 1,
-                                            ...Object.entries(localFilters).reduce<Record<string, string>>(
+                                            ...Object.entries(
+                                                localFilters,
+                                            ).reduce<Record<string, string>>(
                                                 (acc, [k, v]) => {
-                                                    if (v && v.trim() !== '') acc[k] = v;
+                                                    if (v && v.trim() !== '')
+                                                        acc[k] = v;
                                                     return acc;
                                                 },
                                                 {},
@@ -293,7 +312,9 @@ export default function Index({
                                     >
                                         {martyrs.current_page}
                                     </Badge>
-                                    <span className="text-muted-foreground">/</span>
+                                    <span className="text-muted-foreground">
+                                        /
+                                    </span>
                                     <span className="text-sm font-medium">
                                         {martyrs.last_page}
                                     </span>
@@ -308,7 +329,10 @@ export default function Index({
                                             ...cleanFilters(localFilters),
                                         })
                                     }
-                                    disabled={martyrs.current_page === martyrs.last_page}
+                                    disabled={
+                                        martyrs.current_page ===
+                                        martyrs.last_page
+                                    }
                                 >
                                     {t('next')}
                                     {isRTL ? (

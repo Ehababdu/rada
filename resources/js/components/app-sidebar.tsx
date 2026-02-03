@@ -84,7 +84,9 @@ export const AppSidebar = memo(function AppSidebar() {
                 },
                 {
                     title: t('navigation.compensations'),
-                    href: compensationsIndex.definition?.url ?? compensationsIndex(),
+                    href:
+                        compensationsIndex.definition?.url ??
+                        compensationsIndex(),
                     icon: DollarSign,
                     resource: 'compensations',
                 },
@@ -122,7 +124,9 @@ export const AppSidebar = memo(function AppSidebar() {
             items: [
                 {
                     title: t('navigation.military_ranks'),
-                    href: militaryRanksIndex.definition?.url ?? militaryRanksIndex(),
+                    href:
+                        militaryRanksIndex.definition?.url ??
+                        militaryRanksIndex(),
                     icon: Shield,
                     resource: 'military-ranks',
                 },
@@ -140,7 +144,8 @@ export const AppSidebar = memo(function AppSidebar() {
             items: [
                 {
                     title: 'سجل الأنشطة',
-                    href: activityLogIndex.definition?.url ?? activityLogIndex(),
+                    href:
+                        activityLogIndex.definition?.url ?? activityLogIndex(),
                     icon: History,
                     resource: 'activity-log',
                 },
@@ -153,7 +158,8 @@ export const AppSidebar = memo(function AppSidebar() {
                 {
                     title: t('navigation.attachment_types') || 'أنواع المرفقات',
                     href:
-                        attachmentTypesIndex.definition?.url ?? attachmentTypesIndex(),
+                        attachmentTypesIndex.definition?.url ??
+                        attachmentTypesIndex(),
                     icon: FileText,
                     resource: 'attachment-types',
                 },
@@ -165,7 +171,8 @@ export const AppSidebar = memo(function AppSidebar() {
                 },
                 {
                     title: t('navigation.permissions'),
-                    href: permissionsIndex.definition?.url ?? permissionsIndex(),
+                    href:
+                        permissionsIndex.definition?.url ?? permissionsIndex(),
                     icon: Lock,
                     resource: 'permissions',
                 },
@@ -237,7 +244,10 @@ export const AppSidebar = memo(function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent className="scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/40">
-                <NavMain groups={filteredNavGroups} items={filteredStandaloneItems} />
+                <NavMain
+                    groups={filteredNavGroups}
+                    items={filteredStandaloneItems}
+                />
             </SidebarContent>
 
             <SidebarSeparator className="mx-3" />

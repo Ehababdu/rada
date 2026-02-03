@@ -1,7 +1,7 @@
+import { useToast } from '@/hooks/use-toast';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useToast } from '@/hooks/use-toast';
 
 export function useMartyrDelete() {
     const { t } = useTranslation();

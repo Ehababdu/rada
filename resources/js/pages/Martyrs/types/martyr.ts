@@ -22,9 +22,9 @@ interface Martyr {
     // Relations
     military_rank?: { id: number; name_ar: string; name_en: string } | null;
     job_grade?:
-    | { id: number; name_ar: string; name_en?: string }
-    | string
-    | null;
+        | { id: number; name_ar: string; name_en?: string }
+        | string
+        | null;
     bank?: { id: number; name_ar: string } | null;
     branch?: { id: number; name_ar: string } | null;
     employment_status?: {
@@ -109,7 +109,11 @@ interface Props {
     militaryRanks?: Array<{ id: number; name_ar: string; name_en: string }>;
     branches?: Array<{ id: number; name_ar: string; bank_id: number }>;
     employers?: Array<{ id: number; name_ar: string; name_en?: string }>;
-    previousEmployers?: Array<{ id: number; name_ar: string; name_en?: string }>;
+    previousEmployers?: Array<{
+        id: number;
+        name_ar: string;
+        name_en?: string;
+    }>;
 }
 
-export type { Martyr, Filters, Props };
+export type { Filters, Martyr, Props };

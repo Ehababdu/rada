@@ -318,10 +318,7 @@ export default function Index({ banks, filters }: Props) {
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Head title={t('banks.title')} />
 
-                <div
-                    className="space-y-6 p-6"
-                    dir={isRTL ? 'rtl' : 'ltr'}
-                >
+                <div className="space-y-6 p-6" dir={isRTL ? 'rtl' : 'ltr'}>
                     {/* Header Section - Unified Design */}
                     <div className="flex flex-col gap-4 rounded-xl border bg-card p-6 shadow-sm md:flex-row md:items-center md:justify-between">
                         <div className="flex items-center gap-4">
@@ -339,7 +336,10 @@ export default function Index({ banks, filters }: Props) {
                         </div>
                         <div className="flex items-center gap-2">
                             {can('canCreate') && (
-                                <Button asChild className="transition-all hover:scale-105">
+                                <Button
+                                    asChild
+                                    className="transition-all hover:scale-105"
+                                >
                                     <Link href="/banks/create">
                                         <Plus
                                             className={cn(
@@ -487,7 +487,7 @@ export default function Index({ banks, filters }: Props) {
                                                         className={cn(
                                                             'flex items-center gap-2 select-none',
                                                             header.column.getCanSort() &&
-                                                            'cursor-pointer',
+                                                                'cursor-pointer',
                                                         )}
                                                         onClick={header.column.getToggleSortingHandler()}
                                                     >
@@ -654,7 +654,9 @@ export default function Index({ banks, filters }: Props) {
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter className="flex-row gap-2 sm:justify-end">
-                                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                                <AlertDialogCancel>
+                                    {t('cancel')}
+                                </AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={confirmDelete}
                                     className="bg-destructive text-white hover:bg-destructive/90"

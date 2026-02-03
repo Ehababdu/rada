@@ -1,6 +1,6 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
@@ -13,7 +13,6 @@ import {
     Clock,
     XCircle,
 } from 'lucide-react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Alert {
@@ -87,27 +86,37 @@ export default function Show({ alert }: Props) {
 
     const markAsRead = () => {
         if (!alert.is_read) {
-            router.post(`/alerts/${alert.id}/mark-as-read`, {}, {
-                onSuccess: () => {
-                    router.reload({ only: ['alert'] });
+            router.post(
+                `/alerts/${alert.id}/mark-as-read`,
+                {},
+                {
+                    onSuccess: () => {
+                        router.reload({ only: ['alert'] });
+                    },
                 },
-            });
+            );
         }
     };
 
     const markAsUnread = () => {
         if (alert.is_read) {
-            router.post(`/alerts/${alert.id}/mark-as-unread`, {}, {
-                onSuccess: () => {
-                    router.reload({ only: ['alert'] });
+            router.post(
+                `/alerts/${alert.id}/mark-as-unread`,
+                {},
+                {
+                    onSuccess: () => {
+                        router.reload({ only: ['alert'] });
+                    },
                 },
-            });
+            );
         }
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`${t('alerts.title', 'التنبيهات')} - ${alert.title}`} />
+            <Head
+                title={`${t('alerts.title', 'التنبيهات')} - ${alert.title}`}
+            />
 
             <div
                 className="mx-auto flex w-full max-w-[800px] flex-col gap-6 p-6"
@@ -134,7 +143,7 @@ export default function Show({ alert }: Props) {
                                 size="sm"
                                 onClick={markAsRead}
                             >
-                                <CheckCircle2 className="h-4 w-4 mr-2" />
+                                <CheckCircle2 className="mr-2 h-4 w-4" />
                                 {t('alerts.mark_as_read', 'تحديد كمقروء')}
                             </Button>
                         )}
@@ -144,7 +153,7 @@ export default function Show({ alert }: Props) {
                                 size="sm"
                                 onClick={markAsUnread}
                             >
-                                <Bell className="h-4 w-4 mr-2" />
+                                <Bell className="mr-2 h-4 w-4" />
                                 {t('alerts.mark_as_unread', 'تحديد كغير مقروء')}
                             </Button>
                         )}
@@ -156,17 +165,19 @@ export default function Show({ alert }: Props) {
                     <CardHeader className="pb-4">
                         <div className="flex items-start justify-between gap-4">
                             <div className="flex items-center gap-3">
-                                <div className={cn(
-                                    'rounded-lg p-2',
-                                    getTypeColor(alert.type)
-                                )}>
+                                <div
+                                    className={cn(
+                                        'rounded-lg p-2',
+                                        getTypeColor(alert.type),
+                                    )}
+                                >
                                     {getTypeIcon(alert.type)}
                                 </div>
                                 <div>
                                     <CardTitle className="text-xl">
                                         {alert.title}
                                     </CardTitle>
-                                    <div className="flex items-center gap-2 mt-1">
+                                    <div className="mt-1 flex items-center gap-2">
                                         <Badge
                                             variant="outline"
                                             className={getTypeColor(alert.type)}
@@ -174,16 +185,23 @@ export default function Show({ alert }: Props) {
                                             {getTypeLabel(alert.type)}
                                         </Badge>
                                         <Badge
-                                            variant={alert.is_read ? 'default' : 'secondary'}
+                                            variant={
+                                                alert.is_read
+                                                    ? 'default'
+                                                    : 'secondary'
+                                            }
                                             className={cn(
                                                 alert.is_read
                                                     ? 'border-green-500/20 bg-green-500/10 text-green-600'
-                                                    : 'border-orange-500/20 bg-orange-500/10 text-orange-600'
+                                                    : 'border-orange-500/20 bg-orange-500/10 text-orange-600',
                                             )}
                                         >
                                             {alert.is_read
                                                 ? t('alerts.read', 'مقروء')
-                                                : t('alerts.unread', 'غير مقروء')}
+                                                : t(
+                                                      'alerts.unread',
+                                                      'غير مقروء',
+                                                  )}
                                         </Badge>
                                     </div>
                                 </div>
@@ -194,7 +212,7 @@ export default function Show({ alert }: Props) {
                     <CardContent className="space-y-6">
                         {/* Message */}
                         <div>
-                            <h3 className="font-semibold mb-2">
+                            <h3 className="mb-2 font-semibold">
                                 {t('alerts.message', 'الرسالة')}
                             </h3>
                             <div className="rounded-lg border bg-muted/30 p-4">
@@ -207,11 +225,14 @@ export default function Show({ alert }: Props) {
                         {/* Additional Data */}
                         {alert.data && Object.keys(alert.data).length > 0 && (
                             <div>
-                                <h3 className="font-semibold mb-2">
-                                    {t('alerts.additional_data', 'بيانات إضافية')}
+                                <h3 className="mb-2 font-semibold">
+                                    {t(
+                                        'alerts.additional_data',
+                                        'بيانات إضافية',
+                                    )}
                                 </h3>
                                 <div className="rounded-lg border bg-muted/30 p-4">
-                                    <pre className="text-xs text-muted-foreground overflow-x-auto">
+                                    <pre className="overflow-x-auto text-xs text-muted-foreground">
                                         {JSON.stringify(alert.data, null, 2)}
                                     </pre>
                                 </div>
@@ -219,12 +240,11 @@ export default function Show({ alert }: Props) {
                         )}
 
                         {/* Timestamps */}
-                        <div className="flex flex-col gap-2 pt-4 border-t">
+                        <div className="flex flex-col gap-2 border-t pt-4">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Clock className="h-4 w-4" />
                                 <span>
-                                    {t('alerts.created_at', 'تاريخ الإنشاء')}:
-                                    {' '}
+                                    {t('alerts.created_at', 'تاريخ الإنشاء')}:{' '}
                                     {alert.created_at}
                                 </span>
                             </div>
@@ -232,8 +252,7 @@ export default function Show({ alert }: Props) {
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <CheckCircle2 className="h-4 w-4" />
                                     <span>
-                                        {t('alerts.read_at', 'تاريخ القراءة')}:
-                                        {' '}
+                                        {t('alerts.read_at', 'تاريخ القراءة')}:{' '}
                                         {alert.read_at}
                                     </span>
                                 </div>

@@ -324,39 +324,45 @@ export default function Index({ bank, branches, filters }: Props) {
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader className="bg-muted/50">
-                                    {table.getHeaderGroups().map((headerGroup) => (
-                                        <TableRow key={headerGroup.id}>
-                                            {headerGroup.headers.map((header) => (
-                                                <TableHead
-                                                    key={header.id}
-                                                    className={cn(
-                                                        'h-12 px-4 font-bold',
-                                                        isRTL
-                                                            ? 'text-right'
-                                                            : 'text-left',
-                                                    )}
-                                                >
-                                                    <div
-                                                        className={cn(
-                                                            'flex items-center gap-2',
-                                                            header.column.getCanSort() &&
-                                                            'cursor-pointer select-none',
-                                                        )}
-                                                        onClick={header.column.getToggleSortingHandler()}
-                                                    >
-                                                        {flexRender(
-                                                            header.column.columnDef
-                                                                .header,
-                                                            header.getContext(),
-                                                        )}
-                                                        {header.column.getCanSort() && (
-                                                            <ArrowUpDown className="h-3 w-3 opacity-50" />
-                                                        )}
-                                                    </div>
-                                                </TableHead>
-                                            ))}
-                                        </TableRow>
-                                    ))}
+                                    {table
+                                        .getHeaderGroups()
+                                        .map((headerGroup) => (
+                                            <TableRow key={headerGroup.id}>
+                                                {headerGroup.headers.map(
+                                                    (header) => (
+                                                        <TableHead
+                                                            key={header.id}
+                                                            className={cn(
+                                                                'h-12 px-4 font-bold',
+                                                                isRTL
+                                                                    ? 'text-right'
+                                                                    : 'text-left',
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={cn(
+                                                                    'flex items-center gap-2',
+                                                                    header.column.getCanSort() &&
+                                                                        'cursor-pointer select-none',
+                                                                )}
+                                                                onClick={header.column.getToggleSortingHandler()}
+                                                            >
+                                                                {flexRender(
+                                                                    header
+                                                                        .column
+                                                                        .columnDef
+                                                                        .header,
+                                                                    header.getContext(),
+                                                                )}
+                                                                {header.column.getCanSort() && (
+                                                                    <ArrowUpDown className="h-3 w-3 opacity-50" />
+                                                                )}
+                                                            </div>
+                                                        </TableHead>
+                                                    ),
+                                                )}
+                                            </TableRow>
+                                        ))}
                                 </TableHeader>
                                 <TableBody>
                                     {branches.data.length > 0 ? (
@@ -365,17 +371,21 @@ export default function Index({ bank, branches, filters }: Props) {
                                                 key={row.id}
                                                 className="transition-colors hover:bg-muted/20"
                                             >
-                                                {row.getVisibleCells().map((cell) => (
-                                                    <TableCell
-                                                        key={cell.id}
-                                                        className="px-4 py-3"
-                                                    >
-                                                        {flexRender(
-                                                            cell.column.columnDef.cell,
-                                                            cell.getContext(),
-                                                        )}
-                                                    </TableCell>
-                                                ))}
+                                                {row
+                                                    .getVisibleCells()
+                                                    .map((cell) => (
+                                                        <TableCell
+                                                            key={cell.id}
+                                                            className="px-4 py-3"
+                                                        >
+                                                            {flexRender(
+                                                                cell.column
+                                                                    .columnDef
+                                                                    .cell,
+                                                                cell.getContext(),
+                                                            )}
+                                                        </TableCell>
+                                                    ))}
                                             </TableRow>
                                         ))
                                     ) : (

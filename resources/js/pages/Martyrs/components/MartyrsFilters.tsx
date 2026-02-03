@@ -17,7 +17,11 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useTranslation } from 'react-i18next';
 
 // Icons
@@ -99,15 +103,24 @@ export function MartyrsFilters({
                                 <Label>{t('martyrs.military_rank')}</Label>
                                 <Select
                                     value={localFilters.military_rank || 'all'}
-                                    onValueChange={(v) => handleFilterChange('military_rank', v)}
+                                    onValueChange={(v) =>
+                                        handleFilterChange('military_rank', v)
+                                    }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder={t('martyrs.select')} />
+                                        <SelectValue
+                                            placeholder={t('martyrs.select')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">{t('martyrs.all')}</SelectItem>
+                                        <SelectItem value="all">
+                                            {t('martyrs.all')}
+                                        </SelectItem>
                                         {militaryRanks.map((r) => (
-                                            <SelectItem key={r.id} value={String(r.id)}>
+                                            <SelectItem
+                                                key={r.id}
+                                                value={String(r.id)}
+                                            >
                                                 {isRTL ? r.name_ar : r.name_en}
                                             </SelectItem>
                                         ))}
@@ -120,17 +133,36 @@ export function MartyrsFilters({
                                 <div className="space-y-2">
                                     <Label>{t('martyrs.marital_status')}</Label>
                                     <Select
-                                        value={localFilters.marital_status_id || 'all'}
-                                        onValueChange={(v) => handleFilterChange('marital_status_id', v)}
+                                        value={
+                                            localFilters.marital_status_id ||
+                                            'all'
+                                        }
+                                        onValueChange={(v) =>
+                                            handleFilterChange(
+                                                'marital_status_id',
+                                                v,
+                                            )
+                                        }
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder={t('martyrs.select')} />
+                                            <SelectValue
+                                                placeholder={t(
+                                                    'martyrs.select',
+                                                )}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">{t('martyrs.all')}</SelectItem>
+                                            <SelectItem value="all">
+                                                {t('martyrs.all')}
+                                            </SelectItem>
                                             {maritalStatuses.map((s) => (
-                                                <SelectItem key={s.id} value={String(s.id)}>
-                                                    {isRTL ? s.name_ar : s.name_en}
+                                                <SelectItem
+                                                    key={s.id}
+                                                    value={String(s.id)}
+                                                >
+                                                    {isRTL
+                                                        ? s.name_ar
+                                                        : s.name_en}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -141,16 +173,30 @@ export function MartyrsFilters({
                                 <div className="space-y-2">
                                     <Label>{t('martyrs.wife_status')}</Label>
                                     <Select
-                                        value={localFilters.wife_status || 'all'}
-                                        onValueChange={(v) => handleFilterChange('wife_status', v)}
+                                        value={
+                                            localFilters.wife_status || 'all'
+                                        }
+                                        onValueChange={(v) =>
+                                            handleFilterChange('wife_status', v)
+                                        }
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder={t('martyrs.select')} />
+                                            <SelectValue
+                                                placeholder={t(
+                                                    'martyrs.select',
+                                                )}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">{t('martyrs.all')}</SelectItem>
-                                            <SelectItem value="متزوجة">متزوجة</SelectItem>
-                                            <SelectItem value="غير متزوجة">غير متزوجة</SelectItem>
+                                            <SelectItem value="all">
+                                                {t('martyrs.all')}
+                                            </SelectItem>
+                                            <SelectItem value="متزوجة">
+                                                متزوجة
+                                            </SelectItem>
+                                            <SelectItem value="غير متزوجة">
+                                                غير متزوجة
+                                            </SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -160,16 +206,31 @@ export function MartyrsFilters({
                             <div className="space-y-2">
                                 <Label>{t('martyrs.employment_status')}</Label>
                                 <Select
-                                    value={localFilters.employment_status_id || 'all'}
-                                    onValueChange={(v) => handleFilterChange('employment_status_id', v)}
+                                    value={
+                                        localFilters.employment_status_id ||
+                                        'all'
+                                    }
+                                    onValueChange={(v) =>
+                                        handleFilterChange(
+                                            'employment_status_id',
+                                            v,
+                                        )
+                                    }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder={t('martyrs.select')} />
+                                        <SelectValue
+                                            placeholder={t('martyrs.select')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">{t('martyrs.all')}</SelectItem>
+                                        <SelectItem value="all">
+                                            {t('martyrs.all')}
+                                        </SelectItem>
                                         {employmentStatuses.map((s) => (
-                                            <SelectItem key={s.id} value={String(s.id)}>
+                                            <SelectItem
+                                                key={s.id}
+                                                value={String(s.id)}
+                                            >
                                                 {s.name}
                                             </SelectItem>
                                         ))}
@@ -183,15 +244,26 @@ export function MartyrsFilters({
                                     <Label>{t('martyrs.bank')}</Label>
                                     <Select
                                         value={localFilters.bank_id || 'all'}
-                                        onValueChange={(v) => handleFilterChange('bank_id', v)}
+                                        onValueChange={(v) =>
+                                            handleFilterChange('bank_id', v)
+                                        }
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder={t('martyrs.select')} />
+                                            <SelectValue
+                                                placeholder={t(
+                                                    'martyrs.select',
+                                                )}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">{t('martyrs.all')}</SelectItem>
+                                            <SelectItem value="all">
+                                                {t('martyrs.all')}
+                                            </SelectItem>
                                             {banks.map((b) => (
-                                                <SelectItem key={b.id} value={String(b.id)}>
+                                                <SelectItem
+                                                    key={b.id}
+                                                    value={String(b.id)}
+                                                >
                                                     {b.name_ar}
                                                 </SelectItem>
                                             ))}
@@ -204,15 +276,26 @@ export function MartyrsFilters({
                                     <Label>{t('martyrs.branch')}</Label>
                                     <Select
                                         value={localFilters.branch_id || 'all'}
-                                        onValueChange={(v) => handleFilterChange('branch_id', v)}
+                                        onValueChange={(v) =>
+                                            handleFilterChange('branch_id', v)
+                                        }
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder={t('martyrs.select')} />
+                                            <SelectValue
+                                                placeholder={t(
+                                                    'martyrs.select',
+                                                )}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">{t('martyrs.all')}</SelectItem>
+                                            <SelectItem value="all">
+                                                {t('martyrs.all')}
+                                            </SelectItem>
                                             {filteredBranches.map((b) => (
-                                                <SelectItem key={b.id} value={String(b.id)}>
+                                                <SelectItem
+                                                    key={b.id}
+                                                    value={String(b.id)}
+                                                >
                                                     {b.name_ar}
                                                 </SelectItem>
                                             ))}
@@ -225,16 +308,30 @@ export function MartyrsFilters({
                             <div className="space-y-2">
                                 <Label>{t('martyrs.parents_status')}</Label>
                                 <Select
-                                    value={localFilters.parents_status_id || 'all'}
-                                    onValueChange={(v) => handleFilterChange('parents_status_id', v)}
+                                    value={
+                                        localFilters.parents_status_id || 'all'
+                                    }
+                                    onValueChange={(v) =>
+                                        handleFilterChange(
+                                            'parents_status_id',
+                                            v,
+                                        )
+                                    }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder={t('martyrs.select')} />
+                                        <SelectValue
+                                            placeholder={t('martyrs.select')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">{t('martyrs.all')}</SelectItem>
+                                        <SelectItem value="all">
+                                            {t('martyrs.all')}
+                                        </SelectItem>
                                         {parentsStatuses.map((s) => (
-                                            <SelectItem key={s.id} value={String(s.id)}>
+                                            <SelectItem
+                                                key={s.id}
+                                                value={String(s.id)}
+                                            >
                                                 {isRTL ? s.name_ar : s.name_en}
                                             </SelectItem>
                                         ))}
@@ -247,17 +344,33 @@ export function MartyrsFilters({
                                 <div className="space-y-2">
                                     <Label>{t('martyrs.employer')}</Label>
                                     <Select
-                                        value={localFilters.employer_id || 'all'}
-                                        onValueChange={(v) => handleFilterChange('employer_id', v)}
+                                        value={
+                                            localFilters.employer_id || 'all'
+                                        }
+                                        onValueChange={(v) =>
+                                            handleFilterChange('employer_id', v)
+                                        }
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder={t('martyrs.select')} />
+                                            <SelectValue
+                                                placeholder={t(
+                                                    'martyrs.select',
+                                                )}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">{t('martyrs.all')}</SelectItem>
+                                            <SelectItem value="all">
+                                                {t('martyrs.all')}
+                                            </SelectItem>
                                             {employers.map((e) => (
-                                                <SelectItem key={e.id} value={String(e.id)}>
-                                                    {isRTL ? e.name_ar : (e.name_en || e.name_ar)}
+                                                <SelectItem
+                                                    key={e.id}
+                                                    value={String(e.id)}
+                                                >
+                                                    {isRTL
+                                                        ? e.name_ar
+                                                        : e.name_en ||
+                                                          e.name_ar}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -266,19 +379,41 @@ export function MartyrsFilters({
 
                                 {/* Previous Employer */}
                                 <div className="space-y-2">
-                                    <Label>{t('martyrs.previous_employer')}</Label>
+                                    <Label>
+                                        {t('martyrs.previous_employer')}
+                                    </Label>
                                     <Select
-                                        value={localFilters.previous_employer_id || 'all'}
-                                        onValueChange={(v) => handleFilterChange('previous_employer_id', v)}
+                                        value={
+                                            localFilters.previous_employer_id ||
+                                            'all'
+                                        }
+                                        onValueChange={(v) =>
+                                            handleFilterChange(
+                                                'previous_employer_id',
+                                                v,
+                                            )
+                                        }
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder={t('martyrs.select')} />
+                                            <SelectValue
+                                                placeholder={t(
+                                                    'martyrs.select',
+                                                )}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="all">{t('martyrs.all')}</SelectItem>
+                                            <SelectItem value="all">
+                                                {t('martyrs.all')}
+                                            </SelectItem>
                                             {previousEmployers.map((e) => (
-                                                <SelectItem key={e.id} value={String(e.id)}>
-                                                    {isRTL ? e.name_ar : (e.name_en || e.name_ar)}
+                                                <SelectItem
+                                                    key={e.id}
+                                                    value={String(e.id)}
+                                                >
+                                                    {isRTL
+                                                        ? e.name_ar
+                                                        : e.name_en ||
+                                                          e.name_ar}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -291,18 +426,34 @@ export function MartyrsFilters({
                                 <Label>{t('martyrs.status')}</Label>
                                 <Select
                                     value={localFilters.status || 'all'}
-                                    onValueChange={(v) => handleFilterChange('status', v)}
+                                    onValueChange={(v) =>
+                                        handleFilterChange('status', v)
+                                    }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder={t('martyrs.select')} />
+                                        <SelectValue
+                                            placeholder={t('martyrs.select')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">{t('martyrs.all')}</SelectItem>
-                                        <SelectItem value="active">{t('martyrs.status.active')}</SelectItem>
-                                        <SelectItem value="inactive">{t('martyrs.status.inactive')}</SelectItem>
-                                        <SelectItem value="pending">{t('martyrs.status.pending')}</SelectItem>
-                                        <SelectItem value="complete">{t('martyrs.status.complete')}</SelectItem>
-                                        <SelectItem value="incomplete">{t('martyrs.status.incomplete')}</SelectItem>
+                                        <SelectItem value="all">
+                                            {t('martyrs.all')}
+                                        </SelectItem>
+                                        <SelectItem value="active">
+                                            {t('martyrs.status.active')}
+                                        </SelectItem>
+                                        <SelectItem value="inactive">
+                                            {t('martyrs.status.inactive')}
+                                        </SelectItem>
+                                        <SelectItem value="pending">
+                                            {t('martyrs.status.pending')}
+                                        </SelectItem>
+                                        <SelectItem value="complete">
+                                            {t('martyrs.status.complete')}
+                                        </SelectItem>
+                                        <SelectItem value="incomplete">
+                                            {t('martyrs.status.incomplete')}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -311,16 +462,32 @@ export function MartyrsFilters({
                             <div className="space-y-2">
                                 <Label>{t('martyrs.decision')}</Label>
                                 <Select
-                                    value={localFilters.has_martyr_decision || 'all'}
-                                    onValueChange={(v) => handleFilterChange('has_martyr_decision', v)}
+                                    value={
+                                        localFilters.has_martyr_decision ||
+                                        'all'
+                                    }
+                                    onValueChange={(v) =>
+                                        handleFilterChange(
+                                            'has_martyr_decision',
+                                            v,
+                                        )
+                                    }
                                 >
                                     <SelectTrigger>
-                                        <SelectValue placeholder={t('martyrs.select')} />
+                                        <SelectValue
+                                            placeholder={t('martyrs.select')}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">{t('martyrs.all')}</SelectItem>
-                                        <SelectItem value="1">{t('martyrs.yes')}</SelectItem>
-                                        <SelectItem value="0">{t('martyrs.no')}</SelectItem>
+                                        <SelectItem value="all">
+                                            {t('martyrs.all')}
+                                        </SelectItem>
+                                        <SelectItem value="1">
+                                            {t('martyrs.yes')}
+                                        </SelectItem>
+                                        <SelectItem value="0">
+                                            {t('martyrs.no')}
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -331,7 +498,12 @@ export function MartyrsFilters({
                                 <Input
                                     placeholder={t('martyrs.military_number')}
                                     value={localFilters.military_number || ''}
-                                    onChange={(e) => handleFilterChange('military_number', e.target.value)}
+                                    onChange={(e) =>
+                                        handleFilterChange(
+                                            'military_number',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </div>
 
@@ -341,7 +513,12 @@ export function MartyrsFilters({
                                 <Input
                                     placeholder={t('martyrs.decision_number')}
                                     value={localFilters.decision_number || ''}
-                                    onChange={(e) => handleFilterChange('decision_number', e.target.value)}
+                                    onChange={(e) =>
+                                        handleFilterChange(
+                                            'decision_number',
+                                            e.target.value,
+                                        )
+                                    }
                                 />
                             </div>
 
@@ -349,21 +526,40 @@ export function MartyrsFilters({
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 {/* Death Date From */}
                                 <div className="space-y-2">
-                                    <Label>{t('martyrs.death_date_from')}</Label>
+                                    <Label>
+                                        {t('martyrs.death_date_from')}
+                                    </Label>
                                     <Input
                                         type="date"
-                                        value={localFilters.death_date_from || ''}
-                                        onChange={(e) => handleFilterChange('death_date_from', e.target.value)}
+                                        value={
+                                            localFilters.death_date_from || ''
+                                        }
+                                        onChange={(e) =>
+                                            handleFilterChange(
+                                                'death_date_from',
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </div>
 
                                 {/* Decision Date From */}
                                 <div className="space-y-2">
-                                    <Label>{t('martyrs.decision_date_from')}</Label>
+                                    <Label>
+                                        {t('martyrs.decision_date_from')}
+                                    </Label>
                                     <Input
                                         type="date"
-                                        value={localFilters.decision_date_from || ''}
-                                        onChange={(e) => handleFilterChange('decision_date_from', e.target.value)}
+                                        value={
+                                            localFilters.decision_date_from ||
+                                            ''
+                                        }
+                                        onChange={(e) =>
+                                            handleFilterChange(
+                                                'decision_date_from',
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </div>
                             </div>
@@ -375,7 +571,12 @@ export function MartyrsFilters({
                                     <Input
                                         type="date"
                                         value={localFilters.date_from || ''}
-                                        onChange={(e) => handleFilterChange('date_from', e.target.value)}
+                                        onChange={(e) =>
+                                            handleFilterChange(
+                                                'date_from',
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </div>
 
@@ -385,7 +586,12 @@ export function MartyrsFilters({
                                     <Input
                                         type="date"
                                         value={localFilters.date_to || ''}
-                                        onChange={(e) => handleFilterChange('date_to', e.target.value)}
+                                        onChange={(e) =>
+                                            handleFilterChange(
+                                                'date_to',
+                                                e.target.value,
+                                            )
+                                        }
                                     />
                                 </div>
                             </div>
@@ -393,7 +599,11 @@ export function MartyrsFilters({
                     </div>
                 </ScrollArea>
                 <div className="border-t p-6">
-                    <Button onClick={clearFilters} variant="outline" className="w-full">
+                    <Button
+                        onClick={clearFilters}
+                        variant="outline"
+                        className="w-full"
+                    >
                         {t('martyrs.clear_filters')}
                     </Button>
                 </div>

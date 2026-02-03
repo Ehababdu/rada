@@ -87,10 +87,10 @@ export function NavUser() {
                             isMobile
                                 ? 'bottom'
                                 : state === 'collapsed'
-                                    ? isRTL
-                                        ? 'right'
-                                        : 'left'
-                                    : 'bottom'
+                                  ? isRTL
+                                      ? 'right'
+                                      : 'left'
+                                  : 'bottom'
                         }
                         sideOffset={8}
                     >

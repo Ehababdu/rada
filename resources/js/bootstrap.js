@@ -6,9 +6,9 @@ import './i18n';
  * allows your team to easily build robust real-time web applications.
  */
 
+import axios from 'axios';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
-import axios from 'axios';
 
 window.Pusher = Pusher;
 
@@ -23,21 +23,28 @@ window.Echo = new Echo({
     authorizer: (channel) => {
         return {
             authorize: (socketId, callback) => {
-                axios.post('/api/broadcasting/auth', {
-                    socket_id: socketId,
-                    channel_name: channel.name
-                }, {
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                })
-                .then(response => {
-                    callback(false, response.data);
-                })
-                .catch(error => {
-                    callback(true, error);
-                });
-            }
+                axios
+                    .post(
+                        '/api/broadcasting/auth',
+                        {
+                            socket_id: socketId,
+                            channel_name: channel.name,
+                        },
+                        {
+                            headers: {
+                                'X-CSRF-TOKEN': document
+                                    .querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content'),
+                            },
+                        },
+                    )
+                    .then((response) => {
+                        callback(false, response.data);
+                    })
+                    .catch((error) => {
+                        callback(true, error);
+                    });
+            },
         };
     },
 });

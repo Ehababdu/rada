@@ -10,7 +10,6 @@ export const AppSidebarHeader = memo(function AppSidebarHeader({
 }: {
     breadcrumbs?: BreadcrumbItemType[];
 }) {
-
     return (
         <header
             className={cn(

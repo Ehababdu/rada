@@ -118,12 +118,12 @@
 }
 
 /* Error state */
-.filepond--item[data-filepond-item-state="error"] {
+.filepond--item[data-filepond-item-state='error'] {
     border-color: #ef4444;
     background: #fef2f2;
 }
 
-.dark .filepond--item[data-filepond-item-state="error"] {
+.dark .filepond--item[data-filepond-item-state='error'] {
     border-color: #ef4444;
     background: #451a1a;
 }
@@ -174,7 +174,7 @@
 }
 
 /* Reduce the visual width of the error bar and keep nice rounding */
-.filepond--item[data-filepond-item-state="error"] {
+.filepond--item[data-filepond-item-state='error'] {
     width: auto;
     max-width: 680px;
     box-shadow: none;
@@ -210,13 +210,21 @@
 }
 
 /* Error state polish: make error bar more compact and centered */
-.filepond--item[data-filepond-item-state="error"] {
-    background: linear-gradient(90deg, rgba(254,226,226,0.95), rgba(255,243,243,0.95));
+.filepond--item[data-filepond-item-state='error'] {
+    background: linear-gradient(
+        90deg,
+        rgba(254, 226, 226, 0.95),
+        rgba(255, 243, 243, 0.95)
+    );
     border-color: #f87171;
 }
 
-.dark .filepond--item[data-filepond-item-state="error"] {
-    background: linear-gradient(90deg, rgba(76,0,0,0.6), rgba(51,6,6,0.6));
+.dark .filepond--item[data-filepond-item-state='error'] {
+    background: linear-gradient(
+        90deg,
+        rgba(76, 0, 0, 0.6),
+        rgba(51, 6, 6, 0.6)
+    );
 }
 
 /* Make file action icons visually consistent in RTL */
@@ -227,6 +235,11 @@
 
 /* Small responsive tweak */
 @media (max-width: 640px) {
-    .filepond--root { padding: 0.25rem; max-width: 100%; }
-    .filepond--item { width: 100%; }
+    .filepond--root {
+        padding: 0.25rem;
+        max-width: 100%;
+    }
+    .filepond--item {
+        width: 100%;
+    }
 }

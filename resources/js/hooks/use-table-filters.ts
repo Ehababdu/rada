@@ -2,7 +2,13 @@ import { FilterConfig } from '@/components/data-table/filters/filter-panel';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type FilterValue = string | number | boolean | string[] | null | undefined;
+export type FilterValue =
+    | string
+    | number
+    | boolean
+    | string[]
+    | null
+    | undefined;
 
 export interface TableFilters {
     [key: string]: FilterValue;

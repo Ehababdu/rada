@@ -1,6 +1,6 @@
+import { Row, Table } from '@tanstack/react-table';
 import { Download, Filter, Search, Settings } from 'lucide-react';
 import * as React from 'react';
-import { Table, Row } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,7 +57,9 @@ export function DataTableToolbar<TData>({
         if (!searchKeys || searchKeys.length === 0) return null;
 
         const allData =
-            table?.getCoreRowModel().rows.map((row: Row<TData>) => row.original) || [];
+            table
+                ?.getCoreRowModel()
+                .rows.map((row: Row<TData>) => row.original) || [];
         return createFuzzySearcher(allData, {
             keys: searchKeys,
             threshold: 0.3,

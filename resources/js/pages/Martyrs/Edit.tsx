@@ -438,17 +438,12 @@ export default function Edit({
         job_grade_id: martyr.job_grade_id,
         workplace: martyr.workplace,
         previous_workplace: martyr.previous_workplace,
-        employer_id:
-            martyr.employer_id ?? martyr.employer?.id ?? null,
+        employer_id: martyr.employer_id ?? martyr.employer?.id ?? null,
         employer_location_id:
-            martyr.employer_location_id ??
-            martyr.employer_location?.id ??
-            null,
+            martyr.employer_location_id ?? martyr.employer_location?.id ?? null,
         has_previous_workplace: martyr.has_previous_workplace ?? false,
         previous_employer_id:
-            martyr.previous_employer_id ??
-            martyr.previous_employer?.id ??
-            null,
+            martyr.previous_employer_id ?? martyr.previous_employer?.id ?? null,
         previous_employer_location_id:
             martyr.previous_employer_location_id ??
             martyr.previous_employer_location?.id ??
@@ -485,12 +480,14 @@ export default function Edit({
             employers,
         );
     const [loadingEmployers] = useState(false);
-    const [employerLocationsState] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+    const [employerLocationsState] =
+        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             employerLocations,
         );
     const [loadingEmployerLocations, setLoadingEmployerLocations] =
         useState(false);
-    const [previousEmployerLocationsState] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+    const [previousEmployerLocationsState] =
+        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             employerLocations,
         );
     const [
@@ -501,9 +498,7 @@ export default function Edit({
         martyr.employer_id ?? martyr.employer?.id ?? null,
     );
     const prevPreviousEmployerIdRef = useRef<number | null>(
-        martyr.previous_employer_id ??
-            martyr.previous_employer?.id ??
-            null,
+        martyr.previous_employer_id ?? martyr.previous_employer?.id ?? null,
     );
 
     const [currentEmploymentStatuses] =
@@ -643,9 +638,7 @@ export default function Edit({
         let mounted = true;
         if (data.previous_employer_id) {
             setLoadingPreviousEmployerLocations(true);
-            fetch(
-                `/api/employers/${data.previous_employer_id}/locations`,
-            )
+            fetch(`/api/employers/${data.previous_employer_id}/locations`)
                 .then((r) => r.json())
                 .then((d) => {
                     if (!mounted) return;
@@ -659,8 +652,7 @@ export default function Edit({
                     () => mounted && setLoadingPreviousEmployerLocations(false),
                 );
             if (
-                prevPreviousEmployerIdRef.current !==
-                data.previous_employer_id
+                prevPreviousEmployerIdRef.current !== data.previous_employer_id
             ) {
                 setData('previous_employer_location_id', null);
             }
@@ -669,8 +661,7 @@ export default function Edit({
             setData('previous_employer_location_id', null);
         }
 
-        prevPreviousEmployerIdRef.current =
-            data.previous_employer_id ?? null;
+        prevPreviousEmployerIdRef.current = data.previous_employer_id ?? null;
 
         return () => {
             mounted = false;
@@ -681,24 +672,26 @@ export default function Edit({
         e.preventDefault();
 
         const formData = new FormData();
-        Object.entries(data as Record<string, unknown>).forEach(([key, value]) => {
-            // skip undefined or null to avoid clearing server values
-            if (value === undefined || value === null) return;
+        Object.entries(data as Record<string, unknown>).forEach(
+            ([key, value]) => {
+                // skip undefined or null to avoid clearing server values
+                if (value === undefined || value === null) return;
 
-            // if it's a File (profile_image), append directly
-            if (value instanceof File) {
-                formData.append(key, value);
-                return;
-            }
+                // if it's a File (profile_image), append directly
+                if (value instanceof File) {
+                    formData.append(key, value);
+                    return;
+                }
 
-            // arrays/objects -> JSON
-            if (typeof value === 'object') {
-                formData.append(key, JSON.stringify(value));
-                return;
-            }
+                // arrays/objects -> JSON
+                if (typeof value === 'object') {
+                    formData.append(key, JSON.stringify(value));
+                    return;
+                }
 
-            formData.append(key, String(value));
-        });
+                formData.append(key, String(value));
+            },
+        );
 
         // include _method override so Laravel accepts PUT with multipart/form-data
         formData.append('_method', 'PUT');
@@ -1107,9 +1100,7 @@ export default function Edit({
                                     error={errors.employer_location_id}
                                 >
                                     <SearchableSelect
-                                        value={
-                                            data.employer_location_id
-                                        }
+                                        value={data.employer_location_id}
                                         onChange={(value) =>
                                             setData(
                                                 'employer_location_id',
@@ -1228,9 +1219,7 @@ export default function Edit({
                                 error={errors.previous_employer_location_id}
                             >
                                 <SearchableSelect
-                                    value={
-                                        data.previous_employer_location_id
-                                    }
+                                    value={data.previous_employer_location_id}
                                     onChange={(value) =>
                                         setData(
                                             'previous_employer_location_id',
@@ -1500,8 +1489,7 @@ export default function Edit({
                                         setPreviewUrl(obj);
                                     } else {
                                         setPreviewUrl(
-                                            martyr.profile_image ??
-                                                null,
+                                            martyr.profile_image ?? null,
                                         );
                                     }
                                 }}

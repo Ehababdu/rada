@@ -1,6 +1,6 @@
-import React from 'react';
 import { DataTable } from '@/components/ui/data-table';
 import { ColumnDef } from '@tanstack/react-table';
+import React from 'react';
 import type { Martyr } from '../types/martyr';
 
 interface MartyrsTableProps {
@@ -12,22 +12,24 @@ interface MartyrsTableProps {
     onRowSelectionChange: (selection: Record<string, boolean>) => void;
 }
 
-export const MartyrsTable = React.memo<MartyrsTableProps>(({
-    columns,
-    data,
-    columnVisibility,
-    enableRowSelection,
-    rowSelection,
-    onRowSelectionChange,
-}: MartyrsTableProps) => {
-    return (
-        <DataTable
-            columns={columns}
-            data={data}
-            columnVisibility={columnVisibility}
-            enableRowSelection={enableRowSelection}
-            rowSelection={rowSelection}
-            onRowSelectionChange={onRowSelectionChange}
-        />
-    );
-});
+export const MartyrsTable = React.memo<MartyrsTableProps>(
+    ({
+        columns,
+        data,
+        columnVisibility,
+        enableRowSelection,
+        rowSelection,
+        onRowSelectionChange,
+    }: MartyrsTableProps) => {
+        return (
+            <DataTable
+                columns={columns}
+                data={data}
+                columnVisibility={columnVisibility}
+                enableRowSelection={enableRowSelection}
+                rowSelection={rowSelection}
+                onRowSelectionChange={onRowSelectionChange}
+            />
+        );
+    },
+);

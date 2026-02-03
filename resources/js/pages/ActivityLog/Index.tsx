@@ -1,15 +1,27 @@
-import React from 'react';
-import { Head, Link } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CalendarIcon, EyeIcon, UserIcon, FileTextIcon } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
+import { Head, Link } from '@inertiajs/react';
+import { CalendarIcon, EyeIcon, FileTextIcon, UserIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Activity {
     id: number;
@@ -49,31 +61,41 @@ export default function Index({ activities, filters }: Props) {
 
     const getEventColor = (event: string) => {
         switch (event) {
-            case 'created': return 'bg-green-100 text-green-800';
-            case 'updated': return 'bg-blue-100 text-blue-800';
-            case 'deleted': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'created':
+                return 'bg-green-100 text-green-800';
+            case 'updated':
+                return 'bg-blue-100 text-blue-800';
+            case 'deleted':
+                return 'bg-red-100 text-red-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
         }
     };
 
     const getModelIcon = (model: string) => {
         switch (model) {
-            case 'User': return <UserIcon className="h-4 w-4" />;
-            case 'Martyr': return <FileTextIcon className="h-4 w-4" />;
-            default: return <FileTextIcon className="h-4 w-4" />;
+            case 'User':
+                return <UserIcon className="h-4 w-4" />;
+            case 'Martyr':
+                return <FileTextIcon className="h-4 w-4" />;
+            default:
+                return <FileTextIcon className="h-4 w-4" />;
         }
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: t('activity_log.title', 'سجل الأنشطة'), href: '/activity-log' },
+        {
+            title: t('activity_log.title', 'سجل الأنشطة'),
+            href: '/activity-log',
+        },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="سجل الأنشطة" />
 
-            <div className="flex flex-col gap-6 mx-auto py-6">
-                <div className="flex items-center justify-between mb-6">
+            <div className="mx-auto flex flex-col gap-6 py-6">
+                <div className="mb-6 flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold">سجل الأنشطة</h1>
                         <p className="text-muted-foreground">
@@ -88,14 +110,19 @@ export default function Index({ activities, filters }: Props) {
                         <CardTitle>البحث والفلترة</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
                             <div>
                                 <Input
                                     placeholder="البحث في الوصف..."
                                     value={filters.search || ''}
                                     onChange={(e) => {
-                                        const url = new URL(window.location.href);
-                                        url.searchParams.set('search', e.target.value);
+                                        const url = new URL(
+                                            window.location.href,
+                                        );
+                                        url.searchParams.set(
+                                            'search',
+                                            e.target.value,
+                                        );
                                         window.location.href = url.toString();
                                     }}
                                 />
@@ -104,9 +131,14 @@ export default function Index({ activities, filters }: Props) {
                                 <Select
                                     value={filters.model || 'all'}
                                     onValueChange={(value) => {
-                                        const url = new URL(window.location.href);
+                                        const url = new URL(
+                                            window.location.href,
+                                        );
                                         if (value && value !== 'all') {
-                                            url.searchParams.set('model', value);
+                                            url.searchParams.set(
+                                                'model',
+                                                value,
+                                            );
                                         } else {
                                             url.searchParams.delete('model');
                                         }
@@ -117,12 +149,24 @@ export default function Index({ activities, filters }: Props) {
                                         <SelectValue placeholder="النموذج" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="all">الكل</SelectItem>
-                                        <SelectItem value="User">المستخدمين</SelectItem>
-                                        <SelectItem value="Martyr">الشهداء</SelectItem>
-                                        <SelectItem value="Bank">البنوك</SelectItem>
-                                        <SelectItem value="Attachment">المرفقات</SelectItem>
-                                        <SelectItem value="Alert">التنبيهات</SelectItem>
+                                        <SelectItem value="all">
+                                            الكل
+                                        </SelectItem>
+                                        <SelectItem value="User">
+                                            المستخدمين
+                                        </SelectItem>
+                                        <SelectItem value="Martyr">
+                                            الشهداء
+                                        </SelectItem>
+                                        <SelectItem value="Bank">
+                                            البنوك
+                                        </SelectItem>
+                                        <SelectItem value="Attachment">
+                                            المرفقات
+                                        </SelectItem>
+                                        <SelectItem value="Alert">
+                                            التنبيهات
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -131,8 +175,13 @@ export default function Index({ activities, filters }: Props) {
                                     placeholder="المستخدم..."
                                     value={filters.user || ''}
                                     onChange={(e) => {
-                                        const url = new URL(window.location.href);
-                                        url.searchParams.set('user', e.target.value);
+                                        const url = new URL(
+                                            window.location.href,
+                                        );
+                                        url.searchParams.set(
+                                            'user',
+                                            e.target.value,
+                                        );
                                         window.location.href = url.toString();
                                     }}
                                 />
@@ -142,8 +191,13 @@ export default function Index({ activities, filters }: Props) {
                                     type="date"
                                     value={filters.date_from || ''}
                                     onChange={(e) => {
-                                        const url = new URL(window.location.href);
-                                        url.searchParams.set('date_from', e.target.value);
+                                        const url = new URL(
+                                            window.location.href,
+                                        );
+                                        url.searchParams.set(
+                                            'date_from',
+                                            e.target.value,
+                                        );
                                         window.location.href = url.toString();
                                     }}
                                 />
@@ -153,8 +207,13 @@ export default function Index({ activities, filters }: Props) {
                                     type="date"
                                     value={filters.date_to || ''}
                                     onChange={(e) => {
-                                        const url = new URL(window.location.href);
-                                        url.searchParams.set('date_to', e.target.value);
+                                        const url = new URL(
+                                            window.location.href,
+                                        );
+                                        url.searchParams.set(
+                                            'date_to',
+                                            e.target.value,
+                                        );
                                         window.location.href = url.toString();
                                     }}
                                 />
@@ -184,10 +243,17 @@ export default function Index({ activities, filters }: Props) {
                                 {activities.data.map((activity: Activity) => (
                                     <TableRow key={activity.id}>
                                         <TableCell>
-                                            <Badge className={getEventColor(activity.event)}>
-                                                {activity.event === 'created' && 'تم الإنشاء'}
-                                                {activity.event === 'updated' && 'تم التحديث'}
-                                                {activity.event === 'deleted' && 'تم الحذف'}
+                                            <Badge
+                                                className={getEventColor(
+                                                    activity.event,
+                                                )}
+                                            >
+                                                {activity.event === 'created' &&
+                                                    'تم الإنشاء'}
+                                                {activity.event === 'updated' &&
+                                                    'تم التحديث'}
+                                                {activity.event === 'deleted' &&
+                                                    'تم الحذف'}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="max-w-xs truncate">
@@ -195,15 +261,23 @@ export default function Index({ activities, filters }: Props) {
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
-                                                {getModelIcon(activity.subject_type)}
-                                                <span>{activity.subject_type}</span>
+                                                {getModelIcon(
+                                                    activity.subject_type,
+                                                )}
+                                                <span>
+                                                    {activity.subject_type}
+                                                </span>
                                             </div>
                                         </TableCell>
                                         <TableCell>
                                             {activity.causer_name ? (
-                                                <span>{activity.causer_name}</span>
+                                                <span>
+                                                    {activity.causer_name}
+                                                </span>
                                             ) : (
-                                                <span className="text-muted-foreground">غير محدد</span>
+                                                <span className="text-muted-foreground">
+                                                    غير محدد
+                                                </span>
                                             )}
                                         </TableCell>
                                         <TableCell>
@@ -219,7 +293,9 @@ export default function Index({ activities, filters }: Props) {
                                                     size="sm"
                                                     asChild
                                                 >
-                                                    <Link href={`/activity-log/${activity.id}`}>
+                                                    <Link
+                                                        href={`/activity-log/${activity.id}`}
+                                                    >
                                                         <EyeIcon className="h-4 w-4" />
                                                     </Link>
                                                 </Button>
@@ -232,28 +308,60 @@ export default function Index({ activities, filters }: Props) {
 
                         {/* Pagination */}
                         {activities.last_page > 1 && (
-                            <div className="flex items-center justify-between mt-4">
+                            <div className="mt-4 flex items-center justify-between">
                                 <div className="text-sm text-muted-foreground">
-                                    عرض {activities.from} إلى {activities.to} من أصل {activities.total} نتيجة
+                                    عرض {activities.from} إلى {activities.to} من
+                                    أصل {activities.total} نتيجة
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    {activities.links.map((link: { url?: string; label: string; active: boolean }, index: number) => (
-                                        <Button
-                                            key={index}
-                                            variant={link.active ? "default" : "outline"}
-                                            size="sm"
-                                            disabled={!link.url}
-                                            asChild={!!link.url}
-                                        >
-                                            {link.url ? (
-                                                <Link href={link.url}>
-                                                    {link.label.replace('&laquo;', '«').replace('&raquo;', '»')}
-                                                </Link>
-                                            ) : (
-                                                <span>{link.label.replace('&laquo;', '«').replace('&raquo;', '»')}</span>
-                                            )}
-                                        </Button>
-                                    ))}
+                                    {activities.links.map(
+                                        (
+                                            link: {
+                                                url?: string;
+                                                label: string;
+                                                active: boolean;
+                                            },
+                                            index: number,
+                                        ) => (
+                                            <Button
+                                                key={index}
+                                                variant={
+                                                    link.active
+                                                        ? 'default'
+                                                        : 'outline'
+                                                }
+                                                size="sm"
+                                                disabled={!link.url}
+                                                asChild={!!link.url}
+                                            >
+                                                {link.url ? (
+                                                    <Link href={link.url}>
+                                                        {link.label
+                                                            .replace(
+                                                                '&laquo;',
+                                                                '«',
+                                                            )
+                                                            .replace(
+                                                                '&raquo;',
+                                                                '»',
+                                                            )}
+                                                    </Link>
+                                                ) : (
+                                                    <span>
+                                                        {link.label
+                                                            .replace(
+                                                                '&laquo;',
+                                                                '«',
+                                                            )
+                                                            .replace(
+                                                                '&raquo;',
+                                                                '»',
+                                                            )}
+                                                    </span>
+                                                )}
+                                            </Button>
+                                        ),
+                                    )}
                                 </div>
                             </div>
                         )}

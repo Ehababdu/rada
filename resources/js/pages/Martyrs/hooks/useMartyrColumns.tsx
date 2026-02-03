@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { useTranslation } from 'react-i18next';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Shadcn UI Components
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -19,8 +19,12 @@ import {
 // Icons
 import { ArrowUpDown, Edit, Eye, MoreHorizontal, Trash2 } from 'lucide-react';
 
-import { getBankBranchName, getEmploymentStatusName, getLocalizedName } from '../utils/martyrHelpers';
 import type { Martyr } from '../types/martyr';
+import {
+    getBankBranchName,
+    getEmploymentStatusName,
+    getLocalizedName,
+} from '../utils/martyrHelpers';
 
 interface UseMartyrColumnsProps {
     canViewAttachments: boolean;
@@ -46,7 +50,11 @@ export function useMartyrColumns({
         () => [
             { key: '#', label: '#', required: true },
             { key: 'full_name', label: t('martyrs.full_name'), required: true },
-            { key: 'file_number', label: t('martyrs.file_number'), required: true },
+            {
+                key: 'file_number',
+                label: t('martyrs.file_number'),
+                required: true,
+            },
             {
                 key: 'national_id',
                 label: t('martyrs.national_id'),
@@ -160,12 +168,12 @@ export function useMartyrColumns({
 
             ...(canViewAttachments
                 ? [
-                    {
-                        key: 'attachments',
-                        label: t('martyrs.attachments'),
-                        required: true,
-                    },
-                ]
+                      {
+                          key: 'attachments',
+                          label: t('martyrs.attachments'),
+                          required: true,
+                      },
+                  ]
                 : []),
             { key: 'actions', label: t('martyrs.actions'), required: true },
         ],
@@ -180,7 +188,12 @@ export function useMartyrColumns({
                 const allowed = new Set(availableColumns.map((c) => c.key));
                 const valid = parsed.filter((k) => allowed.has(k));
                 if (valid.length) {
-                    return [...new Set([...availableColumns.map((c) => c.key), ...valid])].filter((k) => allowed.has(k));
+                    return [
+                        ...new Set([
+                            ...availableColumns.map((c) => c.key),
+                            ...valid,
+                        ]),
+                    ].filter((k) => allowed.has(k));
                 }
             }
         } catch {
@@ -189,39 +202,45 @@ export function useMartyrColumns({
         return availableColumns.map((c) => c.key);
     });
 
-
-    const basicKeys = useMemo(() =>
-        availableColumns
-            .filter((col) => col.required)
-            .map((c) => c.key),
+    const basicKeys = useMemo(
+        () => availableColumns.filter((col) => col.required).map((c) => c.key),
         [availableColumns],
     );
 
-    const additionalKeys = useMemo(() =>
-        availableColumns
-            .filter((col) => !basicKeys.includes(col.key))
-            .map((c) => c.key),
+    const additionalKeys = useMemo(
+        () =>
+            availableColumns
+                .filter((col) => !basicKeys.includes(col.key))
+                .map((c) => c.key),
         [availableColumns, basicKeys],
     );
 
-    const areAllBasicSelected = useMemo(() =>
-        basicKeys.length > 0 && basicKeys.every((k) => visibleColumns.includes(k)),
-        [basicKeys, visibleColumns]
+    const areAllBasicSelected = useMemo(
+        () =>
+            basicKeys.length > 0 &&
+            basicKeys.every((k) => visibleColumns.includes(k)),
+        [basicKeys, visibleColumns],
     );
 
-    const areSomeBasicSelected = useMemo(() =>
-        basicKeys.some((k) => visibleColumns.includes(k)) && !areAllBasicSelected,
-        [basicKeys, visibleColumns, areAllBasicSelected]
+    const areSomeBasicSelected = useMemo(
+        () =>
+            basicKeys.some((k) => visibleColumns.includes(k)) &&
+            !areAllBasicSelected,
+        [basicKeys, visibleColumns, areAllBasicSelected],
     );
 
-    const areAllAdditionalSelected = useMemo(() =>
-        additionalKeys.length > 0 && additionalKeys.every((k) => visibleColumns.includes(k)),
-        [additionalKeys, visibleColumns]
+    const areAllAdditionalSelected = useMemo(
+        () =>
+            additionalKeys.length > 0 &&
+            additionalKeys.every((k) => visibleColumns.includes(k)),
+        [additionalKeys, visibleColumns],
     );
 
-    const areSomeAdditionalSelected = useMemo(() =>
-        additionalKeys.some((k) => visibleColumns.includes(k)) && !areAllAdditionalSelected,
-        [additionalKeys, visibleColumns, areAllAdditionalSelected]
+    const areSomeAdditionalSelected = useMemo(
+        () =>
+            additionalKeys.some((k) => visibleColumns.includes(k)) &&
+            !areAllAdditionalSelected,
+        [additionalKeys, visibleColumns, areAllAdditionalSelected],
     );
 
     // Memoized callbacks to prevent unnecessary re-renders
@@ -289,7 +308,7 @@ export function useMartyrColumns({
                 accessorKey: 'file_number',
                 header: t('martyrs.file_number'),
                 cell: ({ row }: { row: { original: Martyr } }) => (
-                    <div className="font-medium text-sm">
+                    <div className="text-sm font-medium">
                         {row.original.file_number || '-'}
                     </div>
                 ),
@@ -321,55 +340,64 @@ export function useMartyrColumns({
                 id: 'military_rank',
                 accessorKey: 'military_rank',
                 header: t('martyrs.military_rank'),
-                cell: ({ row }: { row: { original: Martyr } }) => getLocalizedName(row.original.military_rank, isRTL),
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    getLocalizedName(row.original.military_rank, isRTL),
             },
             {
                 id: 'job_grade',
                 accessorKey: 'job_grade',
                 header: t('martyrs.job_grade'),
-                cell: ({ row }: { row: { original: Martyr } }) => getLocalizedName(row.original.job_grade, isRTL),
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    getLocalizedName(row.original.job_grade, isRTL),
             },
             {
                 id: 'children_count',
                 accessorKey: 'children_count',
                 header: t('martyrs.children_count'),
-                cell: ({ row }: { row: { original: Martyr } }) => row.original.children_count ?? 0,
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    row.original.children_count ?? 0,
             },
             {
                 id: 'marital_status',
                 accessorKey: 'marital_status',
                 header: t('martyrs.marital_status'),
-                cell: ({ row }: { row: { original: Martyr } }) => getLocalizedName(row.original.marital_status, isRTL),
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    getLocalizedName(row.original.marital_status, isRTL),
             },
             {
                 id: 'employment_status',
                 accessorKey: 'employment_status',
                 header: t('martyrs.employment_status'),
-                cell: ({ row }: { row: { original: Martyr } }) => getEmploymentStatusName(row.original.employment_status),
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    getEmploymentStatusName(row.original.employment_status),
             },
             {
                 id: 'bank',
                 accessorKey: 'bank',
                 header: t('martyrs.bank'),
-                cell: ({ row }: { row: { original: Martyr } }) => getBankBranchName(row.original.bank),
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    getBankBranchName(row.original.bank),
             },
             {
                 id: 'branch',
                 accessorKey: 'branch',
                 header: t('martyrs.branch'),
-                cell: ({ row }: { row: { original: Martyr } }) => getBankBranchName(row.original.branch),
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    getBankBranchName(row.original.branch),
             },
             {
                 id: 'employer',
                 accessorKey: 'employer',
                 header: t('martyrs.employer'),
-                cell: ({ row }: { row: { original: Martyr } }) => getLocalizedName(row.original.employer, isRTL),
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    getLocalizedName(row.original.employer, isRTL),
             },
             {
                 id: 'employer_location',
                 accessorKey: 'employer_location',
                 header: t('martyrs.employer_location'),
-                cell: ({ row }: { row: { original: Martyr } }) => getLocalizedName(row.original.employer_location, isRTL),
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    getLocalizedName(row.original.employer_location, isRTL),
             },
             {
                 id: 'previous_employer',
@@ -380,7 +408,7 @@ export function useMartyrColumns({
                         ? isRTL
                             ? row.original.previous_employer.name_ar
                             : row.original.previous_employer.name_en ||
-                            row.original.previous_employer.name_ar
+                              row.original.previous_employer.name_ar
                         : '-',
             },
             {
@@ -392,7 +420,7 @@ export function useMartyrColumns({
                         ? isRTL
                             ? row.original.previous_employer_location.name_ar
                             : row.original.previous_employer_location.name_en ||
-                            row.original.previous_employer_location.name_ar
+                              row.original.previous_employer_location.name_ar
                         : '-',
             },
             {
@@ -432,7 +460,9 @@ export function useMartyrColumns({
                     }
                     const isMarried = wife_status === 'متزوجة';
                     return (
-                        <Badge variant={isMarried ? 'destructive' : 'secondary'}>
+                        <Badge
+                            variant={isMarried ? 'destructive' : 'secondary'}
+                        >
                             {wife_status}
                         </Badge>
                     );
@@ -455,25 +485,33 @@ export function useMartyrColumns({
                 id: 'decision_number',
                 accessorKey: 'decision_number',
                 header: t('martyrs.decision_number'),
-                cell: ({ row }: { row: { original: Martyr } }) => row.original.decision_number || '-',
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    row.original.decision_number || '-',
             },
             {
                 id: 'decision_date',
                 accessorKey: 'decision_date',
                 header: t('martyrs.decision_date'),
-                cell: ({ row }: { row: { original: Martyr } }) => row.original.decision_date ? row.original.decision_date.split('T')[0] : '-',
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    row.original.decision_date
+                        ? row.original.decision_date.split('T')[0]
+                        : '-',
             },
             {
                 id: 'death_date',
                 accessorKey: 'death_date',
                 header: t('martyrs.death_date'),
-                cell: ({ row }: { row: { original: Martyr } }) => row.original.death_date ? row.original.death_date.split('T')[0] : '-',
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    row.original.death_date
+                        ? row.original.death_date.split('T')[0]
+                        : '-',
             },
             {
                 id: 'agent_name',
                 accessorKey: 'agent_name',
                 header: t('martyrs.agent_name'),
-                cell: ({ row }: { row: { original: Martyr } }) => row.original.agent_name || '-',
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    row.original.agent_name || '-',
             },
             {
                 id: 'agent_phone',
@@ -505,7 +543,8 @@ export function useMartyrColumns({
                 id: 'agent_relationship',
                 accessorKey: 'agent_relationship',
                 header: t('martyrs.agent_relationship'),
-                cell: ({ row }: { row: { original: Martyr } }) => row.original.agent_relationship || '-',
+                cell: ({ row }: { row: { original: Martyr } }) =>
+                    row.original.agent_relationship || '-',
             },
             {
                 id: 'parents_status',
@@ -543,20 +582,20 @@ export function useMartyrColumns({
             },
             ...(canViewAttachments
                 ? [
-                    {
-                        id: 'attachments',
-                        header: t('martyrs.attachments'),
-                        cell: ({ row }: { row: { original: Martyr } }) => (
-                            <Button variant="link" size="sm" asChild>
-                                <Link
-                                    href={`/martyrs/${row.original.id}/attachments`}
-                                >
-                                    {t('martyrs.view_attachments')}
-                                </Link>
-                            </Button>
-                        ),
-                    },
-                ]
+                      {
+                          id: 'attachments',
+                          header: t('martyrs.attachments'),
+                          cell: ({ row }: { row: { original: Martyr } }) => (
+                              <Button variant="link" size="sm" asChild>
+                                  <Link
+                                      href={`/martyrs/${row.original.id}/attachments`}
+                                  >
+                                      {t('martyrs.view_attachments')}
+                                  </Link>
+                              </Button>
+                          ),
+                      },
+                  ]
                 : []),
             {
                 id: 'actions',
@@ -613,7 +652,15 @@ export function useMartyrColumns({
                 ),
             },
         ],
-        [t, isRTL, canViewAttachments, canViewDetails, canUpdate, canDelete, onDelete],
+        [
+            t,
+            isRTL,
+            canViewAttachments,
+            canViewDetails,
+            canUpdate,
+            canDelete,
+            onDelete,
+        ],
     );
 
     // Filtered Columns - Memoized to prevent unnecessary recalculations
@@ -621,7 +668,8 @@ export function useMartyrColumns({
         () =>
             columns.filter(
                 (col) =>
-                    visibleColumns.includes(col.id as string) || col.id === 'actions',
+                    visibleColumns.includes(col.id as string) ||
+                    col.id === 'actions',
             ),
         [columns, visibleColumns],
     );

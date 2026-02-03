@@ -214,7 +214,7 @@ export function GlobalSearch() {
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="relative inline-flex h-9 w-full items-center justify-start whitespace-nowrap rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 sm:pr-12 md:w-40 lg:w-64"
+                className="relative inline-flex h-9 w-full items-center justify-start rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium whitespace-nowrap shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 sm:pr-12 md:w-40 lg:w-64"
             >
                 <Search
                     className={cn(
@@ -227,44 +227,61 @@ export function GlobalSearch() {
                 </span>
                 <kbd
                     className={cn(
-                        'pointer-events-none absolute top-1.5 hidden h-6 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex',
+                        'pointer-events-none absolute top-1.5 hidden h-6 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 select-none sm:flex',
                         isRTL ? 'left-1.5' : 'right-1.5',
                     )}
                 >
                     <span className="text-xs">⌘</span>K
                 </kbd>
             </button>
-            <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
+            <CommandDialog
+                open={open}
+                onOpenChange={setOpen}
+                shouldFilter={false}
+            >
                 <div dir={isRTL ? 'rtl' : 'ltr'}>
                     <CommandInput
-                        placeholder={t('search.input_placeholder', 'اكتب للبحث...')}
+                        placeholder={t(
+                            'search.input_placeholder',
+                            'اكتب للبحث...',
+                        )}
                         onValueChange={setQuery}
                     />
                     <CommandList>
                         {query && displayResults.length === 0 && (
                             <CommandEmpty>
-                                {loading ? t('loading', 'جاري البحث...') : t('search.no_results', 'لا توجد نتائج.')}
+                                {loading
+                                    ? t('loading', 'جاري البحث...')
+                                    : t('search.no_results', 'لا توجد نتائج.')}
                             </CommandEmpty>
                         )}
 
                         {Object.entries(
-                            displayResults.reduce((acc, result) => {
-                                const groupName = result.group || t('navigation.other', 'أخرى');
-                                if (!acc[groupName]) acc[groupName] = [];
-                                acc[groupName].push(result);
-                                return acc;
-                            }, {} as Record<string, SearchResult[]>),
+                            displayResults.reduce(
+                                (acc, result) => {
+                                    const groupName =
+                                        result.group ||
+                                        t('navigation.other', 'أخرى');
+                                    if (!acc[groupName]) acc[groupName] = [];
+                                    acc[groupName].push(result);
+                                    return acc;
+                                },
+                                {} as Record<string, SearchResult[]>,
+                            ),
                         ).map(([group, groupResults]) => (
                             <CommandGroup key={group} heading={group}>
                                 {groupResults.map((result) => {
-                                    const IconComponent = iconMap[result.icon] || LayoutGrid;
-                                    const href = result.route ? route(result.route) : (result.href || '');
+                                    const IconComponent =
+                                        iconMap[result.icon] || LayoutGrid;
+                                    const href = result.route
+                                        ? route(result.route)
+                                        : result.href || '';
                                     return (
                                         <CommandItem
                                             key={result.id}
                                             value={result.title}
                                             onSelect={() => handleSelect(href)}
-                                            className="flex items-center gap-2 cursor-pointer"
+                                            className="flex cursor-pointer items-center gap-2"
                                         >
                                             <IconComponent className="h-4 w-4 shrink-0 opacity-50" />
                                             <div className="flex flex-col">

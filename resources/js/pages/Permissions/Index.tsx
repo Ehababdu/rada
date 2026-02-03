@@ -101,22 +101,19 @@ export default function Index({
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
 
     // Debounced Search logic
-    const debouncedSearch = useCallback(
-        () => {
-            let timeout: NodeJS.Timeout;
-            return (query: string) => {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    router.get(
-                        permissionsIndex.url(),
-                        { search: query },
-                        { preserveState: true, replace: true },
-                    );
-                }, 300);
-            };
-        },
-        [],
-    );
+    const debouncedSearch = useCallback(() => {
+        let timeout: NodeJS.Timeout;
+        return (query: string) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                router.get(
+                    permissionsIndex.url(),
+                    { search: query },
+                    { preserveState: true, replace: true },
+                );
+            }, 300);
+        };
+    }, []);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -150,10 +147,7 @@ export default function Index({
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Head title={t('permissions.title')} />
 
-                <div
-                    className="space-y-6 p-6"
-                    dir={isRTL ? 'rtl' : 'ltr'}
-                >
+                <div className="space-y-6 p-6" dir={isRTL ? 'rtl' : 'ltr'}>
                     {/* Header Section - Unified Design */}
                     <div className="flex flex-col gap-4 rounded-xl border bg-card p-6 shadow-sm md:flex-row md:items-center md:justify-between">
                         <div className="flex items-center gap-4">
@@ -341,37 +335,39 @@ export default function Index({
                                                         className="w-44"
                                                     >
                                                         <DropdownMenuLabel>
-                                                            {t('common.actions')}
+                                                            {t(
+                                                                'common.actions',
+                                                            )}
                                                         </DropdownMenuLabel>
                                                         <DropdownMenuSeparator />
                                                         {can(
                                                             'canViewDetails',
                                                         ) && (
-                                                                <DropdownMenuItem
-                                                                    asChild
+                                                            <DropdownMenuItem
+                                                                asChild
+                                                            >
+                                                                <Link
+                                                                    href={
+                                                                        permissionsShow(
+                                                                            permission.id,
+                                                                        ).url
+                                                                    }
+                                                                    className="flex cursor-pointer items-center"
                                                                 >
-                                                                    <Link
-                                                                        href={
-                                                                            permissionsShow(
-                                                                                permission.id,
-                                                                            ).url
-                                                                        }
-                                                                        className="flex cursor-pointer items-center"
-                                                                    >
-                                                                        <Eye
-                                                                            className={cn(
-                                                                                'h-4 w-4 text-muted-foreground',
-                                                                                isRTL
-                                                                                    ? 'ml-2'
-                                                                                    : 'mr-2',
-                                                                            )}
-                                                                        />
-                                                                        {t(
-                                                                            'common.view',
+                                                                    <Eye
+                                                                        className={cn(
+                                                                            'h-4 w-4 text-muted-foreground',
+                                                                            isRTL
+                                                                                ? 'ml-2'
+                                                                                : 'mr-2',
                                                                         )}
-                                                                    </Link>
-                                                                </DropdownMenuItem>
-                                                            )}
+                                                                    />
+                                                                    {t(
+                                                                        'common.view',
+                                                                    )}
+                                                                </Link>
+                                                            </DropdownMenuItem>
+                                                        )}
                                                         {can('canUpdate') && (
                                                             <DropdownMenuItem
                                                                 asChild

@@ -392,7 +392,9 @@ export default function Create({
             const fetchBranches = async () => {
                 setLoadingBranches(true);
                 try {
-                    const response = await fetch(`/api/banks/${data.bank_id}/branches`);
+                    const response = await fetch(
+                        `/api/banks/${data.bank_id}/branches`,
+                    );
                     const data = await response.json();
                     setBranches(data);
                 } catch {
@@ -412,7 +414,9 @@ export default function Create({
             const fetchLocations = async () => {
                 setLoadingEmployerLocations(true);
                 try {
-                    const response = await fetch(`/api/employers/${data.employer_id}/locations`);
+                    const response = await fetch(
+                        `/api/employers/${data.employer_id}/locations`,
+                    );
                     const data = await response.json();
                     setEmployerLocationsState(data);
                     // Reset employer_location_id when employer changes

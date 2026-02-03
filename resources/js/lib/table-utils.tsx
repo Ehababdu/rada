@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ColumnDef, Row, Column, Table } from '@tanstack/react-table';
+import { Column, ColumnDef, Row, Table } from '@tanstack/react-table';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import React from 'react';
 
@@ -233,10 +233,7 @@ export function generateExportData<TData>(
 /**
  * Export data to Excel format
  */
-export function exportToExcel<TData>(
-    data: TData[],
-    tableName: string,
-): void {
+export function exportToExcel<TData>(data: TData[], tableName: string): void {
     // TODO: Implement Excel export
     console.log('Exporting to Excel:', data.length, 'records from', tableName);
 }
@@ -244,10 +241,7 @@ export function exportToExcel<TData>(
 /**
  * Export data to PDF format
  */
-export function exportToPDF<TData>(
-    data: TData[],
-    tableName: string,
-): void {
+export function exportToPDF<TData>(data: TData[], tableName: string): void {
     // TODO: Implement PDF export
     console.log('Exporting to PDF:', data.length, 'records from', tableName);
 }

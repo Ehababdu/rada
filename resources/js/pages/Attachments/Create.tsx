@@ -4,13 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Progress from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { index as attachmentTypesIndex } from '@/routes/attachment-types';
 import { type BreadcrumbItem, type Martyr } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Settings, Upload, File, X } from 'lucide-react';
-import React, { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, File, Settings, Upload, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface Props {
     martyr: Martyr;
@@ -59,7 +59,9 @@ export default function Create({ martyr, attachmentTypes }: Props) {
         setAttachmentType(value);
     };
 
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleDescriptionChange = (
+        e: React.ChangeEvent<HTMLTextAreaElement>,
+    ) => {
         setDescription(e.target.value);
     };
 
@@ -128,7 +130,9 @@ export default function Create({ martyr, attachmentTypes }: Props) {
             forceFormData: true,
             // Inertia progress event provides progress in event.detail.progress (0-100)
             onProgress: (event: unknown) => {
-                const p = (event as { detail?: { progress?: number } })?.detail?.progress ?? null;
+                const p =
+                    (event as { detail?: { progress?: number } })?.detail
+                        ?.progress ?? null;
                 setUploadProgress(p !== null ? Math.round(p) : null);
             },
             onSuccess: () => {
@@ -187,136 +191,153 @@ export default function Create({ martyr, attachmentTypes }: Props) {
 
                 {/* Form */}
                 <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {Object.keys(errors).length > 0 && (
-                                <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
-                                    <h3 className="text-sm font-medium text-red-800 dark:text-red-200">خطأ في التحقق</h3>
-                                    <ul className="mt-2 list-disc list-inside text-sm text-red-700 dark:text-red-300">
-                                        {Object.values(errors).map((error, index) => (
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {Object.keys(errors).length > 0 && (
+                            <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                                <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
+                                    خطأ في التحقق
+                                </h3>
+                                <ul className="mt-2 list-inside list-disc text-sm text-red-700 dark:text-red-300">
+                                    {Object.values(errors).map(
+                                        (error, index) => (
                                             <li key={index}>{error}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                            {/* Attachment Type */}
-                            <div>
-                                <div className="mb-2 flex items-center justify-between">
-                                    <label className="block text-sm font-medium text-muted-foreground">
-                                        نوع المرفق{' '}
-                                        <span className="text-red-500">*</span>
-                                    </label>
-                                    <Link
-                                        href={
-                                            attachmentTypesIndex.definition?.url ??
-                                            attachmentTypesIndex()
-                                        }
-                                        className="flex items-center gap-1 text-sm text-primary hover:text-primary/80"
-                                    >
-                                        <Settings size={14} />
-                                        إدارة أنواع المرفقات
-                                    </Link>
-                                </div>
-                                <Combobox
-                                    value={attachment_type}
-                                    onChange={handleAttachmentTypeChange}
-                                    options={remoteOptions}
-                                    onQueryChange={handleQuery}
-                                    isLoading={isLoading}
-                                    placeholder="اختر خيار"
-                                />
-                                {errors.attachment_type && (
-                                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.attachment_type}</p>
-                                )}
+                                        ),
+                                    )}
+                                </ul>
                             </div>
-
-                            {/* File Upload */}
-                            <div>
-                                <Label className="mb-2 block text-sm font-medium text-muted-foreground">
-                                    الملف{' '}
+                        )}
+                        {/* Attachment Type */}
+                        <div>
+                            <div className="mb-2 flex items-center justify-between">
+                                <label className="block text-sm font-medium text-muted-foreground">
+                                    نوع المرفق{' '}
                                     <span className="text-red-500">*</span>
-                                </Label>
-                                <div className="space-y-4">
-                                    <Input
-                                        ref={fileInputRef}
-                                        type="file"
-                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                        onChange={handleFileChange}
-                                        className="cursor-pointer"
-                                    />
-                                    {errors.file && (
-                                        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.file}</p>
-                                    )}
-                                    {file && (
-                                        <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
-                                            <File size={24} className="text-muted-foreground" />
-                                            <div className="flex-1">
-                                                <p className="text-sm font-medium">{file.name}</p>
-                                                <p className="text-xs text-muted-foreground">
-                                                    {(file.size / 1024 / 1024).toFixed(2)} MB
-                                                </p>
-                                            </div>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={handleRemoveFile}
-                                                className="text-muted-foreground hover:text-destructive"
-                                            >
-                                                <X size={16} />
-                                            </Button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Description */}
-                            <div>
-                                <Label className="mb-2 block text-sm font-medium text-muted-foreground">
-                                    الوصف
-                                </Label>
-                                <Textarea
-                                    value={description}
-                                    onChange={handleDescriptionChange}
-                                    rows={4}
-                                    className="border-border"
-                                    placeholder="وصف اختياري"
-                                />
-                                {errors.description && (
-                                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
-                                )}
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex gap-4 border-t border-gray-200 pt-4 dark:border-gray-600">
-                                <Button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="flex items-center gap-2"
+                                </label>
+                                <Link
+                                    href={
+                                        attachmentTypesIndex.definition?.url ??
+                                        attachmentTypesIndex()
+                                    }
+                                    className="flex items-center gap-1 text-sm text-primary hover:text-primary/80"
                                 >
-                                    <Upload size={16} />
-                                    {processing
-                                        ? 'جاري التحميل...'
-                                        : 'رفع المرفق'}
-                                </Button>
-                                <Link href={`/martyrs/${martyr.id}/attachments`}>
-                                    <Button type="button" variant="outline">
-                                        إلغاء
-                                    </Button>
+                                    <Settings size={14} />
+                                    إدارة أنواع المرفقات
                                 </Link>
                             </div>
-                            {uploadProgress !== null && (
-                                <div className="mt-3">
-                                    <div className="mb-1 flex items-center justify-between">
-                                        <span className="text-sm text-muted-foreground">
-                                            جاري الرفع — {uploadProgress}%
-                                        </span>
-                                    </div>
-                                    <Progress value={uploadProgress} />
-                                </div>
+                            <Combobox
+                                value={attachment_type}
+                                onChange={handleAttachmentTypeChange}
+                                options={remoteOptions}
+                                onQueryChange={handleQuery}
+                                isLoading={isLoading}
+                                placeholder="اختر خيار"
+                            />
+                            {errors.attachment_type && (
+                                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                                    {errors.attachment_type}
+                                </p>
                             )}
-                        </form>
-                    </div>
+                        </div>
+
+                        {/* File Upload */}
+                        <div>
+                            <Label className="mb-2 block text-sm font-medium text-muted-foreground">
+                                الملف <span className="text-red-500">*</span>
+                            </Label>
+                            <div className="space-y-4">
+                                <Input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                    onChange={handleFileChange}
+                                    className="cursor-pointer"
+                                />
+                                {errors.file && (
+                                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                                        {errors.file}
+                                    </p>
+                                )}
+                                {file && (
+                                    <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+                                        <File
+                                            size={24}
+                                            className="text-muted-foreground"
+                                        />
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium">
+                                                {file.name}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {(
+                                                    file.size /
+                                                    1024 /
+                                                    1024
+                                                ).toFixed(2)}{' '}
+                                                MB
+                                            </p>
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={handleRemoveFile}
+                                            className="text-muted-foreground hover:text-destructive"
+                                        >
+                                            <X size={16} />
+                                        </Button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Description */}
+                        <div>
+                            <Label className="mb-2 block text-sm font-medium text-muted-foreground">
+                                الوصف
+                            </Label>
+                            <Textarea
+                                value={description}
+                                onChange={handleDescriptionChange}
+                                rows={4}
+                                className="border-border"
+                                placeholder="وصف اختياري"
+                            />
+                            {errors.description && (
+                                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                                    {errors.description}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-4 border-t border-gray-200 pt-4 dark:border-gray-600">
+                            <Button
+                                type="submit"
+                                disabled={processing}
+                                className="flex items-center gap-2"
+                            >
+                                <Upload size={16} />
+                                {processing ? 'جاري التحميل...' : 'رفع المرفق'}
+                            </Button>
+                            <Link href={`/martyrs/${martyr.id}/attachments`}>
+                                <Button type="button" variant="outline">
+                                    إلغاء
+                                </Button>
+                            </Link>
+                        </div>
+                        {uploadProgress !== null && (
+                            <div className="mt-3">
+                                <div className="mb-1 flex items-center justify-between">
+                                    <span className="text-sm text-muted-foreground">
+                                        جاري الرفع — {uploadProgress}%
+                                    </span>
+                                </div>
+                                <Progress value={uploadProgress} />
+                            </div>
+                        )}
+                    </form>
                 </div>
-            </AppLayout>
-        );
+            </div>
+        </AppLayout>
+    );
 }

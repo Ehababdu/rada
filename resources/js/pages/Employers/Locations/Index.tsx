@@ -139,9 +139,7 @@ export default function Index({ employer, locations, filters }: Props) {
 
     const handleDelete = (locationId: number) => {
         if (confirm(t('locations.confirm_delete'))) {
-            router.delete(
-                `/employers/${employer.id}/locations/${locationId}`,
-            );
+            router.delete(`/employers/${employer.id}/locations/${locationId}`);
         }
     };
 
@@ -231,9 +229,7 @@ export default function Index({ employer, locations, filters }: Props) {
                                     onValueChange={handleStatusChange}
                                 >
                                     <SelectTrigger id="status">
-                                        <SelectValue
-                                            placeholder={t('all')}
-                                        />
+                                        <SelectValue placeholder={t('all')} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">
@@ -509,10 +505,7 @@ export default function Index({ employer, locations, filters }: Props) {
                                     };
                                     if (search) params.search = search;
                                     if (isActive) params.is_active = isActive;
-                                    router.get(
-                                        index(employer.id).url,
-                                        params,
-                                    );
+                                    router.get(index(employer.id).url, params);
                                 }}
                                 disabled={locations.current_page === 1}
                             >
@@ -538,10 +531,7 @@ export default function Index({ employer, locations, filters }: Props) {
                                     };
                                     if (search) params.search = search;
                                     if (isActive) params.is_active = isActive;
-                                    router.get(
-                                        index(employer.id).url,
-                                        params,
-                                    );
+                                    router.get(index(employer.id).url, params);
                                 }}
                                 disabled={
                                     locations.current_page ===

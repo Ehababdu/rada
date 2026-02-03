@@ -3,8 +3,8 @@ import { initReactI18next } from 'react-i18next';
 
 // Import translation files
 import arCommon from './locales/ar/common.json';
-import enCommon from './locales/en/common.json';
 import arRoles from './locales/ar/roles.json';
+import enCommon from './locales/en/common.json';
 import enRoles from './locales/en/roles.json';
 
 const resources = {

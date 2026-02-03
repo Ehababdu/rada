@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Filters } from '../types/martyr';
 
 interface UseMartyrFiltersProps {
@@ -12,12 +12,15 @@ export function useMartyrFilters({ filters, branches }: UseMartyrFiltersProps) {
 
     const isUserChange = useRef(false);
 
-    const handleFilterChange = useCallback((key: keyof Filters, value: string) => {
-        const newValue = value === 'all' ? '' : value;
-        const newFilters = { ...localFilters, [key]: newValue };
-        setLocalFilters(newFilters);
-        isUserChange.current = true;
-    }, [localFilters]);
+    const handleFilterChange = useCallback(
+        (key: keyof Filters, value: string) => {
+            const newValue = value === 'all' ? '' : value;
+            const newFilters = { ...localFilters, [key]: newValue };
+            setLocalFilters(newFilters);
+            isUserChange.current = true;
+        },
+        [localFilters],
+    );
 
     const cleanFilters = (f: Filters) => {
         return Object.entries(f).reduce<Record<string, string>>(
@@ -33,7 +36,9 @@ export function useMartyrFilters({ filters, branches }: UseMartyrFiltersProps) {
 
     // Update localFilters when filters prop changes (from server)
     useEffect(() => {
-        if (JSON.stringify(prevFiltersRef.current) !== JSON.stringify(filters)) {
+        if (
+            JSON.stringify(prevFiltersRef.current) !== JSON.stringify(filters)
+        ) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setLocalFilters(filters);
             prevFiltersRef.current = filters;
@@ -43,7 +48,7 @@ export function useMartyrFilters({ filters, branches }: UseMartyrFiltersProps) {
     const filteredBranches = useMemo(() => {
         if (localFilters.bank_id && localFilters.bank_id !== 'all') {
             const bankId = parseInt(localFilters.bank_id);
-            return branches.filter(branch => branch.bank_id === bankId);
+            return branches.filter((branch) => branch.bank_id === bankId);
         } else {
             return branches;
         }
@@ -54,9 +59,11 @@ export function useMartyrFilters({ filters, branches }: UseMartyrFiltersProps) {
         if (localFilters.bank_id && localFilters.bank_id !== 'all') {
             const bankId = parseInt(localFilters.bank_id);
             if (localFilters.branch_id && localFilters.branch_id !== 'all') {
-                const branchExists = branches.some(branch =>
-                    branch.id === parseInt(localFilters.branch_id as string) &&
-                    branch.bank_id === bankId
+                const branchExists = branches.some(
+                    (branch) =>
+                        branch.id ===
+                            parseInt(localFilters.branch_id as string) &&
+                        branch.bank_id === bankId,
                 );
                 if (!branchExists) {
                     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -64,7 +71,12 @@ export function useMartyrFilters({ filters, branches }: UseMartyrFiltersProps) {
                 }
             }
         }
-    }, [localFilters.bank_id, localFilters.branch_id, branches, handleFilterChange]);
+    }, [
+        localFilters.bank_id,
+        localFilters.branch_id,
+        branches,
+        handleFilterChange,
+    ]);
 
     useEffect(() => {
         if (isUserChange.current) {
@@ -79,9 +91,12 @@ export function useMartyrFilters({ filters, branches }: UseMartyrFiltersProps) {
         }
     }, [localFilters]);
 
-    const handleSearchChange = useCallback((value: string) => {
-        handleFilterChange('search', value);
-    }, [handleFilterChange]);
+    const handleSearchChange = useCallback(
+        (value: string) => {
+            handleFilterChange('search', value);
+        },
+        [handleFilterChange],
+    );
 
     const triggerSearch = useCallback(() => {
         isUserChange.current = true;

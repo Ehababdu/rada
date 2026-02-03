@@ -52,14 +52,16 @@ export const NavMain = memo(function NavMain({
     }, [groups, urlIsActive]);
 
     // Track which groups are open - only the group with active page is open by default
-    const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
-        const initial: Record<string, boolean> = {};
-        groups.forEach((group) => {
-            // Only open the group that contains the active page
-            initial[group.title] = group.title === activeGroupTitle;
-        });
-        return initial;
-    });
+    const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
+        () => {
+            const initial: Record<string, boolean> = {};
+            groups.forEach((group) => {
+                // Only open the group that contains the active page
+                initial[group.title] = group.title === activeGroupTitle;
+            });
+            return initial;
+        },
+    );
 
     const toggleGroup = (title: string) => {
         setOpenGroups((prev) => ({ ...prev, [title]: !prev[title] }));
@@ -72,7 +74,7 @@ export const NavMain = memo(function NavMain({
                 <SidebarGroup className="p-2">
                     <SidebarGroupLabel
                         className={cn(
-                            'mb-1 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70',
+                            'mb-1 px-2 text-xs font-semibold tracking-wider text-muted-foreground/70 uppercase',
                             isCollapsed && 'sr-only',
                         )}
                     >
@@ -94,7 +96,9 @@ export const NavMain = memo(function NavMain({
                                     >
                                         <Link
                                             href={item.href}
-                                            prefetch={item.href !== '/compensations'}
+                                            prefetch={
+                                                item.href !== '/compensations'
+                                            }
                                             className="flex items-center gap-3"
                                         >
                                             {item.icon && (
@@ -142,7 +146,8 @@ export const NavMain = memo(function NavMain({
                                             <Link
                                                 href={item.href}
                                                 prefetch={
-                                                    item.href !== '/compensations'
+                                                    item.href !==
+                                                    '/compensations'
                                                 }
                                                 className="flex items-center gap-3"
                                             >
@@ -169,14 +174,16 @@ export const NavMain = memo(function NavMain({
                             <CollapsibleTrigger asChild>
                                 <SidebarGroupLabel
                                     className={cn(
-                                        'mb-1 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors',
+                                        'mb-1 flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold tracking-wider uppercase transition-colors',
                                         'text-muted-foreground/70 hover:bg-muted hover:text-foreground',
                                     )}
                                 >
                                     {GroupIcon && (
                                         <GroupIcon className="h-3.5 w-3.5 opacity-60" />
                                     )}
-                                    <span className="flex-1">{group.title}</span>
+                                    <span className="flex-1">
+                                        {group.title}
+                                    </span>
                                     <ChevronDown
                                         className={cn(
                                             'h-3.5 w-3.5 shrink-0 opacity-50 transition-transform duration-200',
@@ -193,8 +200,12 @@ export const NavMain = memo(function NavMain({
                                             <SidebarMenuItem key={item.title}>
                                                 <SidebarMenuButton
                                                     asChild
-                                                    isActive={urlIsActive(item.href)}
-                                                    tooltip={{ children: item.title }}
+                                                    isActive={urlIsActive(
+                                                        item.href,
+                                                    )}
+                                                    tooltip={{
+                                                        children: item.title,
+                                                    }}
                                                     className={cn(
                                                         'group relative h-9 rounded-lg transition-all duration-200',
                                                         'hover:bg-primary/10 hover:text-primary',
@@ -204,7 +215,8 @@ export const NavMain = memo(function NavMain({
                                                     <Link
                                                         href={item.href}
                                                         prefetch={
-                                                            item.href !== '/compensations'
+                                                            item.href !==
+                                                            '/compensations'
                                                         }
                                                         className="flex items-center gap-3"
                                                     >
