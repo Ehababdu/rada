@@ -35,7 +35,7 @@ export default function Create({ permissions, flash }: Props) {
     const { t } = useTranslation();
     const { toast } = useToast();
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: '',
         display_name: '',
         description: '',

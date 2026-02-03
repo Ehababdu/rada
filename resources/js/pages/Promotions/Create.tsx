@@ -82,10 +82,6 @@ export default function Create({
     const [currentJobGradeName, setCurrentJobGradeName] = useState('');
     const [selectedEmploymentStatus, setSelectedEmploymentStatus] =
         useState<string>('');
-    const [loadingMartyrs, setLoadingMartyrs] = useState(false);
-    const [martyrsForEmployment, setMartyrsForEmployment] = useState<
-        Martyr[] | null
-    >(null);
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: t('promotions.title'), href: '/promotions' },
@@ -178,7 +174,7 @@ export default function Create({
                 setData('next_due_date', date.toISOString().split('T')[0]);
             }
         }
-    }, [data.current_rank_date, data.promotion_years]);
+    }, [data.current_rank_date, data.promotion_years, setData]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

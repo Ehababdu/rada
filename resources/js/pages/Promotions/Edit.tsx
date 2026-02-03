@@ -102,9 +102,6 @@ export default function Edit({
         description: promotion.description || '',
     });
 
-    const [currentRankName, setCurrentRankName] = useState(
-        promotion.martyr?.military_rank || '',
-    );
     const [selectedStatus, setSelectedStatus] = useState<string>(
         promotion.martyr?.employment_status_id?.toString() || '',
     );
@@ -164,7 +161,7 @@ export default function Edit({
                 setData('next_due_date', date.toISOString().split('T')[0]);
             }
         }
-    }, [data.current_rank_date, data.promotion_years]);
+    }, [data.current_rank_date, data.promotion_years, setData]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

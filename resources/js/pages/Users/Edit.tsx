@@ -23,10 +23,19 @@ interface Props {
 }
 
 export default function Edit({ user, roles }: Props) {
-    const { t, i18n } = useTranslation();
-    const isRTL = i18n.language === 'ar';
+    const { t } = useTranslation();
     const { toast } = useToast();
-    const { flash } = usePage<SharedData>().props;
+
+    const [formData, setFormData] = useState({
+        name: user.name,
+        email: user.email,
+        password: '',
+        password_confirmation: '',
+        roles: user.roles?.map((role) => role.name) || [],
+    });
+
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Safety check for user data
     if (!user?.id) {
@@ -46,32 +55,6 @@ export default function Edit({ user, roles }: Props) {
             </AppLayout>
         );
     }
-
-    const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: t('users.title'),
-            href: '/users',
-        },
-        {
-            title: user.name,
-            href: `/users/${user.id}`,
-        },
-        {
-            title: t('common.edit'),
-            href: `/users/${user.id}/edit`,
-        },
-    ];
-
-    const [formData, setFormData] = useState({
-        name: user.name,
-        email: user.email,
-        password: '',
-        password_confirmation: '',
-        roles: user.roles?.map((role) => role.name) || [],
-    });
-
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleInputChange = (field: string, value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
@@ -113,7 +96,7 @@ export default function Edit({ user, roles }: Props) {
                 },
                 onFinish: () => setIsSubmitting(false),
             });
-        } catch (error) {
+        } catch {
             setIsSubmitting(false);
             toast(t('common.error'), { variant: 'destructive' });
         }

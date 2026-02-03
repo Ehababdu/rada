@@ -290,19 +290,6 @@ export default React.memo(function Index({
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [martyrToDelete, setMartyrToDelete] = useState<number | null>(null);
 
-    const bankOptions = useMemo(() => banks || [], [banks]);
-    const employmentStatusOptions = useMemo(
-        () => employmentStatuses || [],
-        [employmentStatuses],
-    );
-    const maritalStatusOptions = useMemo(
-        () => maritalStatuses || [],
-        [maritalStatuses],
-    );
-    const parentsStatusOptions = useMemo(
-        () => parentsStatuses || [],
-        [parentsStatuses],
-    );
     const branchOptions = useMemo(() => branches || [], [branches]);
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -318,7 +305,7 @@ export default React.memo(function Index({
         () => [
             columnHelper.display({
                 id: 'select',
-                header: ({ table }: { table: any }) => (
+                header: ({ table }: { table: Table<Martyr> }) => (
                     <Checkbox
                         checked={table.getIsAllRowsSelected()}
                         onCheckedChange={(value) =>
@@ -327,7 +314,7 @@ export default React.memo(function Index({
                         aria-label="Select all"
                     />
                 ),
-                cell: ({ row }: { row: any }) => (
+                cell: ({ row }: { row: Row<Martyr> }) => (
                     <Checkbox
                         checked={row.getIsSelected()}
                         onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -647,7 +634,7 @@ export default React.memo(function Index({
                 toast(t('errors.search_failed'));
             },
         });
-    }, [searchTerm, filterState, router, toast, t]);
+    }, [searchTerm, filterState, toast, t]);
 
     useEffect(() => {
         // Skip search on initial mount if we already have data from server
@@ -697,7 +684,7 @@ export default React.memo(function Index({
 
     const handleExport = useCallback(() => {
         const activeFilters = Object.fromEntries(
-            Object.entries(filterState).filter(([_, v]) => v !== ''),
+            Object.entries(filterState).filter(([, v]) => v !== ''),
         );
         toast({
             title: t('martyrs.export_processing'),
@@ -731,7 +718,7 @@ export default React.memo(function Index({
                 },
             },
         );
-    }, [router, toast, t, searchTerm, filterState]);
+    }, [toast, t, searchTerm, filterState]);
 
     const handleDelete = (id: number) => {
         setMartyrToDelete(id);
@@ -857,7 +844,7 @@ export default React.memo(function Index({
             }
             searchInProgressRef.current = false;
         };
-    }, []);
+    }, [branches.length, filterState.branch_id]);
 
     return (
         <TooltipProvider>
@@ -1448,10 +1435,10 @@ export default React.memo(function Index({
                                 <TableHeader>
                                     {table
                                         .getHeaderGroups()
-                                        .map((headerGroup: any) => (
+                                        .map((headerGroup: HeaderGroup<Martyr>) => (
                                             <TableRow key={headerGroup.id}>
                                                 {headerGroup.headers.map(
-                                                    (header: any) => (
+                                                    (header: Header<Martyr, unknown>) => (
                                                         <TableHead
                                                             key={header.id}
                                                             className={`text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400 ${
@@ -1507,14 +1494,14 @@ export default React.memo(function Index({
                                     ) : martyrs.data.length > 0 ? (
                                         table
                                             .getRowModel()
-                                            .rows.map((row: any) => (
+                                            .rows.map((row: Row<Martyr>) => (
                                                 <TableRow
                                                     key={row.id}
                                                     className="hover:bg-gray-50 dark:hover:bg-gray-700"
                                                 >
                                                     {row
                                                         .getVisibleCells()
-                                                        .map((cell: any) => (
+                                                        .map((cell: Cell<Martyr, unknown>) => (
                                                             <TableCell
                                                                 key={cell.id}
                                                                 className={`text-sm text-gray-900 dark:text-gray-100 ${

@@ -150,34 +150,6 @@ const isPromotionDue = (nextDueDate?: string | null): boolean => {
     return dueDate ? dueDate <= today : false;
 };
 
-// --- Sub-Components ---
-const StatCard = ({
-    label,
-    value,
-    icon,
-    tone = 'default',
-}: {
-    label: string;
-    value: number;
-    icon: React.ReactNode;
-    tone?: 'default' | 'danger';
-}) => (
-    <div
-        className={cn(
-            'flex flex-col items-center justify-center rounded-xl p-3 transition-all hover:scale-105',
-            tone === 'danger'
-                ? 'border border-red-500/30 bg-red-500/20'
-                : 'border border-white/20 bg-white/10',
-        )}
-    >
-        <div className="mb-1 text-slate-300">{icon}</div>
-        <div className="text-xl font-bold">{value}</div>
-        <div className="text-[10px] tracking-wider text-slate-400 uppercase">
-            {label}
-        </div>
-    </div>
-);
-
 // --- Main Component ---
 export default function Index({ promotions, martyrs, filters }: Props) {
     const { t, i18n } = useTranslation();
@@ -217,7 +189,7 @@ export default function Index({ promotions, martyrs, filters }: Props) {
         }, 500);
 
         return () => clearTimeout(timeoutId);
-    }, [search, martyrId, filters.search, router]);
+    }, [search, martyrId, filters.search]);
 
     const partitioned = useMemo(() => {
         const employees: PromotionRow[] = [];

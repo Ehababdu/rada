@@ -25,8 +25,7 @@ interface Props {
 }
 
 export default function Show({ promotion }: Props) {
-    const { t, i18n } = useTranslation();
-    const isRTL = i18n.language === 'ar';
+    const { t } = useTranslation();
 
     const breadcrumbs: BreadcrumbItem[] = [
         {

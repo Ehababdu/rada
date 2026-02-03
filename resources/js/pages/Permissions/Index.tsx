@@ -81,9 +81,12 @@ interface Props {
 }
 
 // دالة الـ Debounce المحلية لمنع تضارب الاستيرادات
-function customDebounce(func: Function, wait: number) {
+function customDebounce<T extends unknown[]>(
+    func: (...args: T) => void,
+    wait: number
+) {
     let timeout: NodeJS.Timeout;
-    return function (...args: unknown[]) {
+    return function (...args: T) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func(...args), wait);
     };
@@ -111,13 +114,19 @@ export default function Index({
 
     // Debounced Search logic
     const debouncedSearch = useCallback(
-        customDebounce((query: string) => {
-            router.get(
-                permissionsIndex.url(),
-                { search: query },
-                { preserveState: true, replace: true },
-            );
-        }, 300),
+        () => {
+            let timeout: NodeJS.Timeout;
+            return (query: string) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    router.get(
+                        permissionsIndex.url(),
+                        { search: query },
+                        { preserveState: true, replace: true },
+                    );
+                }, 300);
+            };
+        },
         [],
     );
 

@@ -47,7 +47,7 @@ export default function Edit({ role, permissions, flash }: Props) {
 
     const existingPermissionNames = role.permissions.map((p) => p.name);
 
-    const { data, setData, put, processing, errors, reset } = useForm({
+    const { data, setData, put, processing, errors } = useForm({
         name: role.name,
         display_name: role.display_name || '',
         description: role.description || '',

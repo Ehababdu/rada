@@ -27,7 +27,6 @@ const digitsOnlyRegex = /^[0-9]+$/;
  * File validation helper
  */
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB for profile images
-const MAX_DOCUMENT_SIZE = 5 * 1024 * 1024; // 5MB for documents
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 const ACCEPTED_DOCUMENT_TYPES = [
     'image/jpeg',
@@ -35,27 +34,6 @@ const ACCEPTED_DOCUMENT_TYPES = [
     'image/png',
     'application/pdf',
 ];
-
-/**
- * Helper function to validate file
- */
-const fileSchema = (
-    maxSize: number,
-    acceptedTypes: string[],
-    fieldName: string,
-) =>
-    z
-        .instanceof(File, {
-            message: `${fieldName} مطلوب | ${fieldName} is required`,
-        })
-        .refine((file) => file.size <= maxSize, {
-            message: `حجم ${fieldName} يجب ألا يتجاوز ${maxSize / (1024 * 1024)} ميجابايت | ${fieldName} size must not exceed ${maxSize / (1024 * 1024)}MB`,
-        })
-        .refine((file) => acceptedTypes.includes(file.type), {
-            message: `${fieldName} يجب أن يكون بصيغة صحيحة | ${fieldName} must be a valid format`,
-        })
-        .optional()
-        .nullable();
 
 /**
  * Martyr form validation schema using Zod

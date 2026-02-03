@@ -34,10 +34,8 @@ interface Props {
 }
 
 export default function Show({ user }: Props) {
-    const { t, i18n } = useTranslation();
-    const isRTL = i18n.language === 'ar';
+    const { t } = useTranslation();
     const { toast } = useToast();
-    const { flash } = usePage<SharedData>().props;
     const { can } = usePermissions('users');
 
     const breadcrumbs: BreadcrumbItem[] = [

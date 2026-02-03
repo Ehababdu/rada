@@ -22,10 +22,8 @@ interface Props {
 }
 
 export default function Create({ roles }: Props) {
-    const { t, i18n } = useTranslation();
-    const isRTL = i18n.language === 'ar';
+    const { t } = useTranslation();
     const { toast } = useToast();
-    const { flash } = usePage<SharedData>().props;
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -81,7 +79,7 @@ export default function Create({ roles }: Props) {
                 },
                 onFinish: () => setIsSubmitting(false),
             });
-        } catch (error) {
+        } catch {
             setIsSubmitting(false);
             toast(t('common.error'), { variant: 'destructive' });
         }
