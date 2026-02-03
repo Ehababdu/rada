@@ -59,7 +59,7 @@ import {
     Search,
     Trash2,
 } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Permission {
@@ -101,18 +101,18 @@ export default function Index({
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
 
     // Debounced Search logic
-    const debouncedSearch = useCallback(() => {
-        let timeout: NodeJS.Timeout;
-        return (query: string) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                router.get(
-                    permissionsIndex.url(),
-                    { search: query },
-                    { preserveState: true, replace: true },
-                );
-            }, 300);
-        };
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const debouncedSearch = useCallback((query: string) => {
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+        searchTimeoutRef.current = setTimeout(() => {
+            router.get(
+                permissionsIndex.url(),
+                { search: query },
+                { preserveState: true, replace: true },
+            );
+        }, 300);
     }, []);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

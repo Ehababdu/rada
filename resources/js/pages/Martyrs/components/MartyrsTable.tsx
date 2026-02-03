@@ -9,7 +9,7 @@ interface MartyrsTableProps {
     columnVisibility: Record<string, boolean>;
     enableRowSelection: boolean;
     rowSelection: Record<string, boolean>;
-    onRowSelectionChange: (selection: Record<string, boolean>) => void;
+    onRowSelectionChange: (updaterOrValue: Record<string, boolean> | ((old: Record<string, boolean>) => Record<string, boolean>)) => void;
 }
 
 export const MartyrsTable = React.memo<MartyrsTableProps>(
@@ -28,7 +28,12 @@ export const MartyrsTable = React.memo<MartyrsTableProps>(
                 columnVisibility={columnVisibility}
                 enableRowSelection={enableRowSelection}
                 rowSelection={rowSelection}
-                onRowSelectionChange={onRowSelectionChange}
+                onRowSelectionChange={(updaterOrValue) => {
+                    const newSelection = typeof updaterOrValue === 'function' 
+                        ? updaterOrValue(rowSelection) 
+                        : updaterOrValue;
+                    onRowSelectionChange(newSelection);
+                }}
             />
         );
     },

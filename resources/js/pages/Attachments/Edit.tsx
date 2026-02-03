@@ -88,8 +88,8 @@ export default function Edit({ martyr, attachment, attachmentTypes }: Props) {
                           ? event.total
                           : undefined;
                 const loaded =
-                    typeof progressEvent?.loaded === 'number'
-                        ? progressEvent.loaded
+                    typeof (progressEvent as any)?.loaded === 'number'
+                        ? (progressEvent as any).loaded
                         : undefined;
                 if (
                     typeof total === 'number' &&

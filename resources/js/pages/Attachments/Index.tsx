@@ -190,8 +190,7 @@ export default function Index({
 
                 <StatsOverview
                     stats={attachmentStats}
-                    t={t}
-                    attachmentTypes={attachmentTypes}
+                    t={t as (key: string, params?: unknown) => string}
                     martyrId={martyr.id}
                     canCreate={canCreate}
                 />

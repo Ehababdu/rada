@@ -3,13 +3,7 @@ import { usePage } from '@inertiajs/react';
 import { useMemo } from 'react';
 
 interface PageProps {
-    auth: {
-        user?: {
-            permissions?: Array<{ name: string }>;
-            roles?: Array<{ name: string }>;
-        };
-        roles?: Array<{ name: string }>;
-    };
+    auth: any; // Using any for now to match the actual structure
 }
 
 export interface UsePermissionsReturn {
@@ -23,7 +17,7 @@ export interface UsePermissionsReturn {
  * Hook for checking user permissions for a specific resource
  */
 export function usePermissions(resource: string): UsePermissionsReturn {
-    const { auth } = usePage().props as PageProps;
+    const { auth } = usePage().props as any;
 
     const permissions = useMemo(() => {
         return getUserPermissions(auth, resource);

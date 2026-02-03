@@ -132,7 +132,7 @@ export default function Index({ employers, filters }: Props) {
 
     // Search Logic
     const performSearch = useCallback((params: Record<string, unknown>) => {
-        router.get('/employers', params as Record<string, unknown>, {
+        router.get('/employers', params as any, {
             preserveState: true,
             replace: true,
             preserveScroll: true,

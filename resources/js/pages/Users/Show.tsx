@@ -28,6 +28,7 @@ import {
     User as UserIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 
 interface Props {
     user: User;

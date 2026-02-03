@@ -217,7 +217,7 @@ export default function Show({ alert }: Props) {
                             </h3>
                             <div className="rounded-lg border bg-muted/30 p-4">
                                 <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                                    {alert.message}
+                                    {alert.message as string}
                                 </p>
                             </div>
                         </div>

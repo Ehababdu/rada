@@ -210,9 +210,7 @@ export function StatsOverview({
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-medium text-rose-900 dark:text-rose-100">
-                                                        {type.attachment_type
-                                                            ?.label ||
-                                                            type.label}
+                                                        {type.full_name}
                                                     </p>
                                                     <p className="text-xs text-rose-600 dark:text-rose-300">
                                                         {t(

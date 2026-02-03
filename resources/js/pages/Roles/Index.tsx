@@ -110,7 +110,7 @@ export default function Index({ roles, filters }: Props) {
 
     // Search Logic
     const performSearch = useCallback((params: Record<string, unknown>) => {
-        router.get('/roles', params as Record<string, unknown>, {
+        router.get('/roles', params as any, {
             preserveState: true,
             replace: true,
             preserveScroll: true,

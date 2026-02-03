@@ -348,6 +348,7 @@ export default function Create({
 
     const [banksState] = useState(banks);
     const [loadingBanks] = useState(false);
+    const [loadingRanks] = useState(false);
 
     const [branches, setBranches] = useState<
         { id: number; name_ar: string; name_en: string | null }[]
@@ -395,8 +396,8 @@ export default function Create({
                     const response = await fetch(
                         `/api/banks/${data.bank_id}/branches`,
                     );
-                    const data = await response.json();
-                    setBranches(data);
+                    const branchesData = await response.json();
+                    setBranches(branchesData);
                 } catch {
                     // handle error
                 } finally {
@@ -417,8 +418,8 @@ export default function Create({
                     const response = await fetch(
                         `/api/employers/${data.employer_id}/locations`,
                     );
-                    const data = await response.json();
-                    setEmployerLocationsState(data);
+                    const locationsData = await response.json();
+                    setEmployerLocationsState(locationsData);
                     // Reset employer_location_id when employer changes
                     setData('employer_location_id', null);
                 } catch {

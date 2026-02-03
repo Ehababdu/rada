@@ -1,3 +1,5 @@
+import { Martyr } from '@/types';
+
 export interface AttachmentType {
     id: number;
     label: string;

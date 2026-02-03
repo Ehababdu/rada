@@ -26,6 +26,11 @@ export default function Edit({ user, roles }: Props) {
     const { t } = useTranslation();
     const { toast } = useToast();
 
+    const breadcrumbs = [
+        { title: t('navigation.users'), href: '/users' },
+        { title: `${t('common.edit')} ${user.name}` },
+    ];
+
     const [formData, setFormData] = useState({
         name: user.name,
         email: user.email,

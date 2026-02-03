@@ -26,6 +26,8 @@ import {
     getLocalizedName,
 } from '../utils/martyrHelpers';
 
+const VISIBLE_COLUMNS_KEY = 'martyrs-visible-columns';
+
 interface UseMartyrColumnsProps {
     canViewAttachments: boolean;
     canViewDetails: boolean;

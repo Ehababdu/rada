@@ -80,8 +80,6 @@ export function DatePicker({
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <InputGroupButton
-              variant="ghost"
-              size="icon-xs"
               aria-label="Select date"
             >
               <CalendarIcon />

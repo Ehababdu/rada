@@ -475,18 +475,18 @@ export default function Edit({
     >([]);
     const [loadingBranches, setLoadingBranches] = useState(false);
 
-    const [employersState] =
+    const [employersState, setEmployersState] =
         useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             employers,
         );
     const [loadingEmployers] = useState(false);
-    const [employerLocationsState] =
+    const [employerLocationsState, setEmployerLocationsState] =
         useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             employerLocations,
         );
     const [loadingEmployerLocations, setLoadingEmployerLocations] =
         useState(false);
-    const [previousEmployerLocationsState] =
+    const [previousEmployerLocationsState, setPreviousEmployerLocationsState] =
         useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             employerLocations,
         );

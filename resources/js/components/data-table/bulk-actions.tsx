@@ -31,11 +31,11 @@ export function BulkActions<TData>({
 }: BulkActionsProps<TData>) {
     const { t } = useTranslation();
     const [confirmAction, setConfirmAction] = React.useState<{
-        action: BulkAction;
+        action: BulkAction<TData>;
         isOpen: boolean;
     } | null>(null);
 
-    const handleAction = (action: BulkAction) => {
+    const handleAction = (action: BulkAction<TData>) => {
         if (action.confirmMessage) {
             setConfirmAction({ action, isOpen: true });
         } else {

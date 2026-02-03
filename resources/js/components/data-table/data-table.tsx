@@ -209,7 +209,6 @@ export function DataTable<TData, TValue>({
                                     className="h-24 text-center"
                                 >
                                     <DataTableEmptyState
-                                        table={table}
                                         searchQuery={
                                             table.getState().globalFilter
                                         }

@@ -111,6 +111,10 @@ export default function Edit({
         { title: t('edit'), href: '#' },
     ];
 
+    const currentRankName = military_ranks.find(
+        (rank) => rank.id.toString() === promotion.current_rank
+    )?.name_ar || promotion.current_rank;
+
     // --- Helpers ---
     const isCivilian = () => {
         const status = employment_statuses.find(

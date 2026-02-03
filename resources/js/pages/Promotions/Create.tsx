@@ -125,7 +125,7 @@ export default function Create({
     );
 
     const filteredMartyrOptions = (() => {
-        const source = martyrsForEmployment ?? martyrs;
+        const source = martyrs;
         const filtered = selectedEmploymentStatus
             ? source.filter(
                   (m) =>
@@ -143,7 +143,7 @@ export default function Create({
 
     // منطق جلب البيانات (كما في الكود الأصلي)
     const handleMartyrChange = (martyrId: string) => {
-        const source = martyrsForEmployment ?? martyrs;
+        const source = martyrs;
         const martyr = source.find((m) => m.id.toString() === martyrId);
         setData('martyr_id', martyrId);
 

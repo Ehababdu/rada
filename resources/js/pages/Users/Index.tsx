@@ -178,7 +178,7 @@ export default function Index({
             };
 
             router.visit('/users', {
-                data: query,
+                data: query as any,
                 preserveState: true,
                 preserveScroll: true,
                 only: ['users', 'filters'],

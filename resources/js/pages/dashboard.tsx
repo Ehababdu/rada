@@ -100,7 +100,8 @@ export default function Dashboard({ stats }: DashboardProps) {
                         icon={Users}
                         variant="blue"
                         isVisible={isVisible}
-                        delay="100ms"
+                        delay={100}
+                        isCurrency={false}
                     />
                     <StatCard
                         title="ترقيات العام المستحقة"
@@ -108,12 +109,13 @@ export default function Dashboard({ stats }: DashboardProps) {
                         icon={Award}
                         variant="amber"
                         isVisible={isVisible}
-                        delay="200ms"
+                        delay={200}
                         subContent={
                             stats.promotionsDueThisYear > 0
                                 ? 'تنبيه: توجد ملفات تحتاج مراجعة'
                                 : 'لا توجد ترقيات معلقة'
                         }
+                        isCurrency={false}
                     />
                     <StatCard
                         title="إجمالي الإيصالات المالية"
@@ -121,7 +123,7 @@ export default function Dashboard({ stats }: DashboardProps) {
                         icon={Receipt}
                         variant="green"
                         isVisible={isVisible}
-                        delay="300ms"
+                        delay={300}
                         isCurrency
                     />
                 </div>
@@ -242,7 +244,7 @@ function StatCard({
                     ? 'translate-y-0 opacity-100'
                     : 'translate-y-10 opacity-0',
             )}
-            style={{ transitionDelay: delay }}
+            style={{ transitionDelay: `${delay}ms` }}
         >
             <div className="group-hover:animate-shimmer absolute -inset-full top-0 block h-full w-1/2 -skew-x-12 transform bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 dark:via-white/5" />
 
@@ -265,7 +267,7 @@ function StatCard({
                             ? new Intl.NumberFormat('ar-LY', {
                                   style: 'currency',
                                   currency: 'LYD',
-                              }).format(value)
+                              }).format(Number(value))
                             : value}
                     </h3>
                     {subContent && (

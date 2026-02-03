@@ -100,7 +100,7 @@ export default function Index({ employmentStatuses, filters }: Props) {
     const performSearch = useCallback((params: Record<string, unknown>) => {
         router.get(
             employmentStatusesIndex.url(),
-            params as Record<string, unknown>,
+            params as any,
             {
                 preserveState: true,
                 replace: true,

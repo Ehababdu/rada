@@ -179,7 +179,6 @@ export default function Index({
                                 areSomeAdditionalSelected={
                                     areSomeAdditionalSelected
                                 }
-                                isRTL={isRTL}
                             />
                         </div>
                     </div>

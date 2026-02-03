@@ -128,7 +128,7 @@ export default function Index({ banks, filters }: Props) {
 
     // Search Logic
     const performSearch = useCallback((params: Record<string, unknown>) => {
-        router.get('/banks', params as Record<string, unknown>, {
+        router.get('/banks', params as any, {
             preserveState: true,
             replace: true,
             preserveScroll: true,
