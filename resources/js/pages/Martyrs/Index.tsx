@@ -1,7 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import React, { useState, useCallback, useMemo, useDeferredValue, startTransition } from 'react';
+import React, { useState, useCallback, useMemo, startTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Shadcn UI Components
@@ -13,6 +12,9 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 
 // Icons
 import { ChevronLeft, ChevronRight, Search, User } from 'lucide-react';
+
+// Types
+import { type BreadcrumbItem } from '@/types';
 
 // Local imports
 import { usePermissions } from '@/hooks/use-permissions';
@@ -58,12 +60,6 @@ export default function Index({
     const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
-    // Memoized callbacks to prevent unnecessary re-renders
-    const handleDeleteClick = useCallback((id: number) => {
-        setDeletingId(id);
-        setDeleteOpen(true);
-    }, []);
-
     // Hooks
     const {
         localFilters,
@@ -73,6 +69,20 @@ export default function Index({
         clearFilters,
         cleanFilters,
     } = useMartyrFilters({ filters, branches });
+
+    const {
+        deleteOpen,
+        setDeleteOpen,
+        setDeletingId,
+        isDeleting,
+        handleDelete,
+    } = useMartyrDelete();
+
+    // Memoized callbacks to prevent unnecessary re-renders
+    const handleDeleteClick = useCallback((id: number) => {
+        setDeletingId(id);
+        setDeleteOpen(true);
+    }, [setDeletingId, setDeleteOpen]);
 
     const {
         availableColumns,
@@ -94,6 +104,15 @@ export default function Index({
         onDelete: handleDeleteClick,
     });
 
+    // Convert visibleColumns array to columnVisibility object for TanStack Table
+    const columnVisibility = useMemo(() => {
+        const visibility: Record<string, boolean> = {};
+        availableColumns.forEach((col) => {
+            visibility[col.key] = visibleColumns.includes(col.key);
+        });
+        return visibility;
+    }, [availableColumns, visibleColumns]);
+
     const {
         latestExportAvailable,
         latestExportUrl,
@@ -105,28 +124,11 @@ export default function Index({
         selectedRows,
     });
 
-    // Memoized column visibility to prevent recalculation on every render
-    const columnVisibility = useMemo(() =>
-        availableColumns.reduce(
-            (acc, col) => ({
-                ...acc,
-                [col.key]: visibleColumns.includes(col.key),
-            }),
-            {},
-        ),
-        [availableColumns, visibleColumns]
-    );
-
-    const {
-        deleteOpen,
-        setDeleteOpen,
-        setDeletingId,
-        isDeleting,
-        handleDelete,
-    } = useMartyrDelete();
-
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: t('martyrs.title'), href: '/martyrs' },
+        {
+            title: t('martyrs.title'),
+            href: '/martyrs',
+        },
     ];
 
     return (

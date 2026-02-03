@@ -196,7 +196,7 @@ export default function Index({ bank, branches, filters }: Props) {
                 ),
             }),
         ],
-        [t, isRTL, bank.id],
+        [t, isRTL, bank.id, columnHelper, toast],
     );
 
     const table = useReactTable({

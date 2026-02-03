@@ -345,7 +345,6 @@ export default function Create({
     });
 
     const [militaryRanksState, setMilitaryRanksState] = useState(militaryRanks);
-    const [loadingRanks, setLoadingRanks] = useState(false);
 
     const [banksState] = useState(banks);
     const [loadingBanks] = useState(false);
@@ -383,25 +382,26 @@ export default function Create({
             selectedStatus &&
             selectedStatus.name_ar.toLowerCase().includes('عسكري')
         ) {
-            setLoadingRanks(true);
             // Filter military ranks locally instead of fetching from API
             setMilitaryRanksState(militaryRanks);
-            setLoadingRanks(false);
         }
     }, [data.employment_status_id, employmentStatusesState, militaryRanks]);
 
     useEffect(() => {
         if (data.bank_id) {
-            setLoadingBranches(true);
-            fetch(`/api/banks/${data.bank_id}/branches`)
-                .then((response) => response.json())
-                .then((data) => {
+            const fetchBranches = async () => {
+                setLoadingBranches(true);
+                try {
+                    const response = await fetch(`/api/banks/${data.bank_id}/branches`);
+                    const data = await response.json();
                     setBranches(data);
+                } catch {
+                    // handle error
+                } finally {
                     setLoadingBranches(false);
-                })
-                .catch(() => {
-                    setLoadingBranches(false);
-                });
+                }
+            };
+            fetchBranches();
         } else {
             setBranches([]);
         }
@@ -409,25 +409,27 @@ export default function Create({
 
     useEffect(() => {
         if (data.employer_id) {
-            setLoadingEmployerLocations(true);
-            fetch(`/api/employers/${data.employer_id}/locations`)
-                .then((response) => response.json())
-                .then((data) => {
+            const fetchLocations = async () => {
+                setLoadingEmployerLocations(true);
+                try {
+                    const response = await fetch(`/api/employers/${data.employer_id}/locations`);
+                    const data = await response.json();
                     setEmployerLocationsState(data);
-                    setLoadingEmployerLocations(false);
                     // Reset employer_location_id when employer changes
                     setData('employer_location_id', null);
-                })
-                .catch(() => {
+                } catch {
                     setEmployerLocationsState([]);
-                    setLoadingEmployerLocations(false);
                     setData('employer_location_id', null);
-                });
+                } finally {
+                    setLoadingEmployerLocations(false);
+                }
+            };
+            fetchLocations();
         } else {
             setEmployerLocationsState(employerLocations);
             setData('employer_location_id', null);
         }
-    }, [data.employer_id, employerLocations]);
+    }, [data.employer_id, employerLocations, setData]);
 
     // Handle previous employer location changes
     useEffect(() => {
@@ -436,7 +438,7 @@ export default function Create({
             // Reset previous employer location when previous employer changes
             setData('previous_employer_location_id', null);
         }
-    }, [data.previous_employer_id]);
+    }, [data.previous_employer_id, setData]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

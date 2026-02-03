@@ -114,7 +114,7 @@ export default function Create({ martyrs, selectedMartyr }: Props) {
 
     useEffect(() => {
         setData('amount', calculation.total.toString());
-    }, [calculation.total]);
+    }, [calculation.total, setData]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

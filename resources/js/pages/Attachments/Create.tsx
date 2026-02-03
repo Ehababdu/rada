@@ -20,7 +20,11 @@ interface Props {
 export default function Create({ martyr, attachmentTypes }: Props) {
     const { errors } = usePage().props;
     const { toast } = useToast();
-    const [attachment_type, setAttachmentType] = useState('');
+    const [attachment_type, setAttachmentType] = useState(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const type = urlParams.get('type');
+        return type && attachmentTypes[type] ? type : '';
+    });
     const [file, setFile] = useState<File | null>(null);
     const [description, setDescription] = useState('');
     const [remoteOptions, setRemoteOptions] = useState(attachmentTypes);
@@ -30,15 +34,6 @@ export default function Create({ martyr, attachmentTypes }: Props) {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const queryDebounceRef = useRef<number | null>(null);
-
-    useEffect(() => {
-        // Set attachment type from query parameter if present
-        const urlParams = new URLSearchParams(window.location.search);
-        const type = urlParams.get('type');
-        if (type && remoteOptions[type]) {
-            setAttachmentType(type);
-        }
-    }, [remoteOptions]);
 
     useEffect(() => {
         return () => {

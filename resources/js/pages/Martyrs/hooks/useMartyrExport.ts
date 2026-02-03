@@ -22,13 +22,13 @@ export function useMartyrExport({
 
         const checkStatus = async () => {
             try {
-                const response = await fetch('/api/export/status');
+                const response = await fetch('/martyrs/export/status');
                 if (!response.ok) return;
 
                 const data = await response.json();
                 if (mounted) {
-                    setLatestExportAvailable(data.available);
-                    setLatestExportUrl(data.url);
+                    setLatestExportAvailable(data.exists);
+                    setLatestExportUrl(data.exists ? data.url : null);
                 }
             } catch (error) {
                 console.error('Failed to check export status:', error);

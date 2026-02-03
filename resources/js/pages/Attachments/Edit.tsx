@@ -306,7 +306,6 @@ export default function Edit({ martyr, attachment, attachmentTypes }: Props) {
                                                 data.file.type.startsWith(
                                                     'image/',
                                                 ) && previewUrl ? (
-                                                    // eslint-disable-next-line @next/next/no-img-element
                                                     <img
                                                         src={previewUrl}
                                                         alt={data.file.name}

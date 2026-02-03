@@ -25,7 +25,7 @@ export function NumericRangeFilter<TData>({
     const [minValue, setMinValue] = React.useState<string>('');
     const [maxValue, setMaxValue] = React.useState<string>('');
 
-    const applyFilter = () => {
+    const applyFilter = React.useCallback(() => {
         const minNum = minValue ? parseFloat(minValue) : undefined;
         const maxNum = maxValue ? parseFloat(maxValue) : undefined;
 
@@ -34,7 +34,7 @@ export function NumericRangeFilter<TData>({
         } else {
             column?.setFilterValue(undefined);
         }
-    };
+    }, [minValue, maxValue, column]);
 
     const clearFilter = () => {
         setMinValue('');
@@ -45,7 +45,7 @@ export function NumericRangeFilter<TData>({
     React.useEffect(() => {
         const timeoutId = setTimeout(applyFilter, 300);
         return () => clearTimeout(timeoutId);
-    }, [minValue, maxValue]);
+    }, [minValue, maxValue, applyFilter]);
 
     return (
         <div className="grid gap-2">

@@ -4,14 +4,12 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem as BreadcrumbItemType } from '@/types';
 import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 export const AppSidebarHeader = memo(function AppSidebarHeader({
     breadcrumbs = [],
 }: {
     breadcrumbs?: BreadcrumbItemType[];
 }) {
-    const { i18n } = useTranslation();
 
     return (
         <header

@@ -8,6 +8,7 @@ import './i18n';
 
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
+import axios from 'axios';
 
 window.Pusher = Pusher;
 
@@ -19,7 +20,7 @@ window.Echo = new Echo({
     wssPort: import.meta.env.VITE_REVERB_PORT || 8080,
     forceTLS: (import.meta.env.VITE_REVERB_SCHEME || 'http') === 'https',
     enabledTransports: ['ws', 'wss'],
-    authorizer: (channel, _options) => {
+    authorizer: (channel) => {
         return {
             authorize: (socketId, callback) => {
                 axios.post('/api/broadcasting/auth', {

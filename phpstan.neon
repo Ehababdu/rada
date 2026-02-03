@@ -1,0 +1,31 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 5
+    paths:
+        - app
+        - config
+        - database
+        - resources
+        - routes
+        - tests
+
+    excludePaths:
+        - vendor
+        - node_modules
+        - storage
+        - bootstrap/cache
+        - public
+
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+
+    ignoreErrors:
+        # Laravel specific ignores
+        - '#Call to an undefined method.*#'
+        - '#Access to an undefined property.*#'
+        - '#Cannot call method.*on mixed.#'
+
+rules:
+    - Larastan\Rules\UnusedPublicClassMethodRule

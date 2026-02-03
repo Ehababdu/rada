@@ -301,7 +301,7 @@ export default React.memo(function Index({
 
     const columnHelper = createColumnHelper<Martyr>();
 
-    const columns = useMemo<ColumnDef<Martyr, any>[]>(
+    const columns = useMemo<ColumnDef<Martyr, unknown>[]>(
         () => [
             columnHelper.display({
                 id: 'select',
@@ -565,7 +565,7 @@ export default React.memo(function Index({
                 enableHiding: false,
             }),
         ],
-        [t, isRTL],
+        [t, isRTL, columnHelper],
     );
 
     const table = useReactTable<Martyr>({
@@ -815,7 +815,7 @@ export default React.memo(function Index({
                 setFilterState((prev) => ({ ...prev, branch_id: '' }));
             }
         }
-    }, [filterState.bank_id, toast, t]);
+    }, [filterState.bank_id, toast, t, branches.length, filterState.branch_id]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {

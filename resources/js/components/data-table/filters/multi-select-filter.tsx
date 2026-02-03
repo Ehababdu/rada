@@ -37,23 +37,26 @@ export function MultiSelectFilter<TData>({
 }: MultiSelectFilterProps<TData>) {
     const { t } = useTranslation();
     const [open, setOpen] = React.useState(false);
-    const selectedValues = new Set(
-        (column?.getFilterValue() as string[]) || [],
+    const [selectedValues, setSelectedValues] = React.useState(
+        new Set((column?.getFilterValue() as string[]) || []),
     );
 
     const handleSelect = (value: string) => {
-        if (selectedValues.has(value)) {
-            selectedValues.delete(value);
-        } else {
-            selectedValues.add(value);
-        }
-
-        const filterValues = Array.from(selectedValues);
-        column?.setFilterValue(filterValues.length ? filterValues : undefined);
+        setSelectedValues((prev) => {
+            const newSet = new Set(prev);
+            if (newSet.has(value)) {
+                newSet.delete(value);
+            } else {
+                newSet.add(value);
+            }
+            const filterValues = Array.from(newSet);
+            column?.setFilterValue(filterValues.length ? filterValues : undefined);
+            return newSet;
+        });
     };
 
     const clearSelection = () => {
-        selectedValues.clear();
+        setSelectedValues(new Set());
         column?.setFilterValue(undefined);
         setOpen(false);
     };

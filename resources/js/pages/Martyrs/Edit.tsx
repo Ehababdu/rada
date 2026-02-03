@@ -636,7 +636,7 @@ export default function Edit({
         return () => {
             mounted = false;
         };
-    }, [data.employer_id]);
+    }, [data.employer_id, employerLocations, setData]);
 
     // load previous employer locations when previous_employer changes
     useEffect(() => {
@@ -675,7 +675,7 @@ export default function Edit({
         return () => {
             mounted = false;
         };
-    }, [data.previous_employer_id]);
+    }, [data.previous_employer_id, employerLocations, setData]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

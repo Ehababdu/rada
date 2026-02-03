@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 // Shadcn UI Components
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -172,18 +172,29 @@ export function useMartyrColumns({
         [t, canViewAttachments],
     );
 
-    const [visibleColumns, setVisibleColumns] = useState<string[]>(() =>
-        availableColumns.map((c) => c.key),
-    );
-    const VISIBLE_COLUMNS_KEY = 'martyrs_visible_columns';
+    const [visibleColumns, setVisibleColumns] = useState<string[]>(() => {
+        try {
+            const raw = localStorage.getItem(VISIBLE_COLUMNS_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw) as string[];
+                const allowed = new Set(availableColumns.map((c) => c.key));
+                const valid = parsed.filter((k) => allowed.has(k));
+                if (valid.length) {
+                    return [...new Set([...availableColumns.map((c) => c.key), ...valid])].filter((k) => allowed.has(k));
+                }
+            }
+        } catch {
+            // Ignore errors
+        }
+        return availableColumns.map((c) => c.key);
+    });
+
 
     const basicKeys = useMemo(() =>
         availableColumns
-            .filter((col) =>
-                ['#', 'file_number', 'full_name', 'national_id', 'military_rank', 'job_grade', 'marital_status', 'employment_status', 'employer', 'has_martyr_decision', 'agent_name', 'military_number', ...(canViewAttachments ? ['attachments'] : [])].includes(col.key),
-            )
+            .filter((col) => col.required)
             .map((c) => c.key),
-        [availableColumns, canViewAttachments],
+        [availableColumns],
     );
 
     const additionalKeys = useMemo(() =>
@@ -217,27 +228,6 @@ export function useMartyrColumns({
     const setVisibleColumnsCallback = useCallback((columns: string[]) => {
         setVisibleColumns(columns);
     }, []);
-
-    // Persist Columns
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        try {
-            const raw = localStorage.getItem(VISIBLE_COLUMNS_KEY);
-            if (raw) {
-                const parsed = JSON.parse(raw) as string[];
-                const allowed = new Set(availableColumns.map((c) => c.key));
-                const valid = parsed.filter((k) => allowed.has(k));
-                if (valid.length) {
-                    setVisibleColumns((prev) => {
-                        const combined = [...new Set([...prev, ...valid])];
-                        return combined.filter((k) => allowed.has(k));
-                    });
-                }
-            }
-        } catch {
-            // Ignore errors
-        }
-    }, [availableColumns]);
 
     // Columns Definition
     const columns = useMemo<ColumnDef<Martyr>[]>(
@@ -623,7 +613,7 @@ export function useMartyrColumns({
                 ),
             },
         ],
-        [t, isRTL, canViewAttachments, canViewDetails, canUpdate, canDelete],
+        [t, isRTL, canViewAttachments, canViewDetails, canUpdate, canDelete, onDelete],
     );
 
     // Filtered Columns - Memoized to prevent unnecessary recalculations

@@ -144,39 +144,11 @@ export default function Index({
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
-    // Search state
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
     const searchTimeoutRef = useRef<NodeJS.Timeout>(null);
 
-    // Debounced search
-    const debouncedSearch = useCallback((value: string) => {
-        setSearchQuery(value);
-        if (searchTimeoutRef.current) {
-            clearTimeout(searchTimeoutRef.current);
-        }
-        searchTimeoutRef.current = setTimeout(() => {
-            updateData({ filter: value ? { search: value } : {} });
-        }, 300);
-    }, []);
-
-    // Reset search
-    const resetSearch = useCallback(() => {
-        setSearchQuery('');
-        setRoleFilter('');
-        updateData({ filter: { search: '', role: '' }, sort: '' });
-    }, []);
-
-    // Cleanup timeout on unmount
-    useEffect(() => {
-        return () => {
-            if (searchTimeoutRef.current) {
-                clearTimeout(searchTimeoutRef.current);
-            }
-        };
-    }, []);
-
     // Function to update data from server
-    const updateData = (params: {
+    const updateData = useCallback((params: {
         page?: number;
         per_page?: number;
         sort?: string;
@@ -209,10 +181,37 @@ export default function Index({
             preserveScroll: true,
             only: ['users', 'filters'],
         });
-    };
+    }, [pageIndex, pageSize, sortBy, sortDirection, searchQuery, roleFilter]);
+
+    // Debounced search
+    const debouncedSearch = useCallback((value: string) => {
+        setSearchQuery(value);
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+        searchTimeoutRef.current = setTimeout(() => {
+            updateData({ filter: value ? { search: value } : {} });
+        }, 300);
+    }, [updateData]);
+
+    // Reset search
+    const resetSearch = useCallback(() => {
+        setSearchQuery('');
+        setRoleFilter('');
+        updateData({ filter: { search: '', role: '' }, sort: '' });
+    }, [updateData]);
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+        };
+    }, []);
 
     // Helper function for sortable header
-    const SortableHeader = ({
+    const SortableHeader = useCallback(({
         columnId,
         label,
     }: {
@@ -242,7 +241,7 @@ export default function Index({
                 <ArrowUpDown className="ml-2 h-4 w-4" />
             )}
         </Button>
-    );
+    ), [sortBy, sortDirection]);
 
     const handleDelete = (user: User) => {
         setUserToDelete(user);
@@ -417,7 +416,7 @@ export default function Index({
         ];
 
         return allColumns;
-    }, [sortBy, sortDirection, can, t, isRTL]);
+    }, [can, t, isRTL, SortableHeader, auth?.user?.id, columnHelper]);
 
     const table = useReactTable({
         data: users.data,

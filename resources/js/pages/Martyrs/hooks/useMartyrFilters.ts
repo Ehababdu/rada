@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import type { Filters } from '../types/martyr';
 
 interface UseMartyrFiltersProps {
@@ -9,62 +9,15 @@ interface UseMartyrFiltersProps {
 
 export function useMartyrFilters({ filters, branches }: UseMartyrFiltersProps) {
     const [localFilters, setLocalFilters] = useState<Filters>(filters);
-    const [filteredBranches, setFilteredBranches] = useState(branches);
 
     const isUserChange = useRef(false);
-    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Update localFilters when filters prop changes (from server)
-    useEffect(() => {
-        const filtersChanged = JSON.stringify(localFilters) !== JSON.stringify(filters);
-        if (filtersChanged) {
-            setLocalFilters(filters);
-        }
-    }, [filters]);
-
-    // Filter branches based on selected bank
-    useEffect(() => {
-        if (localFilters.bank_id && localFilters.bank_id !== 'all') {
-            const bankId = parseInt(localFilters.bank_id);
-            setFilteredBranches(branches.filter(branch => branch.bank_id === bankId));
-            // Clear branch filter if selected branch doesn't belong to the new bank
-            if (localFilters.branch_id && localFilters.branch_id !== 'all') {
-                const branchExists = branches.some(branch =>
-                    branch.id === parseInt(localFilters.branch_id as string) &&
-                    branch.bank_id === bankId
-                );
-                if (!branchExists) {
-                    handleFilterChange('branch_id', '');
-                }
-            }
-        } else {
-            setFilteredBranches(branches);
-        }
-    }, [localFilters.bank_id, branches]);
-
-    const triggerSearch = useCallback((search: string) => {
-        const cleaned = cleanFilters({ ...localFilters, search });
-        router.get('/martyrs', cleaned, {
-            preserveState: true,
-            preserveScroll: true,
-            replace: true,
-        });
-    }, [localFilters]);
-
-    const handleSearchChange = (value: string) => {
-        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-        searchTimeoutRef.current = setTimeout(
-            () => triggerSearch(value),
-            400,
-        );
-    };
-
-    const handleFilterChange = (key: keyof Filters, value: string) => {
+    const handleFilterChange = useCallback((key: keyof Filters, value: string) => {
         const newValue = value === 'all' ? '' : value;
         const newFilters = { ...localFilters, [key]: newValue };
         setLocalFilters(newFilters);
         isUserChange.current = true;
-    };
+    }, [localFilters]);
 
     const cleanFilters = (f: Filters) => {
         return Object.entries(f).reduce<Record<string, string>>(
@@ -75,6 +28,43 @@ export function useMartyrFilters({ filters, branches }: UseMartyrFiltersProps) {
             {},
         );
     };
+
+    const prevFiltersRef = useRef<Filters>(filters);
+
+    // Update localFilters when filters prop changes (from server)
+    useEffect(() => {
+        if (JSON.stringify(prevFiltersRef.current) !== JSON.stringify(filters)) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setLocalFilters(filters);
+            prevFiltersRef.current = filters;
+        }
+    }, [filters]);
+
+    const filteredBranches = useMemo(() => {
+        if (localFilters.bank_id && localFilters.bank_id !== 'all') {
+            const bankId = parseInt(localFilters.bank_id);
+            return branches.filter(branch => branch.bank_id === bankId);
+        } else {
+            return branches;
+        }
+    }, [localFilters.bank_id, branches]);
+
+    // Clear branch filter if selected branch doesn't belong to the new bank
+    useEffect(() => {
+        if (localFilters.bank_id && localFilters.bank_id !== 'all') {
+            const bankId = parseInt(localFilters.bank_id);
+            if (localFilters.branch_id && localFilters.branch_id !== 'all') {
+                const branchExists = branches.some(branch =>
+                    branch.id === parseInt(localFilters.branch_id as string) &&
+                    branch.bank_id === bankId
+                );
+                if (!branchExists) {
+                    // eslint-disable-next-line react-hooks/set-state-in-effect
+                    handleFilterChange('branch_id', '');
+                }
+            }
+        }
+    }, [localFilters.bank_id, localFilters.branch_id, branches, handleFilterChange]);
 
     useEffect(() => {
         if (isUserChange.current) {
@@ -88,6 +78,14 @@ export function useMartyrFilters({ filters, branches }: UseMartyrFiltersProps) {
             }
         }
     }, [localFilters]);
+
+    const handleSearchChange = useCallback((value: string) => {
+        handleFilterChange('search', value);
+    }, [handleFilterChange]);
+
+    const triggerSearch = useCallback(() => {
+        isUserChange.current = true;
+    }, []);
 
     const clearFilters = () => {
         setLocalFilters({});

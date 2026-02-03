@@ -14,13 +14,6 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-interface Props {
-    flash: {
-        success?: string;
-        error?: string;
-    };
-}
-
 export default function Create() {
     const { t } = useTranslation();
     const { toast } = useToast();

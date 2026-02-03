@@ -188,12 +188,12 @@ export function useConfirm() {
     const handleConfirm = React.useCallback(async () => {
         state.resolve?.(true);
         setState((s) => ({ ...s, open: false }));
-    }, [state.resolve]);
+    }, [state]);
 
     const handleCancel = React.useCallback(() => {
         state.resolve?.(false);
         setState((s) => ({ ...s, open: false }));
-    }, [state.resolve]);
+    }, [state]);
 
     const ConfirmDialogComponent = React.useCallback(
         () => (

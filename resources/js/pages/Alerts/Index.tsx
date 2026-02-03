@@ -130,8 +130,10 @@ export default function Index({ alerts, filters }: Props) {
     useEffect(() => {
         if (!auth?.user?.id) return;
 
-        const channel = window.Echo?.private(`alerts.${auth.user.id}`)
-            .listen('.alert.created', (e: unknown) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const echoInstance = (window as typeof window & { Echo?: any }).Echo;
+        const channel = echoInstance?.private?.(`alerts.${auth.user.id}`)
+            ?.listen('.alert.created', (e: Alert) => {
                 setRealTimeAlerts(prev => [e, ...prev]);
                 toast({
                     title: e.title,
@@ -154,8 +156,8 @@ export default function Index({ alerts, filters }: Props) {
     }, [alerts.data, realTimeAlerts]);
 
     // Search Logic
-    const performSearch = useCallback((params: Record<string, unknown>) => {
-        router.get('/alerts', params as Record<string, unknown>, {
+    const performSearch = useCallback((params: Record<string, string | number | boolean>) => {
+        router.get('/alerts', params, {
             preserveState: true,
             replace: true,
             preserveScroll: true,
@@ -187,23 +189,23 @@ export default function Index({ alerts, filters }: Props) {
         }
     };
 
-    const markAsRead = (id: number) => {
+    const markAsRead = useCallback((id: number) => {
         router.post(`/alerts/${id}/mark-as-read`, {}, {
             onSuccess: () => {
                 toast({ title: t('alert_marked_as_read', 'تم تحديد التنبيه كمقروء') });
                 router.reload({ only: ['alerts'] });
             },
         });
-    };
+    }, [t, toast]);
 
-    const markAsUnread = (id: number) => {
+    const markAsUnread = useCallback((id: number) => {
         router.post(`/alerts/${id}/mark-as-unread`, {}, {
             onSuccess: () => {
                 toast({ title: t('alert_marked_as_unread', 'تم تحديد التنبيه كغير مقروء') });
                 router.reload({ only: ['alerts'] });
             },
         });
-    };
+    }, [t, toast]);
 
     const markAllAsRead = () => {
         router.post('/alerts/mark-all-as-read', {}, {
@@ -396,7 +398,7 @@ export default function Index({ alerts, filters }: Props) {
                 ),
             }),
         ],
-        [t, isRTL, columnHelper],
+        [t, isRTL, columnHelper, markAsRead, markAsUnread],
     );
 
     const table = useReactTable({
