@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, Row, Column, Table } from '@tanstack/react-table';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import React from 'react';
 
@@ -16,9 +16,9 @@ export function createSortableColumn<TData, TValue>(
     header: string,
     cell: (props: {
         getValue: () => TValue;
-        row: any;
-        column: any;
-        table: any;
+        row: Row<TData>;
+        column: Column<TData, TValue>;
+        table: Table<TData>;
     }) => React.ReactNode,
     accessorFn: (row: TData) => TValue,
 ): ColumnDef<TData, TValue> {
@@ -62,9 +62,9 @@ export function createCustomColumn<TData, TValue>(
     header: string,
     cell: (props: {
         getValue: () => TValue;
-        row: any;
-        column: any;
-        table: any;
+        row: Row<TData>;
+        column: Column<TData, TValue>;
+        table: Table<TData>;
     }) => React.ReactNode,
     accessorFn: (row: TData) => TValue,
 ): ColumnDef<TData, TValue> {
@@ -163,7 +163,7 @@ export function getStatusVariant(
 /**
  * Debounce function for search inputs
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
     func: T,
     wait: number,
 ): (...args: Parameters<T>) => void {
@@ -177,7 +177,7 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Check if value is empty
  */
-export function isEmpty(value: any): boolean {
+export function isEmpty(value: unknown): boolean {
     if (value == null) return true;
     if (typeof value === 'string') return value.trim() === '';
     if (Array.isArray(value)) return value.length === 0;
@@ -201,7 +201,7 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
  */
 export function generateExportData<TData>(
     data: TData[],
-    columns: ColumnDef<TData, any>[],
+    columns: ColumnDef<TData, unknown>[],
     filename: string,
 ): void {
     const headers = columns
@@ -212,7 +212,7 @@ export function generateExportData<TData>(
         columns
             .filter((col) => col.id)
             .map((col) => {
-                const value = (item as any)[col.id!];
+                const value = (item as Record<string, unknown>)[col.id!];
                 return String(value || '');
             }),
     );

@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 /**
  * Hook for creating table columns with translations and common patterns
  */
-export function useTableColumns<TData extends Record<string, any>>(
+export function useTableColumns<TData extends Record<string, unknown>>(
     resource: string,
     actions?: {
         onView?: (item: TData) => void;

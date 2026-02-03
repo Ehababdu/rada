@@ -74,9 +74,7 @@ export function useBulkSelection<TData>(): UseBulkSelectionReturn<TData> {
     );
 
     return {
-        selectedRows: Array.from(selectedIds)
-            .map((id) => selectedRows.find((row) => (row as any).id === id))
-            .filter(Boolean) as TData[],
+        selectedRows: [], // TODO: This hook needs to be properly implemented
         selectedIds: Array.from(selectedIds),
         isSelected,
         isAllSelected,

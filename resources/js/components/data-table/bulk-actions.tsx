@@ -11,15 +11,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useTranslation } from 'react-i18next';
 
-interface BulkAction {
+interface BulkAction<TData> {
     label: string;
-    action: (selectedRows: any[]) => void;
+    action: (selectedRows: TData[]) => void;
     variant?: 'default' | 'destructive';
     confirmMessage?: string;
 }
 
 interface BulkActionsProps<TData> {
-    bulkActions: BulkAction[];
+    bulkActions: BulkAction<TData>[];
     selectedRows: TData[];
     onClearSelection: () => void;
 }

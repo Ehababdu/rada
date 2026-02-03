@@ -2,8 +2,10 @@ import { FilterConfig } from '@/components/data-table/filters/filter-panel';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+export type FilterValue = string | number | boolean | string[] | null | undefined;
+
 export interface TableFilters {
-    [key: string]: any;
+    [key: string]: FilterValue;
 }
 
 export interface SelectFieldOption {
@@ -25,12 +27,12 @@ export interface TableFilterConfig {
 
 export interface UseTableFiltersReturn extends TableFilterConfig {
     filters: TableFilters;
-    setFilter: (key: string, value: any) => void;
+    setFilter: (key: string, value: FilterValue) => void;
     clearFilter: (key: string) => void;
     clearAllFilters: () => void;
     hasActiveFilters: boolean;
     activeFiltersCount: number;
-    getFilterValue: (key: string) => any;
+    getFilterValue: (key: string) => FilterValue;
     applySavedFilters: (savedFilters: TableFilters) => void;
 }
 
@@ -45,7 +47,7 @@ export function useTableFilters(
     const [filters, setFiltersState] = useState<TableFilters>(initialFilters);
 
     const setFilter = useCallback(
-        (key: string, value: any) => {
+        (key: string, value: FilterValue) => {
             setFiltersState((prev) => {
                 const newFilters = { ...prev };
 

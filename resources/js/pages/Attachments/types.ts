@@ -21,7 +21,7 @@ export interface Attachment {
 
 export interface AttachmentStats {
     uploaded: Attachment[];
-    notUploaded: any[]; // Ideally typed more specifically if possible
+    notUploaded: Martyr[]; // Martyrs without attachments
     uploadedCount: number;
     notUploadedCount: number;
     total: number;

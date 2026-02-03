@@ -1,5 +1,6 @@
 import { Download, Filter, Search, Settings } from 'lucide-react';
 import * as React from 'react';
+import { Table, Row } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +11,7 @@ import { DataTableFacetedFilter } from './data-table-faceted-filter';
 import { SavedFilters } from './filters/saved-filters';
 
 interface DataTableToolbarProps<TData> {
-    table: any;
+    table: Table<TData>;
     searchKey?: string;
     searchKeys?: string[];
     filterableColumns?: {
@@ -56,7 +57,7 @@ export function DataTableToolbar<TData>({
         if (!searchKeys || searchKeys.length === 0) return null;
 
         const allData =
-            table?.getCoreRowModel().rows.map((row: any) => row.original) || [];
+            table?.getCoreRowModel().rows.map((row: Row<TData>) => row.original) || [];
         return createFuzzySearcher(allData, {
             keys: searchKeys,
             threshold: 0.3,
@@ -77,7 +78,7 @@ export function DataTableToolbar<TData>({
                 results.map((result) => result.refIndex),
             );
 
-            table?.setGlobalFilter((row: any) => {
+            table?.setGlobalFilter((row: Row<TData>) => {
                 return filteredIds.has(row.index);
             });
         } else if (searchKey) {

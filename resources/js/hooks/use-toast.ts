@@ -52,7 +52,7 @@ export const useToast = () => {
                 action,
                 variant = 'default',
             } = messageOrOptions;
-            const toastOptions: any = {
+            const toastOptions: Omit<ToastOptions, 'variant'> = {
                 description,
                 action,
             };
