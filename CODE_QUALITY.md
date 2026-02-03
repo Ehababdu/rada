@@ -9,9 +9,19 @@ Run all quality checks at once:
 npm run check-all
 ```
 
+Or in Docker environment:
+```bash
+vendor/bin/sail npm run check-all
+```
+
 Fix all auto-fixable issues:
 ```bash
 npm run fix-all
+```
+
+Or in Docker environment:
+```bash
+vendor/bin/sail npm run fix-all
 ```
 
 ## 📋 Available Commands
@@ -69,14 +79,45 @@ The `check-all` command runs checks in this order:
 5. **PHPStan** (`phpstan`) - PHP static analysis
 6. **Pest** (`test`) - Unit and feature tests
 
-## 🛠️ Tool Versions
+## � Docker Integration
 
-- **ESLint**: 9.x with React and TypeScript plugins
-- **Prettier**: 3.x with Tailwind and import organization plugins
-- **TypeScript**: 5.x with strict mode enabled
-- **Laravel Pint**: 1.x with Laravel preset
-- **PHPStan**: 2.x (Larastan extension)
-- **Pest**: 3.x
+This project uses Laravel Sail for Docker development. The code quality tools are fully integrated with the Docker environment.
+
+### Docker Setup
+- **Vendor Directory**: Properly mounted between host and container for consistent dependencies
+- **Node Modules**: Isolated in container to prevent conflicts
+- **Autoload**: Optimized autoload files generated in container context
+
+### Running in Docker
+All npm scripts work in Docker using `vendor/bin/sail` prefix:
+```bash
+# Run all checks
+vendor/bin/sail npm run check-all
+
+# Run individual tools
+vendor/bin/sail npm run phpstan
+vendor/bin/sail npm run pint:check
+vendor/bin/sail npm run test
+
+# Fix issues
+vendor/bin/sail npm run fix-all
+```
+
+### Docker Configuration
+The `docker-compose.yml` is configured to:
+- Mount the entire project directory
+- Exclude `node_modules` to prevent conflicts
+- Share `vendor` directory for consistent PHP dependencies
+- Use proper user permissions for file access
+
+### Troubleshooting Docker Issues
+If you encounter PHPStan bootstrap errors:
+1. Ensure autoload files are regenerated in container context:
+   ```bash
+   vendor/bin/sail composer dump-autoload --optimize
+   ```
+2. Check that vendor directory is properly mounted
+3. Restart containers if needed: `vendor/bin/sail down && vendor/bin/sail up -d`
 
 ## 📝 Best Practices
 
@@ -121,11 +162,32 @@ npm run phpstan  # Run static analysis
 npm run format  # Format all files
 ```
 
-### Skipping Checks (Not Recommended)
+### Docker-Specific Issues
 
-If you need to commit despite failing checks:
+**PHPStan bootstrap not found:**
 ```bash
-git commit --no-verify  # Skip pre-commit hooks
+# Regenerate autoload files in container context
+vendor/bin/sail composer dump-autoload --optimize
+```
+
+**Permission issues:**
+```bash
+# Ensure proper user permissions in docker-compose.yml
+# Check WWWUSER and WWWGROUP environment variables
+```
+
+**Node modules conflicts:**
+```bash
+# Clear node_modules and reinstall in container
+vendor/bin/sail rm -rf node_modules
+vendor/bin/sail npm install
+```
+
+**Vendor directory issues:**
+```bash
+# Ensure vendor directory is mounted in docker-compose.yml
+# Restart containers after configuration changes
+vendor/bin/sail down && vendor/bin/sail up -d
 ```
 
 ## 📈 Code Coverage
