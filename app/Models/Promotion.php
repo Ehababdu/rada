@@ -60,7 +60,7 @@ class Promotion extends Model
      */
     public function getStatusLabelAttribute(): string
     {
-        return match ($this->status) {
+        return match ($this->status ?? 'default') {
             'pending' => 'في انتظار الترقية',
             'overdue' => 'ترقية متأخرة',
             'completed' => 'ترقية مكتملة',
@@ -75,13 +75,13 @@ class Promotion extends Model
     {
         return [
             'id' => $this->id,
-            'current_rank' => $this->militaryRank?->name_ar ?? '',
-            'promotion_rank' => $this->promotionRank?->name_ar ?? '',
-            'current_job_grade' => $this->currentJobGrade?->name_ar ?? '',
-            'promotion_job_grade' => $this->promotionJobGrade?->name_ar ?? '',
+            'current_rank' => $this->militaryRank->name_ar ?? '',
+            'promotion_rank' => $this->promotionRank->name_ar ?? '',
+            'current_job_grade' => $this->currentJobGrade->name_ar ?? '',
+            'promotion_job_grade' => $this->promotionJobGrade->name_ar ?? '',
             'current_rank_date' => $this->current_rank_date?->format('Y-m-d'),
             'promotion_years' => $this->promotion_years,
-            'next_due_date' => $this->next_due_date?->format('Y-m-d'),
+            'next_due_date' => $this->next_due_date->format('Y-m-d'),
             'description' => $this->description,
         ];
     }

@@ -24,7 +24,7 @@ return [
     'compensation_info' => 'معلومات التعويض',
     'martyr_information' => 'معلومات الشهيد',
     'recipient_information' => 'معلومات المستلم',
-    'compensation_details' => 'تفاصيل التعويض',
+    'compensation_summary' => 'تفاصيل التعويض',
     'metadata' => 'البيانات الوصفية',
     'married_martyrs_only' => 'الشهداء المتزوجون فقط',
     'total_compensations' => 'إجمالي التعويضات',

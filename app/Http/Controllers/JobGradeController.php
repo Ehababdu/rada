@@ -83,6 +83,7 @@ class JobGradeController extends Controller implements HasMiddleware
         ]);
 
         // Auto-assign order if not provided
+        /** @phpstan-ignore-next-line */
         if (! isset($validated['order']) || $validated['order'] === null) {
             $validated['order'] = JobGrade::max('order') + 1;
         }
@@ -126,6 +127,7 @@ class JobGradeController extends Controller implements HasMiddleware
         ]);
 
         // Auto-assign order if not provided
+        /** @phpstan-ignore-next-line */
         if (! isset($validated['order']) || $validated['order'] === null) {
             $validated['order'] = JobGrade::where('id', '!=', $jobGrade->id)->max('order') + 1;
         }

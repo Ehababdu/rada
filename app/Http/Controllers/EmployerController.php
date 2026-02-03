@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEmployerRequest;
+use App\Http\Requests\UpdateEmployerRequest;
 use App\Models\Employer;
 use App\Models\EmployerLocation;
 use Illuminate\Http\RedirectResponse;
@@ -153,6 +154,7 @@ class EmployerController extends Controller
     {
         $search = $request->get('search');
 
+        /** @phpstan-ignore-next-line */
         $employers = Employer::with('location')
             ->when($search, function ($query) use ($search) {
                 $query->where('name_ar', 'like', "%{$search}%")

@@ -27,9 +27,9 @@ use Laravel\Fortify\Features;
 Route::get('/', function () {
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
-        'app_name' => env('APP_NAME'),
-        'app_title' => env('app_title'),
-        'app_description' => env('APP_DESCRIPTION'),
+        'app_name' => config('app.name'),
+        'app_title' => config('app.title', 'Rada'),
+        'app_description' => config('app.description', 'Martyr Management System'),
     ]);
 })->name('home');
 

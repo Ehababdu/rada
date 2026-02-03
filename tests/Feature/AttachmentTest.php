@@ -52,7 +52,7 @@ class AttachmentTest extends TestCase
 
     public function test_user_can_create_attachment()
     {
-        $file = UploadedFile::fake()->createWithContent('test.pdf', '%PDF-1.4 test content', 'application/pdf');
+        $file = UploadedFile::fake()->create('test.pdf', 100, 'application/pdf');
 
         $response = $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class)
             ->post("/martyrs/{$this->martyr->id}/attachments", [
@@ -119,7 +119,7 @@ class AttachmentTest extends TestCase
     public function test_user_can_update_attachment()
     {
         $attachment = Attachment::factory()->forMartyr($this->martyr)->create();
-        $newFile = UploadedFile::fake()->createWithContent('updated.pdf', '%PDF-1.4 updated content', 'application/pdf');
+        $newFile = UploadedFile::fake()->create('updated.pdf', 100, 'application/pdf');
 
         $response = $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class)
             ->put("/martyrs/{$this->martyr->id}/attachments/{$attachment->id}", [

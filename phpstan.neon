@@ -22,4 +22,3 @@ parameters:
         # Laravel specific ignores
         - '#Call to an undefined method.*#'
         - '#Access to an undefined property.*#'
-        - '#Cannot call method.*on mixed.#'

@@ -26,7 +26,7 @@ class AttachmentController extends Controller
     public function index(Request $request, Martyr $martyr)
     {
         $attachments = $this->attachmentService->getAttachments($martyr, $request);
-        $attachmentTypes = AttachmentType::orderBy('label')->get(['id', 'label'])->pluck('label', 'id');
+        $attachmentTypes = AttachmentType::orderBy('label')->pluck('label', 'id');
 
         // Calculate attachment statistics
         $allAttachments = $martyr->attachments()->with('attachmentType')->get();
@@ -93,7 +93,7 @@ class AttachmentController extends Controller
     {
         return Inertia::render('Attachments/Create', [
             'martyr' => $martyr,
-            'attachmentTypes' => AttachmentType::orderBy('label')->get(['id', 'label'])->pluck('label', 'id'),
+            'attachmentTypes' => AttachmentType::orderBy('label')->pluck('label', 'id'),
         ]);
     }
 
@@ -132,7 +132,7 @@ class AttachmentController extends Controller
         return Inertia::render('Attachments/Show', [
             'martyr' => $martyr,
             'attachment' => $attachment,
-            'attachmentTypes' => AttachmentType::orderBy('label')->get(['id', 'label'])->pluck('label', 'id'),
+            'attachmentTypes' => AttachmentType::orderBy('label')->pluck('label', 'id'),
         ]);
     }
 
@@ -149,7 +149,7 @@ class AttachmentController extends Controller
         return Inertia::render('Attachments/Edit', [
             'martyr' => $martyr,
             'attachment' => $attachment,
-            'attachmentTypes' => AttachmentType::orderBy('label')->get(['id', 'label'])->pluck('label', 'id'),
+            'attachmentTypes' => AttachmentType::orderBy('label')->pluck('label', 'id'),
         ]);
     }
 

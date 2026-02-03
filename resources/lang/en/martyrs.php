@@ -63,7 +63,7 @@ return [
         'success' => 'Martyr deleted successfully',
         'error' => 'Error deleting martyr',
     ],
-    'status' => 'Status',
+    'status_label' => 'Status',
     'statuses' => [
         'draft' => 'Draft',
         'pending' => 'Pending',
@@ -150,7 +150,7 @@ return [
         'inactive' => 'Inactive',
         'pending' => 'Pending',
     ],
-    'show_columns' => 'Show Columns',
+    'show_columns_label' => 'Show Columns',
     'show_columns_description' => 'Select which columns to display in the table',
     'reset_columns' => 'Reset to Default',
     'branch' => 'Branch',

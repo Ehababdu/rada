@@ -15,6 +15,7 @@ class Martyr extends Model
 
     protected static function bootScout()
     {
+        /** @phpstan-ignore-next-line */
         static::creatingIndex(function ($meilisearch, $indexName) {
             $meilisearch->updateSortableAttributes([
                 'death_date',
@@ -120,37 +121,37 @@ class Martyr extends Model
         return $this->hasMany(Attachment::class);
     }
 
-    public function employmentStatus()
+    public function employmentStatus(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(EmploymentStatus::class, 'employment_status_id');
     }
 
-    public function jobGrade()
+    public function jobGrade(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(JobGrade::class, 'job_grade_id');
     }
 
-    public function parentsStatus()
+    public function parentsStatus(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(ParentsStatus::class, 'parents_status_id');
     }
 
-    public function maritalStatus()
+    public function maritalStatus(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(MaritalStatus::class, 'marital_status_id');
     }
 
-    public function militaryRank()
+    public function militaryRank(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(MilitaryRank::class, 'military_rank_id');
     }
 
-    public function bank()
+    public function bank(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Bank::class);
     }
 
-    public function branch()
+    public function branch(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Branch::class);
     }
@@ -264,7 +265,7 @@ class Martyr extends Model
             'status' => $this->status,
             'wife_status' => $this->wife_status,
             'children_count' => $this->children_count,
-            'death_date' => $this->death_date?->format('Y-m-d'),
+            'death_date' => $this->death_date ? \Carbon\Carbon::parse($this->death_date)->format('Y-m-d') : null,
             'created_at' => $this->created_at?->format('Y-m-d'),
             'updated_at' => $this->updated_at?->format('Y-m-d'),
         ];

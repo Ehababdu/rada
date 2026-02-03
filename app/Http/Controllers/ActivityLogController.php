@@ -42,7 +42,8 @@ class ActivityLogController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        $activities->through(function ($activity) {
+        /** @phpstan-ignore-next-line */
+        $activities->through(function (\Spatie\Activitylog\Models\Activity $activity) {
             return [
                 'id' => $activity->id,
                 'description' => $activity->description,

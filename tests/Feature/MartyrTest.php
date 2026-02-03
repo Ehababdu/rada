@@ -123,9 +123,11 @@ class MartyrTest extends TestCase
 
         // Check death_date separately since it's stored as datetime
         $martyr = \App\Models\Martyr::where('national_id', '123456789012')->first();
+        $this->assertInstanceOf(\Carbon\Carbon::class, $martyr->death_date);
         $this->assertEquals('2023-01-15', $martyr->death_date->format('Y-m-d'));
         $this->assertTrue($martyr->has_martyr_decision);
         $this->assertEquals('DEC-2023-001', $martyr->decision_number);
+        $this->assertInstanceOf(\Carbon\Carbon::class, $martyr->decision_date);
         $this->assertEquals('2023-02-01', $martyr->decision_date->format('Y-m-d'));
     }
 
@@ -151,8 +153,8 @@ class MartyrTest extends TestCase
         // Use existing IDs from seeders - use non-military employment status
         $employmentStatus = \App\Models\EmploymentStatus::where('name', '!=', 'عسكري')->first();
         $employmentStatusId = $employmentStatus ? $employmentStatus->id : \App\Models\EmploymentStatus::first()->id;
-        $parentsStatusId = \App\Models\ParentsStatus::find(2)?->id ?? \App\Models\ParentsStatus::first()->id;
-        $maritalStatusId = \App\Models\MaritalStatus::find(2)?->id ?? \App\Models\MaritalStatus::first()->id;
+        $parentsStatusId = \App\Models\ParentsStatus::find(2)->id ?? \App\Models\ParentsStatus::first()->id;
+        $maritalStatusId = \App\Models\MaritalStatus::find(2)->id ?? \App\Models\MaritalStatus::first()->id;
         $militaryRankId = null; // No military rank for non-military
         $bankId = \App\Models\Bank::first()->id;
         $branchId = \App\Models\Branch::where('bank_id', $bankId)->first()->id;
@@ -199,6 +201,7 @@ class MartyrTest extends TestCase
         $this->assertEquals('الاسم المحدث', $martyr->full_name);
         $this->assertEquals('222222222222', $martyr->national_id);
         $this->assertEquals('العنوان المحدث', $martyr->address);
+        $this->assertInstanceOf(\Carbon\Carbon::class, $martyr->death_date);
         $this->assertEquals('2023-02-20', $martyr->death_date->format('Y-m-d'));
         $this->assertFalse($martyr->has_martyr_decision);
         $this->assertNull($martyr->decision_number);

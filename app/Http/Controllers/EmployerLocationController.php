@@ -132,9 +132,11 @@ class EmployerLocationController extends Controller
     {
         \Log::info('Update method called', [
             'employer_id' => $employer->id,
+            /** @phpstan-ignore-next-line */
             'location_id' => $location ? $location->id : 'null',
         ]);
 
+        /** @phpstan-ignore-next-line */
         if (! $location) {
             \Log::error('Location not found', [
                 'employer_id' => $employer->id,

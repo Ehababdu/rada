@@ -34,7 +34,7 @@ class SidebarPermissionTest extends TestCase
 
             // Simple manual check
             if (! empty($props['navAccess']['martyrs'])) {
-                $this->assertTrue(true);
+                $this->assertNotEmpty($props['navAccess']['martyrs']);
 
                 return;
             }

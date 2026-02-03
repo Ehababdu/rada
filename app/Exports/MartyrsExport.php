@@ -62,9 +62,12 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
 
             if (! empty($this->filters['has_martyr_decision'])) {
                 $val = $this->filters['has_martyr_decision'];
-                if ($val === '1' || $val === 1 || $val === true) {
+                $truthyValues = ['1', 1, true, 'true'];
+                $falsyValues = ['0', 0, false, 'false'];
+                
+                if (in_array($val, $truthyValues, true)) {
                     $query->where('has_martyr_decision', true);
-                } elseif ($val === '0' || $val === 0 || $val === 'false') {
+                } elseif (in_array($val, $falsyValues, true)) {
                     $query->where('has_martyr_decision', false);
                 }
             }

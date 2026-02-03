@@ -40,7 +40,7 @@ class Compensation extends Model
             'recipient_name' => $this->recipient_name,
             'recipient_passport_number' => $this->recipient_passport_number,
             'amount' => $this->amount,
-            'receipt_date' => $this->receipt_date?->format('Y-m-d'),
+            'receipt_date' => $this->receipt_date->format('Y-m-d'),
         ];
     }
 }

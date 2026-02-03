@@ -23,7 +23,7 @@ return [
     'compensation_info' => 'Compensation Information',
     'martyr_information' => 'Martyr Information',
     'recipient_information' => 'Recipient Information',
-    'compensation_details' => 'Compensation Details',
+    'compensation_summary' => 'Compensation Details',
     'metadata' => 'Metadata',
     'married_martyrs_only' => 'Married Martyrs Only',
     'total_compensations' => 'Total Compensations',

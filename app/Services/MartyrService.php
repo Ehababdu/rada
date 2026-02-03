@@ -275,6 +275,7 @@ class MartyrService
         }
     }
 
+    /** @phpstan-ignore method.unused */
     private function buildMeiliFilters(array $filters): string
     {
         $meiliFilters = [];

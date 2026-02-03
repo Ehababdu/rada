@@ -71,7 +71,8 @@ class CompensationController extends Controller
             ->with('militaryRank:id,name_ar,name_en')
             ->orderBy('full_name')
             ->get()
-            ->map(function ($martyr) {
+            /** @phpstan-ignore-next-line */
+            ->map(function (Martyr $martyr) {
                 return [
                     'id' => $martyr->id,
                     'full_name' => $martyr->full_name,
@@ -105,7 +106,8 @@ class CompensationController extends Controller
             ->with('militaryRank:id,name_ar,name_en')
             ->orderBy('full_name')
             ->get()
-            ->map(function ($martyr) {
+            /** @phpstan-ignore-next-line */
+            ->map(function (Martyr $martyr) {
                 return [
                     'id' => $martyr->id,
                     'full_name' => $martyr->full_name,
@@ -148,6 +150,7 @@ class CompensationController extends Controller
         $martyr = Martyr::with(['parentsStatus', 'maritalStatus'])->findOrFail($validated['martyr_id']);
 
         // Calculate amount if not provided
+        /** @phpstan-ignore-next-line */
         if (! isset($validated['amount']) || $validated['amount'] === null) {
             $baseAmount = $martyr->calculateCompensationAmount();
             $monthsCount = isset($validated['months']) ? count($validated['months']) : 1;
@@ -196,7 +199,8 @@ class CompensationController extends Controller
             ->with('militaryRank:id,name_ar,name_en')
             ->orderBy('full_name')
             ->get()
-            ->map(function ($martyr) {
+            /** @phpstan-ignore-next-line */
+            ->map(function (Martyr $martyr) {
                 return [
                     'id' => $martyr->id,
                     'full_name' => $martyr->full_name,

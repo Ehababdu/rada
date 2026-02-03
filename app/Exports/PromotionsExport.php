@@ -54,12 +54,12 @@ class PromotionsExport implements FromQuery, WithHeadings, WithMapping
     {
         return [
             'id' => $promotion->id,
-            'martyr_name' => $promotion->martyr?->full_name ?? 'غير محدد',
-            'martyr_national_id' => $promotion->martyr?->national_id ?? 'غير محدد',
-            'current_rank' => $promotion->militaryRank?->name_ar ?? 'غير محدد',
-            'promotion_rank' => $promotion->promotionRank?->name_ar ?? 'غير محدد',
-            'current_job_grade' => $promotion->currentJobGrade?->name_ar ?? 'غير محدد',
-            'promotion_job_grade' => $promotion->promotionJobGrade?->name_ar ?? 'غير محدد',
+            'martyr_name' => $promotion->martyr->full_name ?? 'غير محدد',
+            'martyr_national_id' => $promotion->martyr->national_id ?? 'غير محدد',
+            'current_rank' => $promotion->militaryRank->name_ar ?? 'غير محدد',
+            'promotion_rank' => $promotion->promotionRank->name_ar ?? 'غير محدد',
+            'current_job_grade' => $promotion->currentJobGrade->name_ar ?? 'غير محدد',
+            'promotion_job_grade' => $promotion->promotionJobGrade->name_ar ?? 'غير محدد',
             'current_rank_date' => $promotion->current_rank_date?->format('d/m/Y'),
             'promotion_years' => $promotion->promotion_years,
             'next_due_date' => $promotion->next_due_date->format('d/m/Y'),

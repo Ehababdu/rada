@@ -46,12 +46,12 @@ class PromotionController extends Controller
             return [
                 'id' => $promotion->id,
                 'martyr_id' => $promotion->martyr_id,
-                'martyr_name' => $promotion->martyr?->full_name ?? 'غير محدد',
-                'martyr_national_id' => $promotion->martyr?->national_id ?? 'غير محدد',
-                'current_rank' => $promotion->militaryRank?->name_ar ?? 'غير محدد',
-                'promotion_rank' => $promotion->promotionRank?->name_ar ?? 'غير محدد',
-                'current_job_grade' => $promotion->currentJobGrade?->name_ar ?? 'غير محدد',
-                'promotion_job_grade' => $promotion->promotionJobGrade?->name_ar ?? 'غير محدد',
+                'martyr_name' => $promotion->martyr->full_name ?? 'غير محدد',
+                'martyr_national_id' => $promotion->martyr->national_id ?? 'غير محدد',
+                'current_rank' => $promotion->militaryRank->name_ar ?? 'غير محدد',
+                'promotion_rank' => $promotion->promotionRank->name_ar ?? 'غير محدد',
+                'current_job_grade' => $promotion->currentJobGrade->name_ar ?? 'غير محدد',
+                'promotion_job_grade' => $promotion->promotionJobGrade->name_ar ?? 'غير محدد',
                 'current_job_grade_id' => $promotion->current_job_grade_id,
                 'promotion_job_grade_id' => $promotion->promotion_job_grade_id,
                 'current_rank_date' => $promotion->current_rank_date?->format('Y-m-d'),
@@ -69,7 +69,8 @@ class PromotionController extends Controller
             ->with(['militaryRank:id,name_ar,name_en', 'jobGrade:id,name_ar,name_en'])
             ->orderBy('full_name')
             ->get()
-            ->map(function ($martyr) {
+            /** @phpstan-ignore-next-line */
+            ->map(function (\App\Models\Martyr $martyr) {
                 return [
                     'id' => $martyr->id,
                     'full_name' => $martyr->full_name,
@@ -98,7 +99,8 @@ class PromotionController extends Controller
             ->with('militaryRank:id,name_ar,name_en', 'jobGrade:id,name_ar')
             ->orderBy('full_name')
             ->get()
-            ->map(function ($martyr) {
+            /** @phpstan-ignore-next-line */
+            ->map(function (\App\Models\Martyr $martyr) {
                 // If martyr has no direct military_rank_id, try to find last promotion's rank
                 $militaryRankId = $martyr->military_rank_id;
                 $militaryRankName = $martyr->militaryRank?->name_ar;
@@ -199,8 +201,8 @@ class PromotionController extends Controller
                 'martyr_id' => $promotion->martyr_id,
                 'martyr_name' => $promotion->martyr->full_name,
                 'martyr_national_id' => $promotion->martyr->national_id,
-                'current_rank' => $promotion->militaryRank?->name_ar ?? 'غير محدد',
-                'promotion_rank' => $promotion->promotionRank?->name_ar ?? 'غير محدد',
+                'current_rank' => $promotion->militaryRank->name_ar ?? 'غير محدد',
+                'promotion_rank' => $promotion->promotionRank->name_ar ?? 'غير محدد',
                 'promotion_years' => $promotion->promotion_years,
                 'next_due_date' => $promotion->next_due_date->format('Y-m-d'),
                 'next_due_date_formatted' => $promotion->next_due_date->format('d/m/Y'),
@@ -222,7 +224,8 @@ class PromotionController extends Controller
             ->with('militaryRank:id,name_ar,name_en', 'jobGrade:id,name_ar')
             ->orderBy('full_name')
             ->get()
-            ->map(function ($martyr) {
+            /** @phpstan-ignore-next-line */
+            ->map(function (\App\Models\Martyr $martyr) {
                 // If martyr has no direct military_rank_id, try to find last promotion's rank
                 $militaryRankId = $martyr->military_rank_id;
                 $militaryRankName = $martyr->militaryRank?->name_ar;

@@ -66,7 +66,7 @@ class Attachment extends Model implements HasMedia
 
     public function getAttachmentTypeLabelAttribute(): string
     {
-        return $this->attachmentType?->label ?? $this->attachment_type;
+        return $this->attachmentType->label ?? $this->attachment_type;
     }
 
     public function getFileUrlAttribute(): string

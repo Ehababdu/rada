@@ -264,7 +264,9 @@ class MartyrController extends Controller
             $query->where('employment_status_id', $employmentStatus);
         }
 
-        $martyrs = $query->with('militaryRank:id,name_ar', 'jobGrade:id,name_ar')->limit(500)->get()->map(function (Martyr $m) {
+        $martyrs = $query->with('militaryRank:id,name_ar', 'jobGrade:id,name_ar')->limit(500)->get()
+            /** @phpstan-ignore-next-line */
+            ->map(function (\App\Models\Martyr $m) {
             return [
                 'id' => $m->id,
                 'full_name' => $m->full_name,

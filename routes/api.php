@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\EmployerController;
 use App\Http\Controllers\Api\EmploymentStatusController;
+use App\Http\Controllers\Api\MaritalStatusController;
 use App\Http\Controllers\Api\MilitaryRankController;
 use App\Http\Controllers\Api\ParentsStatusController;
 use App\Http\Controllers\MartyrController;
@@ -31,7 +32,7 @@ Route::get('/attachment-types', function (Request $request) {
         $query->where('label', 'ILIKE', '%' . $search . '%');
     }
 
-    $types = $query->get()->pluck('label', 'id')->toArray();
+    $types = $query->pluck('label', 'id')->toArray();
 
     \Log::info('Results:', $types);
 
