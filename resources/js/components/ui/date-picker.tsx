@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { Calendar } from "@/components/ui/calendar"
-import { Field, FieldLabel } from "@/components/ui/field"
 import {
   InputGroup,
   InputGroupAddon,
@@ -15,9 +14,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { useTranslation } from "react-i18next"
 
 interface DatePickerProps {
   date?: Date
@@ -51,8 +47,6 @@ export function DatePicker({
   placeholder = "Pick a date",
   className,
 }: DatePickerProps) {
-  const { i18n } = useTranslation()
-  const isRTL = i18n.language === 'ar'
   const [open, setOpen] = React.useState(false)
   const [month, setMonth] = React.useState<Date | undefined>(date)
   const [value, setValue] = React.useState(formatDate(date))

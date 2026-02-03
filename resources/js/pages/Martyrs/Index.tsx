@@ -52,7 +52,6 @@ export default function Index({
 
     // Deferred search for better performance
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
-    const deferredSearchTerm = useDeferredValue(searchTerm);
 
     // Table state
     const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
@@ -85,7 +84,6 @@ export default function Index({
         areSomeBasicSelected,
         areAllAdditionalSelected,
         areSomeAdditionalSelected,
-        columns,
         filteredColumns,
     } = useMartyrColumns({
         canViewAttachments,
@@ -122,7 +120,6 @@ export default function Index({
     const {
         deleteOpen,
         setDeleteOpen,
-        deletingId,
         setDeletingId,
         isDeleting,
         handleDelete,

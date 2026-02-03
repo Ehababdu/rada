@@ -16,16 +16,12 @@ export default function LanguageSwitcher() {
         i18n.changeLanguage(lng);
         // Persist language preference if needed (e.g., localStorage or cookie)
         // Usually handled by i18next plugin, but explicit check helps validation
-        document.dir = lng === 'ar' ? 'rtl' : 'ltr';
     };
 
     const languages = [
         { code: 'ar', label: 'العربية', dir: 'rtl' },
         { code: 'en', label: 'English', dir: 'ltr' },
     ];
-
-    const currentLanguage =
-        languages.find((l) => l.code === i18n.language) || languages[0];
 
     return (
         <DropdownMenu>

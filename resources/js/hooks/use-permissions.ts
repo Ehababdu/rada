@@ -48,12 +48,3 @@ export function usePermissions(resource: string): UsePermissionsReturn {
         canAll,
     };
 }
-
-/**
- * Direct permission check function
- */
-export function can(action: keyof UserPermissions, resource: string): boolean {
-    const { auth } = usePage().props as PageProps;
-    const permissions = getUserPermissions(auth, resource);
-    return permissions[action] ?? false;
-}

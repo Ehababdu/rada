@@ -13,15 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import {
   Table,
@@ -43,8 +35,6 @@ interface DataTableProps<TData, TValue> {
   pageSize?: number
   totalItems?: number
   currentPage?: number
-  totalPages?: number
-  onPageChange?: (page: number) => void
   onPageSizeChange?: (pageSize: number) => void
   pageSizeOptions?: (number | { value: number; label: string })[]
   columnVisibility?: VisibilityState
@@ -67,8 +57,6 @@ export function DataTable<TData, TValue>({
   pageSize,
   totalItems,
   currentPage,
-  totalPages,
-  onPageChange,
   onPageSizeChange,
   pageSizeOptions,
   columnVisibility: externalColumnVisibility,

@@ -34,7 +34,6 @@ interface MartyrsActionsProps {
     areSomeBasicSelected: boolean;
     areAllAdditionalSelected: boolean;
     areSomeAdditionalSelected: boolean;
-    isRTL: boolean;
 }
 
 export const MartyrsActions = React.memo<MartyrsActionsProps>(({
@@ -54,7 +53,6 @@ export const MartyrsActions = React.memo<MartyrsActionsProps>(({
     areSomeBasicSelected,
     areAllAdditionalSelected,
     areSomeAdditionalSelected,
-    isRTL,
 }: MartyrsActionsProps) => {
     const { t } = useTranslation();
 

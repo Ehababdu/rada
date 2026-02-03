@@ -22,7 +22,7 @@ interface Props {
     };
 }
 
-export default function Edit({ employmentStatus, flash }: Props) {
+export default function Edit({ employmentStatus }: Props) {
     const { t } = useTranslation();
     const { toast } = useToast();
 

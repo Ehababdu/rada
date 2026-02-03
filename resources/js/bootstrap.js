@@ -19,7 +19,7 @@ window.Echo = new Echo({
     wssPort: import.meta.env.VITE_REVERB_PORT || 8080,
     forceTLS: (import.meta.env.VITE_REVERB_SCHEME || 'http') === 'https',
     enabledTransports: ['ws', 'wss'],
-    authorizer: (channel, options) => {
+    authorizer: (channel, _options) => {
         return {
             authorize: (socketId, callback) => {
                 axios.post('/api/broadcasting/auth', {

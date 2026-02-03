@@ -21,11 +21,11 @@ interface Props {
     };
 }
 
-export default function Create({ flash }: Props) {
+export default function Create() {
     const { t } = useTranslation();
     const { toast } = useToast();
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: '',
     });
 

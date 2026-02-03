@@ -1,4 +1,3 @@
-import { usePermissions } from '@/hooks/use-permissions';
 import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type SharedData } from '@/types';
@@ -110,7 +109,6 @@ export default function Index({ alerts, filters }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
     const { toast } = useToast();
-    const { can } = usePermissions('alerts');
     const { auth } = usePage().props as unknown as SharedData;
 
     const [searchTerm, setSearchTerm] = useState(filters.search || '');

@@ -27,7 +27,6 @@ interface Props {
 
 export default function Edit({ jobGrade }: Props) {
     const { t, i18n } = useTranslation();
-    const isRTL = i18n.language === 'ar';
 
     const { data, setData, put, processing, errors, reset } = useForm({
         name_ar: jobGrade.name_ar,

@@ -11,7 +11,6 @@ import {
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface AttachmentType {
     id: number;
@@ -26,8 +25,7 @@ interface Props {
     };
 }
 
-export default function Edit({ attachmentType, flash }: Props) {
-    const { t } = useTranslation();
+export default function Edit({ attachmentType }: Props) {
     const { toast } = useToast();
 
     const { data, setData, put, processing, errors } = useForm({

@@ -24,7 +24,7 @@ export function DateRangeFilter<TData>({
     column,
     title,
 }: DateRangeFilterProps<TData>) {
-    const { t, i18n } = useTranslation();
+    const { i18n } = useTranslation();
     const [date, setDate] = React.useState<DateRange | undefined>();
 
     React.useEffect(() => {

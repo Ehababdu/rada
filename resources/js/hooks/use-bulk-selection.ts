@@ -18,8 +18,6 @@ export interface UseBulkSelectionReturn<TData> {
 export function useBulkSelection<TData>(): UseBulkSelectionReturn<TData> {
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-    const selectedRows = useMemo(() => [], []); // This will be populated by the table
-
     const isSelected = useCallback(
         (id: string) => {
             return selectedIds.has(id);

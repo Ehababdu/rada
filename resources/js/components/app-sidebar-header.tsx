@@ -12,7 +12,6 @@ export const AppSidebarHeader = memo(function AppSidebarHeader({
     breadcrumbs?: BreadcrumbItemType[];
 }) {
     const { i18n } = useTranslation();
-    const isRTL = i18n.language === 'ar';
 
     return (
         <header

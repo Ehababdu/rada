@@ -1,13 +1,7 @@
 import { Button } from '@/components/ui/button';
-import { Table } from '@tanstack/react-table';
 import { FileSearch, Plus, RefreshCw } from 'lucide-react';
 
-interface DataTableEmptyStateProps<TData> {
-    /**
-     * The table instance
-     */
-    table: Table<TData>;
-
+interface DataTableEmptyStateProps {
     /**
      * Current search query
      */
@@ -44,8 +38,7 @@ interface DataTableEmptyStateProps<TData> {
     emptyDescription?: string;
 }
 
-export function DataTableEmptyState<TData>({
-    table,
+export function DataTableEmptyState({
     searchQuery,
     isFiltered = false,
     onReset,
@@ -53,7 +46,7 @@ export function DataTableEmptyState<TData>({
     primaryActionText = 'Add New',
     emptyMessage,
     emptyDescription,
-}: DataTableEmptyStateProps<TData>) {
+}: DataTableEmptyStateProps) {
     // Determine the message based on context
     const message = searchQuery
         ? `No results found for "${searchQuery}"`

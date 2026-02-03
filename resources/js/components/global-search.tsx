@@ -9,14 +9,9 @@ import {
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { index as activityLogIndex } from '@/routes/activity-log';
-import { index as attachmentTypesIndex } from '@/routes/attachment-types';
-import { index as banksIndex } from '@/routes/banks';
 import { index as compensationsIndex } from '@/routes/compensations';
 import { index as employersIndex } from '@/routes/employers';
-import { index as employmentStatusesIndex } from '@/routes/employment-statuses';
-import { index as jobGradesIndex } from '@/routes/job-grades';
 import { index as martyrsIndex } from '@/routes/martyrs';
-import { index as militaryRanksIndex } from '@/routes/military-ranks';
 import { index as permissionsIndex } from '@/routes/permissions';
 import { index as promotionsIndex } from '@/routes/promotions';
 import { index as rolesIndex } from '@/routes/roles';

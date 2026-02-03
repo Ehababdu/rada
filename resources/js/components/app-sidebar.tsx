@@ -220,7 +220,7 @@ export const AppSidebar = memo(function AppSidebar() {
             // Check navAccess for the resource
             return navAccess[item.resource] === true;
         })
-        .map(({ resource, ...item }) => item);
+        .map((item) => item);
 
     return (
         <Sidebar collapsible="icon" variant="inset" side={sidebarSide}>

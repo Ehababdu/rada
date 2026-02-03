@@ -1,4 +1,4 @@
-import { Link, router } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';

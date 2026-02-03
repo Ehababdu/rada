@@ -101,7 +101,7 @@ export function formatDate(
             month: 'short',
             day: 'numeric',
         }).format(new Date(date));
-    } catch (error) {
+    } catch {
         console.warn('Invalid date value:', date);
         return '-';
     }
@@ -236,7 +236,6 @@ export function generateExportData<TData>(
 export function exportToExcel<TData>(
     data: TData[],
     tableName: string,
-    t: (key: string) => string,
 ): void {
     // TODO: Implement Excel export
     console.log('Exporting to Excel:', data.length, 'records from', tableName);
@@ -248,7 +247,6 @@ export function exportToExcel<TData>(
 export function exportToPDF<TData>(
     data: TData[],
     tableName: string,
-    t: (key: string) => string,
 ): void {
     // TODO: Implement PDF export
     console.log('Exporting to PDF:', data.length, 'records from', tableName);

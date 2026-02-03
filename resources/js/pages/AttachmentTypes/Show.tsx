@@ -22,7 +22,6 @@ import {
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, SquarePen, Trash2 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 
 interface AttachmentType {
     id: number;
@@ -39,8 +38,7 @@ interface Props {
     };
 }
 
-export default function Show({ attachmentType, flash }: Props) {
-    const { t } = useTranslation();
+export default function Show({ attachmentType }: Props) {
     const { toast } = useToast();
 
     const handleDelete = () => {

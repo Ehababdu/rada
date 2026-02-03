@@ -136,7 +136,7 @@ export default function Create({ martyr, attachmentTypes }: Props) {
                 const p = (event as { detail?: { progress?: number } })?.detail?.progress ?? null;
                 setUploadProgress(p !== null ? Math.round(p) : null);
             },
-            onSuccess: (page: unknown) => {
+            onSuccess: () => {
                 toast({ title: 'تم إضافة المرفق بنجاح', variant: 'success' });
                 setProcessing(false);
                 setUploadProgress(null);

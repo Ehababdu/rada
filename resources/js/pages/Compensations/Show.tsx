@@ -32,7 +32,6 @@ interface Props {
 
 export default function Show({ compensation }: Props) {
     const { t, i18n } = useTranslation();
-    const isRTL = i18n.language === 'ar';
 
     const breadcrumbs: BreadcrumbItem[] = [
         {

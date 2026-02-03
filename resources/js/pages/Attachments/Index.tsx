@@ -54,7 +54,6 @@ export default function Index({
     attachments,
     attachmentTypes,
     attachmentStats,
-    filters,
 }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
