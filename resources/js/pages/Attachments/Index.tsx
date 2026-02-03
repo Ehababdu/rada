@@ -210,20 +210,6 @@ export default function Index({
                             pageSize={attachments.per_page}
                             totalItems={attachments.total}
                             currentPage={attachments.current_page}
-                            totalPages={attachments.last_page}
-                            onPageChange={(page: number) => {
-                                const params = new URLSearchParams(
-                                    window.location.search,
-                                );
-                                params.set('page', page.toString());
-                                router.visit(
-                                    `/martyrs/${martyr.id}/attachments?${params.toString()}`,
-                                    {
-                                        preserveState: true,
-                                        preserveScroll: true,
-                                    },
-                                );
-                            }}
                             onPageSizeChange={(pageSize: number) => {
                                 const params = new URLSearchParams(
                                     window.location.search,

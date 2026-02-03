@@ -210,20 +210,21 @@ export default function Show({ alert }: Props) {
                     </CardHeader>
 
                     <CardContent className="space-y-6">
-                        {/* Message */}
-                        <div>
-                            <h3 className="mb-2 font-semibold">
-                                {t('alerts.message', 'الرسالة')}
-                            </h3>
-                            <div className="rounded-lg border bg-muted/30 p-4">
-                                <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                                    {alert.message as string}
-                                </p>
+                        {(
+                            <div>
+                                <h3 className="mb-2 font-semibold">
+                                    {t('alerts.message', 'الرسالة')}
+                                </h3>
+                                <div className="rounded-lg border bg-muted/30 p-4">
+                                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                                        {alert.message ? String(alert.message) : 'No message'}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
+                        ) as React.ReactNode}
 
                         {/* Additional Data */}
-                        {alert.data && Object.keys(alert.data).length > 0 && (
+                        {alert.data && (alert.data as any) && Object.keys(alert.data as any).length > 0 && (
                             <div>
                                 <h3 className="mb-2 font-semibold">
                                     {t(
