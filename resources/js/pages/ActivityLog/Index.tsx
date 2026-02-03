@@ -1,11 +1,11 @@
 import React from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { Button } from '@/Components/ui/button';
-import { Input } from '@/Components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
-import { Badge } from '@/Components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/Components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CalendarIcon, EyeIcon, TrashIcon, UserIcon, FileTextIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
@@ -62,10 +62,10 @@ export default function Index({ activities, filters }) {
                             </div>
                             <div>
                                 <Select
-                                    value={filters.model || ''}
+                                    value={filters.model || 'all'}
                                     onValueChange={(value) => {
                                         const url = new URL(window.location);
-                                        if (value) {
+                                        if (value && value !== 'all') {
                                             url.searchParams.set('model', value);
                                         } else {
                                             url.searchParams.delete('model');
@@ -77,7 +77,7 @@ export default function Index({ activities, filters }) {
                                         <SelectValue placeholder="النموذج" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">الكل</SelectItem>
+                                        <SelectItem value="all">الكل</SelectItem>
                                         <SelectItem value="User">المستخدمين</SelectItem>
                                         <SelectItem value="Martyr">الشهداء</SelectItem>
                                         <SelectItem value="Bank">البنوك</SelectItem>

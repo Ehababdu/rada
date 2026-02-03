@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
+import { index as activityLogIndex } from '@/routes/activity-log';
 import { index as attachmentTypesIndex } from '@/routes/attachment-types';
 import { index as banksIndex } from '@/routes/banks';
 import { index as compensationsIndex } from '@/routes/compensations';
@@ -23,7 +24,9 @@ import { index as usersIndex } from '@/routes/users';
 import { router } from '@inertiajs/react';
 import axios from 'axios';
 import {
+    Activity,
     Award,
+    Bell,
     Briefcase,
     Building,
     Building2,
@@ -40,6 +43,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const iconMap: Record<string, any> = {
+    Activity,
+    Bell,
     LayoutGrid,
     Users,
     Award,
@@ -128,6 +133,20 @@ export function GlobalSearch() {
                 title: t('navigation.roles'),
                 href: rolesIndex().url,
                 icon: 'Shield',
+                group: t('navigation.system_management'),
+            },
+            {
+                id: 'p14',
+                title: t('navigation.activity_log', 'سجل الأنشطة'),
+                href: activityLogIndex().url,
+                icon: 'Activity',
+                group: t('navigation.system_management'),
+            },
+            {
+                id: 'p15',
+                title: t('navigation.alerts', 'التنبيهات'),
+                href: '/alerts',
+                icon: 'Bell',
                 group: t('navigation.system_management'),
             },
         ],

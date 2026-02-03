@@ -85,11 +85,11 @@ class ActivityLogController extends Controller
                 'subject_id' => $activity->subject_id,
                 'causer_name' => $activity->causer?->name,
                 'causer_email' => $activity->causer?->email,
-                'old_values' => $activity->getOldValues(),
-                'new_values' => $activity->getNewValues(),
+                'old_values' => $activity->properties['old'] ?? [],
+                'new_values' => $activity->properties['attributes'] ?? [],
                 'changes' => $activity->changes(),
                 'properties' => $activity->properties,
-                'created_at' => $activity->created_at->format('d/m/Y H:i:s'),
+                'created_at' => $activity->created_at ? \Carbon\Carbon::parse($activity->created_at)->format('d/m/Y H:i:s') : null,
             ],
         ]);
     }
