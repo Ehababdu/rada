@@ -11,11 +11,8 @@ import { AlertTriangle, ArrowLeft, Award, Save } from 'lucide-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface Props {}
-
-export default function Create({}: Props) {
-    const { t, i18n } = useTranslation();
-    const isRTL = i18n.language === 'ar';
+export default function Create() {
+    const { t } = useTranslation();
 
     const { data, setData, post, processing, errors, reset } = useForm({
         name_ar: '',

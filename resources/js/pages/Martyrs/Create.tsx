@@ -41,7 +41,6 @@ interface SearchableSelectProps {
     error?: string;
     loading?: boolean;
     disabled?: boolean;
-    required?: boolean;
 }
 
 function SearchableSelect({
@@ -52,7 +51,6 @@ function SearchableSelect({
     error,
     loading = false,
     disabled = false,
-    required = false,
 }: SearchableSelectProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
@@ -66,7 +64,6 @@ function SearchableSelect({
     }>({ top: 0, left: 0, width: 0 });
 
     const [localOptions, setLocalOptions] = useState(options);
-    const [fetching, setFetching] = useState(false);
     const filteredOptions = localOptions.filter(
         (option) =>
             option.name_ar.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -350,45 +347,33 @@ export default function Create({
     const [militaryRanksState, setMilitaryRanksState] = useState(militaryRanks);
     const [loadingRanks, setLoadingRanks] = useState(false);
 
-    const [banksState, setBanksState] = useState(banks);
-    const [loadingBanks, setLoadingBanks] = useState(false);
+    const [banksState] = useState(banks);
+    const [loadingBanks] = useState(false);
 
     const [branches, setBranches] = useState<
         { id: number; name_ar: string; name_en: string | null }[]
     >([]);
     const [loadingBranches, setLoadingBranches] = useState(false);
 
-    const [employmentStatusesState, setEmploymentStatusesState] =
-        useState(employmentStatuses);
-    const [loadingEmploymentStatuses, setLoadingEmploymentStatuses] =
-        useState(false);
+    const [employmentStatusesState] = useState(employmentStatuses);
+    const [loadingEmploymentStatuses] = useState(false);
 
-    const [jobGradesState, setJobGradesState] = useState(jobGrades);
-    const [loadingJobGrades, setLoadingJobGrades] = useState(false);
+    const [jobGradesState] = useState(jobGrades);
+    const [loadingJobGrades] = useState(false);
 
-    const [employersState, setEmployersState] = useState(employers);
-    const [loadingEmployers, setLoadingEmployers] = useState(false);
+    const [employersState] = useState(employers);
+    const [loadingEmployers] = useState(false);
 
     const [employerLocationsState, setEmployerLocationsState] =
         useState(employerLocations);
     const [loadingEmployerLocations, setLoadingEmployerLocations] =
         useState(false);
 
-    const jobGradeOptions = jobGradesState.reduce(
-        (acc, grade) => {
-            acc[grade.id] = grade.name_ar;
-            return acc;
-        },
-        {} as Record<number, string>,
-    );
+    const [parentsStatusesState] = useState(parentsStatuses);
+    const [loadingParentsStatuses] = useState(false);
 
-    const [parentsStatusesState, setParentsStatusesState] =
-        useState(parentsStatuses);
-    const [loadingParentsStatuses, setLoadingParentsStatuses] = useState(false);
-
-    const [maritalStatusesState, setMaritalStatusesState] =
-        useState(maritalStatuses);
-    const [loadingMaritalStatuses, setLoadingMaritalStatuses] = useState(false);
+    const [maritalStatusesState] = useState(maritalStatuses);
+    const [loadingMaritalStatuses] = useState(false);
 
     useEffect(() => {
         const selectedStatus = employmentStatusesState.find(

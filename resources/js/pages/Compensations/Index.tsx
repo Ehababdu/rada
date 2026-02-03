@@ -20,15 +20,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -70,8 +61,6 @@ import { DataTable } from '@/components/ui/data-table';
 
 // Icons
 import {
-    ChevronLeft,
-    ChevronRight,
     Edit,
     Eye,
     Filter,
@@ -290,20 +279,6 @@ export default function Index({
         ],
         [t, canViewDetails, canUpdate, canDelete],
     );
-
-    const confirmDelete = () => {
-        if (deleteId) {
-            router.delete(`/compensations/${deleteId}`, {
-                onSuccess: () => {
-                    toast({
-                        title: t('compensations.deleted'),
-                        variant: 'default',
-                    });
-                    setDeleteId(null);
-                },
-            });
-        }
-    };
 
     return (
         <TooltipProvider>

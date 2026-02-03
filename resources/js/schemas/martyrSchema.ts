@@ -24,18 +24,6 @@ const passportRegex = /^[A-Z0-9]+$/;
 const digitsOnlyRegex = /^[0-9]+$/;
 
 /**
- * File validation helper
- */
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB for profile images
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
-const ACCEPTED_DOCUMENT_TYPES = [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'application/pdf',
-];
-
-/**
  * Martyr form validation schema using Zod
  */
 export const martyrSchema = z
@@ -272,7 +260,7 @@ export const martyrSchema = z
         profile_image: z.instanceof(File).nullable().optional(),
     })
     .refine(
-        (data) => {
+        () => {
             // Conditional validation: If marital status is single, children_count must be null or 0
             // Note: This would need the actual marital status name to work properly
             // For now, we'll skip this validation on the client side and rely on server validation

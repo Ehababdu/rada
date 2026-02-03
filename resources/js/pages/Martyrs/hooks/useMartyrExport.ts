@@ -17,21 +17,21 @@ export function useMartyrExport({
     const [latestExportAvailable, setLatestExportAvailable] = useState<boolean | null>(null);
     const [latestExportUrl, setLatestExportUrl] = useState<string | null>(null);
 
-    // Check Export Status - Only once on mount
     useEffect(() => {
         let mounted = true;
-        let timeoutId: NodeJS.Timeout;
 
         const checkStatus = async () => {
             try {
-                const res = await fetch('/martyrs/export/status');
-                const data = await res.json();
+                const response = await fetch('/api/export/status');
+                if (!response.ok) return;
+
+                const data = await response.json();
                 if (mounted) {
-                    setLatestExportAvailable(!!data.exists);
+                    setLatestExportAvailable(data.available);
                     setLatestExportUrl(data.url);
                 }
-            } catch {
-                if (mounted) setLatestExportAvailable(false);
+            } catch (error) {
+                console.error('Failed to check export status:', error);
             }
         };
 
@@ -39,7 +39,7 @@ export function useMartyrExport({
         checkStatus();
 
         // Set up periodic checks with longer intervals
-        timeoutId = setTimeout(() => {
+        const timeoutId = setTimeout(() => {
             if (mounted) checkStatus();
         }, 30000); // Check every 30 seconds instead of constantly
 

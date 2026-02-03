@@ -41,7 +41,6 @@ interface SearchableSelectProps {
     error?: string;
     loading?: boolean;
     disabled?: boolean;
-    required?: boolean;
     apiEndpoint?: string;
 }
 
@@ -53,7 +52,6 @@ const SearchableSelect = ({
     error,
     loading = false,
     disabled = false,
-    required = false,
     apiEndpoint,
 }: SearchableSelectProps) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -391,7 +389,7 @@ export default function Edit({
         },
     ];
 
-    const { data, setData, post, put, processing, errors } = useForm<{
+    const { data, setData, processing, errors } = useForm<{
         file_number: string;
         full_name: string;
         national_id: string;
@@ -467,12 +465,12 @@ export default function Edit({
         agent_passport_number: martyr.agent_passport_number,
     });
 
-    const [currentMilitaryRanks, setCurrentMilitaryRanks] =
+    const [currentMilitaryRanks] =
         useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             militaryRanks,
         );
 
-    const [currentBanks, setCurrentBanks] =
+    const [currentBanks] =
         useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             banks,
         );
@@ -482,19 +480,17 @@ export default function Edit({
     >([]);
     const [loadingBranches, setLoadingBranches] = useState(false);
 
-    const [employersState, setEmployersState] =
+    const [employersState] =
         useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             employers,
         );
-    const [loadingEmployers, setLoadingEmployers] = useState(false);
-    const [employerLocationsState, setEmployerLocationsState] =
-        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+    const [loadingEmployers] = useState(false);
+    const [employerLocationsState] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             employerLocations,
         );
     const [loadingEmployerLocations, setLoadingEmployerLocations] =
         useState(false);
-    const [previousEmployerLocationsState, setPreviousEmployerLocationsState] =
-        useState<{ id: number; name_ar: string; name_en: string | null }[]>(
+    const [previousEmployerLocationsState] = useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             employerLocations,
         );
     const [
@@ -510,40 +506,26 @@ export default function Edit({
             null,
     );
 
-    const [currentEmploymentStatuses, setCurrentEmploymentStatuses] =
+    const [currentEmploymentStatuses] =
         useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             employmentStatuses,
         );
 
-    const [currentParentsStatuses, setCurrentParentsStatuses] =
+    const [currentParentsStatuses] =
         useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             parentsStatuses,
         );
 
-    const [currentMaritalStatuses, setCurrentMaritalStatuses] =
+    const [currentMaritalStatuses] =
         useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             maritalStatuses,
         );
 
-    const jobGradeOptions = {
-        أولى: 'أولى',
-        ثانية: 'ثانية',
-        ثالثة: 'ثالثة',
-        رابعة: 'رابعة',
-        خامسة: 'خامسة',
-        سادسة: 'سادسة',
-        سابعة: 'سابعة',
-        ثامنة: 'ثامنة',
-        تاسعة: 'تاسعة',
-        عاشرة: 'عاشرة',
-    };
-
-    const [loadingParentsStatuses, setLoadingParentsStatuses] = useState(false);
-    const [loadingMaritalStatuses, setLoadingMaritalStatuses] = useState(false);
-    const [loadingEmploymentStatuses, setLoadingEmploymentStatuses] =
-        useState(false);
-    const [loadingRanks, setLoadingRanks] = useState(false);
-    const [loadingBanks, setLoadingBanks] = useState(false);
+    const [loadingParentsStatuses] = useState(false);
+    const [loadingMaritalStatuses] = useState(false);
+    const [loadingEmploymentStatuses] = useState(false);
+    const [loadingRanks] = useState(false);
+    const [loadingBanks] = useState(false);
 
     // image preview: show existing saved image or newly selected file preview
     const [previewUrl, setPreviewUrl] = useState<string | null>(

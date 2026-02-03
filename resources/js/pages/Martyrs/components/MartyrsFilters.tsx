@@ -48,7 +48,6 @@ export function MartyrsFilters({
     setIsFiltersOpen,
     localFilters,
     handleFilterChange,
-    handleSearchChange,
     clearFilters,
     filteredBranches,
     militaryRanks,

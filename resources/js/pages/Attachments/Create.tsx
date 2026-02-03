@@ -92,7 +92,7 @@ export default function Create({ martyr, attachmentTypes }: Props) {
                     console.error('API error:', res.status);
                     // Fallback to filtered props
                     const filtered = Object.fromEntries(
-                        Object.entries(attachmentTypes).filter(([_, label]) =>
+                        Object.entries(attachmentTypes).filter(([, label]) =>
                             label.toLowerCase().includes(q.toLowerCase()),
                         ),
                     );
@@ -107,7 +107,7 @@ export default function Create({ martyr, attachmentTypes }: Props) {
                 console.error('Fetch error:', err);
                 // Fallback to filtered props
                 const filtered = Object.fromEntries(
-                    Object.entries(attachmentTypes).filter(([_, label]) =>
+                    Object.entries(attachmentTypes).filter(([, label]) =>
                         label.toLowerCase().includes(q.toLowerCase()),
                     ),
                 );

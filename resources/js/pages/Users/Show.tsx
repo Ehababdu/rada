@@ -16,8 +16,8 @@ import { Separator } from '@/components/ui/separator';
 import { usePermissions } from '@/hooks/use-permissions';
 import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, type SharedData, type User } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { type BreadcrumbItem, type User } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     ArrowLeft,
     Calendar,

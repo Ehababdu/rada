@@ -388,7 +388,7 @@ export default function Index({ jobGrades, filters }: Props) {
                         <DataTable
                             columns={columns}
                             data={jobGrades.data}
-                            // @ts-ignore - نستخدم هذا في حال كان تعريف النوع في DataTable لا يتوقع pagination كـ Prop
+                            // @ts-expect-error - نستخدم هذا في حال كان تعريف النوع في DataTable لا يتوقع pagination كـ Prop
                             pagination={{
                                 currentPage: jobGrades.current_page,
                                 lastPage: jobGrades.last_page,
