@@ -9,9 +9,47 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CalendarIcon, EyeIcon, TrashIcon, UserIcon, FileTextIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
 
-export default function Index({ activities, filters }) {
-    const getEventColor = (event) => {
+interface Activity {
+    id: number;
+    event: string;
+    description: string;
+    subject_type: string;
+    causer_name?: string;
+    created_at: string;
+}
+
+interface Filters {
+    search?: string;
+    model?: string;
+    user?: string;
+    date_from?: string;
+    date_to?: string;
+}
+
+interface Props {
+    activities: {
+        data: Activity[];
+        total: number;
+        from: number;
+        to: number;
+        last_page: number;
+        links: Array<{
+            url?: string;
+            label: string;
+            active: boolean;
+        }>;
+    };
+    filters: Filters;
+}
+
+export default function Index({ activities, filters }: Props) {
+    const { t } = useTranslation();
+
+    const getEventColor = (event: string) => {
         switch (event) {
             case 'created': return 'bg-green-100 text-green-800';
             case 'updated': return 'bg-blue-100 text-blue-800';
@@ -20,7 +58,7 @@ export default function Index({ activities, filters }) {
         }
     };
 
-    const getModelIcon = (model) => {
+    const getModelIcon = (model: string) => {
         switch (model) {
             case 'User': return <UserIcon className="h-4 w-4" />;
             case 'Martyr': return <FileTextIcon className="h-4 w-4" />;
@@ -28,11 +66,15 @@ export default function Index({ activities, filters }) {
         }
     };
 
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: t('activity_log.title', 'سجل الأنشطة'), href: '/activity-log' },
+    ];
+
     return (
-        <>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="سجل الأنشطة" />
 
-            <div className="container mx-auto py-6">
+            <div className="flex flex-col gap-6 mx-auto py-6">
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <h1 className="text-3xl font-bold">سجل الأنشطة</h1>
@@ -54,7 +96,7 @@ export default function Index({ activities, filters }) {
                                     placeholder="البحث في الوصف..."
                                     value={filters.search || ''}
                                     onChange={(e) => {
-                                        const url = new URL(window.location);
+                                        const url = new URL(window.location.href);
                                         url.searchParams.set('search', e.target.value);
                                         window.location.href = url.toString();
                                     }}
@@ -64,7 +106,7 @@ export default function Index({ activities, filters }) {
                                 <Select
                                     value={filters.model || 'all'}
                                     onValueChange={(value) => {
-                                        const url = new URL(window.location);
+                                        const url = new URL(window.location.href);
                                         if (value && value !== 'all') {
                                             url.searchParams.set('model', value);
                                         } else {
@@ -91,7 +133,7 @@ export default function Index({ activities, filters }) {
                                     placeholder="المستخدم..."
                                     value={filters.user || ''}
                                     onChange={(e) => {
-                                        const url = new URL(window.location);
+                                        const url = new URL(window.location.href);
                                         url.searchParams.set('user', e.target.value);
                                         window.location.href = url.toString();
                                     }}
@@ -102,7 +144,7 @@ export default function Index({ activities, filters }) {
                                     type="date"
                                     value={filters.date_from || ''}
                                     onChange={(e) => {
-                                        const url = new URL(window.location);
+                                        const url = new URL(window.location.href);
                                         url.searchParams.set('date_from', e.target.value);
                                         window.location.href = url.toString();
                                     }}
@@ -113,7 +155,7 @@ export default function Index({ activities, filters }) {
                                     type="date"
                                     value={filters.date_to || ''}
                                     onChange={(e) => {
-                                        const url = new URL(window.location);
+                                        const url = new URL(window.location.href);
                                         url.searchParams.set('date_to', e.target.value);
                                         window.location.href = url.toString();
                                     }}
@@ -141,7 +183,7 @@ export default function Index({ activities, filters }) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {activities.data.map((activity) => (
+                                {activities.data.map((activity: Activity) => (
                                     <TableRow key={activity.id}>
                                         <TableCell>
                                             <Badge className={getEventColor(activity.event)}>
@@ -197,7 +239,7 @@ export default function Index({ activities, filters }) {
                                     عرض {activities.from} إلى {activities.to} من أصل {activities.total} نتيجة
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    {activities.links.map((link, index) => (
+                                    {activities.links.map((link: { url?: string; label: string; active: boolean }, index: number) => (
                                         <Button
                                             key={index}
                                             variant={link.active ? "default" : "outline"}
@@ -220,6 +262,6 @@ export default function Index({ activities, filters }) {
                     </CardContent>
                 </Card>
             </div>
-        </>
+        </AppLayout>
     );
 }

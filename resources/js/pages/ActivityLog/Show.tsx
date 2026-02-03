@@ -5,9 +5,38 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ArrowLeftIcon, CalendarIcon, UserIcon, FileTextIcon, DatabaseIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
 
-export default function Show({ activity }) {
-    const getEventColor = (event) => {
+interface Activity {
+    id: number;
+    event: string;
+    description: string;
+    subject_type: string;
+    subject_id: number;
+    causer_name?: string;
+    causer_email?: string;
+    created_at: string;
+    changes?: {
+        old?: Record<string, any>;
+        new?: Record<string, any>;
+    };
+    properties?: Record<string, any>;
+}
+
+interface Props {
+    activity: Activity;
+}
+
+export default function Show({ activity }: Props) {
+    const { t } = useTranslation();
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: t('activity_log.title', 'سجل الأنشطة'), href: '/activity-log' },
+        { title: `نشاط #${activity.id}`, href: `/activity-log/${activity.id}` },
+    ];
+    const getEventColor = (event: string) => {
         switch (event) {
             case 'created': return 'bg-green-100 text-green-800';
             case 'updated': return 'bg-blue-100 text-blue-800';
@@ -16,7 +45,7 @@ export default function Show({ activity }) {
         }
     };
 
-    const getEventLabel = (event) => {
+    const getEventLabel = (event: string) => {
         switch (event) {
             case 'created': return 'تم الإنشاء';
             case 'updated': return 'تم التحديث';
@@ -25,7 +54,7 @@ export default function Show({ activity }) {
         }
     };
 
-    const renderChanges = (changes) => {
+    const renderChanges = (changes: { old?: Record<string, any>; new?: Record<string, any> } | undefined) => {
         if (!changes || (!changes.old && !changes.new)) {
             return <span className="text-muted-foreground">لا توجد تغييرات</span>;
         }
@@ -53,7 +82,7 @@ export default function Show({ activity }) {
     };
 
     return (
-        <>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`تفاصيل النشاط #${activity.id}`} />
 
             <div className="container mx-auto py-6">
@@ -197,6 +226,6 @@ export default function Show({ activity }) {
                     </div>
                 </div>
             </div>
-        </>
+        </AppLayout>
     );
 }

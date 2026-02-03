@@ -15,6 +15,7 @@ import {
 import { isUserSuperAdmin } from '@/lib/permissions';
 import { dashboard } from '@/routes';
 import { index as activityLogIndex } from '@/routes/activity-log';
+import { index as alertsIndex } from '@/routes/alerts';
 import { index as attachmentTypesIndex } from '@/routes/attachment-types';
 import { index as banksIndex } from '@/routes/banks';
 import { index as compensationsIndex } from '@/routes/compensations';
@@ -31,6 +32,7 @@ import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
     Award,
+    Bell,
     Briefcase,
     Building,
     Building2,
@@ -141,6 +143,12 @@ export const AppSidebar = memo(function AppSidebar() {
                     href: activityLogIndex.definition?.url ?? activityLogIndex(),
                     icon: History,
                     resource: 'activity-log',
+                },
+                {
+                    title: t('navigation.alerts', 'التنبيهات'),
+                    href: alertsIndex.definition?.url ?? alertsIndex(),
+                    icon: Bell,
+                    resource: 'alerts',
                 },
                 {
                     title: t('navigation.attachment_types') || 'أنواع المرفقات',
