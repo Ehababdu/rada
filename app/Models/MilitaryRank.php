@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class MilitaryRank extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name_ar',
         'name_en',

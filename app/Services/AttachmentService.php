@@ -6,7 +6,6 @@ use App\Models\Attachment;
 use App\Models\Martyr;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Storage;
 
 class AttachmentService
 {
@@ -35,7 +34,7 @@ class AttachmentService
                 $sortedResults->count(),
                 $perPage,
                 $request->page ?? 1,
-                ['path' => $request->url(), 'pageName' => 'page']
+                ['path' => $request->url(), 'pageName' => 'page'],
             );
         } else {
             // Use regular query for listing
@@ -62,7 +61,7 @@ class AttachmentService
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            
+
             try {
                 $attachment->addMediaFromRequest('file')
                     ->usingName($file->getClientOriginalName())

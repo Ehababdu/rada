@@ -30,7 +30,7 @@ class SecurityHeadersMiddleware
         $csp = implode('; ', array_map(
             fn ($key, $value) => "$key $value",
             array_keys($cspDirectives),
-            $cspDirectives
+            $cspDirectives,
         ));
 
         $response->headers->set('Content-Security-Policy', $csp);

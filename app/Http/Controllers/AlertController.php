@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Alert;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class AlertController extends Controller
@@ -64,7 +64,7 @@ class AlertController extends Controller
         }
 
         // Mark as read if not already read
-        if (!$alert->isRead()) {
+        if (! $alert->isRead()) {
             $alert->markAsRead();
         }
 

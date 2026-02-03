@@ -4,9 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
-use Inertia\Testing\AssertableInertia as Assert;
 
 class SidebarPermissionTest extends TestCase
 {
@@ -33,8 +33,9 @@ class SidebarPermissionTest extends TestCase
             $props = $data['page']['props'] ?? [];
 
             // Simple manual check
-            if (!empty($props['navAccess']['martyrs'])) {
+            if (! empty($props['navAccess']['martyrs'])) {
                 $this->assertTrue(true);
+
                 return;
             }
         }
@@ -42,13 +43,13 @@ class SidebarPermissionTest extends TestCase
         // Fallback to Inertia assertion if above didn't return
         $response->assertStatus(200);
         $response->assertInertia(
-            fn(Assert $page) => $page
+            fn (Assert $page) => $page
                 ->has(
                     'navAccess',
-                    fn(Assert $json) => $json
+                    fn (Assert $json) => $json
                         ->where('martyrs', true)
-                        ->etc()
-                )
+                        ->etc(),
+                ),
         );
     }
 }

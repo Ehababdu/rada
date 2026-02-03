@@ -219,7 +219,8 @@ class MartyrTest extends TestCase
     public function test_user_can_delete_martyr()
     {
         // Create a user first for foreign key constraints
-        $user = $this->createUser();        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'martyrs.delete']);
+        $user = $this->createUser();
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'martyrs.delete']);
         $user->givePermissionTo('martyrs.delete');
         $this->seed([
             \Database\Seeders\EmploymentStatusSeeder::class,

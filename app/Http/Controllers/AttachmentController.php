@@ -47,7 +47,7 @@ class AttachmentController extends Controller
                     'id' => (int) $typeId,
                     'attachment_type' => [
                         'id' => (int) $typeId,
-                        'label' => $typeLabel
+                        'label' => $typeLabel,
                     ],
                     'file_path' => null,
                     'original_filename' => null,
@@ -67,12 +67,13 @@ class AttachmentController extends Controller
             'notUploaded' => $notUploadedTypes,
             'uploadedCount' => $uploadedCount,
             'notUploadedCount' => count($notUploadedTypes),
-            'total' => count($attachmentTypes)
+            'total' => count($attachmentTypes),
         ];
 
         // Add attachment_type_label to each attachment
         $attachments->getCollection()->transform(function ($attachment) use ($attachmentTypes) {
             $attachment->attachment_type_label = $attachmentTypes[$attachment->attachment_type] ?? $attachment->attachment_type;
+
             return $attachment;
         });
 

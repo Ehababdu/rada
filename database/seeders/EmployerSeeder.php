@@ -3,8 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Employer;
-use App\Models\EmployerLocation;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class EmployerSeeder extends Seeder
@@ -17,7 +15,7 @@ class EmployerSeeder extends Seeder
         // الحصول على المستخدم الأول ليكون created_by
         $user = \App\Models\User::first();
 
-        if (!$user) {
+        if (! $user) {
             // إنشاء مستخدم افتراضي إذا لم يكن هناك أي مستخدم
             $user = \App\Models\User::create([
                 'name' => 'System Admin',
@@ -104,13 +102,14 @@ class EmployerSeeder extends Seeder
         // إضافة created_by لجميع الجهات
         $employers = array_map(function ($employer) use ($user) {
             $employer['created_by'] = $user->id;
+
             return $employer;
         }, $employers);
 
         foreach ($employers as $employer) {
             Employer::updateOrCreate(
                 ['name_ar' => $employer['name_ar']],
-                $employer
+                $employer,
             );
         }
     }

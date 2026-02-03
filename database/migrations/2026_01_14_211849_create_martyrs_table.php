@@ -17,14 +17,14 @@ return new class extends Migration
             $table->string('full_name');
             $table->string('national_id')->unique();
             $table->text('address');
-                // Create foreign id columns without constraints to avoid ordering FK errors during migrate:fresh
-                $table->foreignId('parents_status_id')->nullable();
-                $table->foreignId('marital_status_id')->nullable();
+            // Create foreign id columns without constraints to avoid ordering FK errors during migrate:fresh
+            $table->foreignId('parents_status_id')->nullable();
+            $table->foreignId('marital_status_id')->nullable();
             $table->integer('children_count')->nullable();
             $table->enum('wife_status', ['ارملة', 'متزوجة'])->nullable();
             $table->foreignId('employment_status_id')->nullable();
             // Job grade as FK (consolidated - final schema)
-                $table->foreignId('job_grade_id')->nullable();
+            $table->foreignId('job_grade_id')->nullable();
             // `workplace` and `previous_workplace` removed — use employer/employer_location relations
             $table->string('military_number')->nullable();
             $table->foreignId('military_rank_id')->nullable();
@@ -44,11 +44,11 @@ return new class extends Migration
             $table->enum('status', ['complete', 'incomplete'])->default('incomplete');
 
             // Employer and previous employer fields (consolidated)
-                $table->foreignId('employer_id')->nullable();
-                $table->foreignId('employer_location_id')->nullable();
+            $table->foreignId('employer_id')->nullable();
+            $table->foreignId('employer_location_id')->nullable();
             $table->boolean('has_previous_workplace')->default(false);
-                $table->foreignId('previous_employer_id')->nullable();
-                $table->foreignId('previous_employer_location_id')->nullable();
+            $table->foreignId('previous_employer_id')->nullable();
+            $table->foreignId('previous_employer_location_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

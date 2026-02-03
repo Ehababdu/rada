@@ -4,11 +4,11 @@ namespace App\Console\Commands;
 
 use App\Models\SystemPage;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Route;
 
 class SyncSystemPages extends Command
 {
     protected $signature = 'app:sync-system-pages';
+
     protected $description = 'Sync system pages to Meilisearch index';
 
     public function handle()
@@ -35,7 +35,7 @@ class SyncSystemPages extends Command
         foreach ($pages as $pageData) {
             SystemPage::updateOrCreate(
                 ['id' => $pageData['id']],
-                $pageData
+                $pageData,
             );
         }
 

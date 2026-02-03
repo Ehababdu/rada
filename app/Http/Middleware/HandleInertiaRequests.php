@@ -65,16 +65,15 @@ class HandleInertiaRequests extends Middleware
             // Special handling for roles: it uses permissions.view permission
             if ($resource === 'roles') {
                 $navAccess[$resource] = $isSuperAdmin || collect($permissionNames)
-                    ->contains(fn(string $permission) => 
-                        $permission === 'permissions.view' || 
-                        $permission === 'permissions.edit' || 
+                    ->contains(fn (string $permission) => $permission === 'permissions.view' ||
+                        $permission === 'permissions.edit' ||
                         $permission === 'permissions.create' ||
-                        $permission === 'roles' || 
-                        Str::startsWith($permission, 'roles.')
+                        $permission === 'roles' ||
+                        Str::startsWith($permission, 'roles.'),
                     );
             } else {
                 $navAccess[$resource] = $isSuperAdmin || collect($permissionNames)
-                    ->contains(fn(string $permission) => $permission === $resource || Str::startsWith($permission, $resource . '.'));
+                    ->contains(fn (string $permission) => $permission === $resource || Str::startsWith($permission, $resource . '.'));
             }
         }
 
@@ -88,12 +87,12 @@ class HandleInertiaRequests extends Middleware
                 'roles' => $roleNames,
             ],
             'navAccess' => $navAccess,
-            'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'flash' => [
-                'success' => fn() => $request->session()->get('success'),
-                'error' => fn() => $request->session()->get('error'),
-                'warning' => fn() => $request->session()->get('warning'),
-                'info' => fn() => $request->session()->get('info'),
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'warning' => fn () => $request->session()->get('warning'),
+                'info' => fn () => $request->session()->get('info'),
             ],
             'csp_nonce' => $request->attributes->get('csp_nonce'),
         ];

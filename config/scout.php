@@ -155,7 +155,7 @@ return [
                     'branch_id',
                     'employer_id',
                     'job_grade_id',
-                    'status'
+                    'status',
                 ],
                 'sortableAttributes' => [
                     'full_name',
@@ -165,7 +165,7 @@ return [
                     'national_id',
                     'military_number',
                     'decision_number',
-                    'children_count'
+                    'children_count',
                 ],
             ],
         ],

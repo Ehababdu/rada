@@ -15,7 +15,7 @@ it('user can view employment statuses list', function () {
     $response->assertStatus(200)
         ->assertInertia(fn ($page) => $page
             ->component('EmploymentStatuses/Index')
-            ->has('employmentStatuses.data', 3)
+            ->has('employmentStatuses.data', 3),
         );
 });
 
@@ -40,7 +40,7 @@ it('user can view employment status', function () {
     $response->assertStatus(200)
         ->assertInertia(fn ($page) => $page
             ->component('EmploymentStatuses/Show')
-            ->has('employmentStatus')
+            ->has('employmentStatus'),
         );
 });
 
@@ -79,7 +79,7 @@ it('user can view create employment status form', function () {
 
     $response->assertStatus(200)
         ->assertInertia(fn ($page) => $page
-            ->component('EmploymentStatuses/Create')
+            ->component('EmploymentStatuses/Create'),
         );
 });
 
@@ -92,6 +92,6 @@ it('user can view edit employment status form', function () {
     $response->assertStatus(200)
         ->assertInertia(fn ($page) => $page
             ->component('EmploymentStatuses/Edit')
-            ->has('employmentStatus')
+            ->has('employmentStatus'),
         );
 });

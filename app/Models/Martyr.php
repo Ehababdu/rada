@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Martyr extends Model
 {
-    use HasFactory, Searchable, SoftDeletes, LogsActivity;
+    use HasFactory, LogsActivity, Searchable, SoftDeletes;
 
     protected static function bootScout()
     {
@@ -233,10 +233,12 @@ class Martyr extends Model
 
     /**
      * Get the indexable data array for the model.
-     */    public function shouldBeSearchable()
+     */
+    public function shouldBeSearchable()
     {
         return true;
     }
+
     public function toSearchableArray(): array
     {
         return [
@@ -284,7 +286,7 @@ class Martyr extends Model
                 'branch_id',
                 'status',
                 'wife_status',
-                'children_count'
+                'children_count',
             ])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();

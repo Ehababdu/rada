@@ -15,15 +15,15 @@ class RoleController extends Controller
 {
     public function index(Request $request): Response
     {
-        if (!auth()->user()->can('permissions.view')) {
+        if (! auth()->user()->can('permissions.view')) {
             abort(403, 'Unauthorized');
         }
 
         $roles = Role::with('permissions')
             ->withCount('users')
             ->when($request->search, function ($query) use ($request) {
-                $query->where('name', 'like', '%'.$request->search.'%')
-                    ->orWhere('display_name', 'like', '%'.$request->search.'%');
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('display_name', 'like', '%' . $request->search . '%');
             })
             ->orderBy('name')
             ->paginate(15);
@@ -36,7 +36,7 @@ class RoleController extends Controller
 
     public function create(): Response
     {
-        if (!auth()->user()->can('permissions.create')) {
+        if (! auth()->user()->can('permissions.create')) {
             abort(403, 'Unauthorized');
         }
 
@@ -49,7 +49,7 @@ class RoleController extends Controller
 
     public function store(StoreRoleRequest $request): RedirectResponse
     {
-        if (!auth()->user()->can('permissions.create')) {
+        if (! auth()->user()->can('permissions.create')) {
             abort(403, 'Unauthorized');
         }
 
@@ -72,7 +72,7 @@ class RoleController extends Controller
 
     public function show(Role $role): Response
     {
-        if (!auth()->user()->can('permissions.view')) {
+        if (! auth()->user()->can('permissions.view')) {
             abort(403, 'Unauthorized');
         }
 
@@ -85,7 +85,7 @@ class RoleController extends Controller
 
     public function edit(Role $role): Response
     {
-        if (!auth()->user()->can('permissions.edit')) {
+        if (! auth()->user()->can('permissions.edit')) {
             abort(403, 'Unauthorized');
         }
 
@@ -99,7 +99,7 @@ class RoleController extends Controller
 
     public function update(UpdateRoleRequest $request, Role $role): RedirectResponse
     {
-        if (!auth()->user()->can('permissions.edit')) {
+        if (! auth()->user()->can('permissions.edit')) {
             abort(403, 'Unauthorized');
         }
 
@@ -121,7 +121,7 @@ class RoleController extends Controller
 
     public function destroy(Role $role): RedirectResponse
     {
-        if (!auth()->user()->can('permissions.delete')) {
+        if (! auth()->user()->can('permissions.delete')) {
             abort(403, 'Unauthorized');
         }
 

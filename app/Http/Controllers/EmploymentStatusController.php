@@ -19,7 +19,7 @@ class EmploymentStatusController extends Controller
         $query = EmploymentStatus::query();
 
         if ($request->has('search') && $request->search) {
-            $query->where('name', 'like', '%'.$request->search.'%');
+            $query->where('name', 'like', '%' . $request->search . '%');
         }
 
         $employmentStatuses = $query
@@ -100,7 +100,7 @@ class EmploymentStatusController extends Controller
         $employmentStatus = EmploymentStatus::findOrFail($employmentStatusId);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:employment_statuses,name,'.$employmentStatus->id.',id',
+            'name' => 'required|string|max:255|unique:employment_statuses,name,' . $employmentStatus->id . ',id',
         ]);
 
         $employmentStatus->update($validated);

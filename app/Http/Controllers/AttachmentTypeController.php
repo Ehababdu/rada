@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\AttachmentType;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class AttachmentTypeController extends Controller
@@ -14,7 +13,7 @@ class AttachmentTypeController extends Controller
      */
     public function index()
     {
-        if (!auth()->user()->can('attachment-types.view')) {
+        if (! auth()->user()->can('attachment-types.view')) {
             abort(403, 'Unauthorized');
         }
 
@@ -30,7 +29,7 @@ class AttachmentTypeController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->can('attachment-types.create')) {
+        if (! auth()->user()->can('attachment-types.create')) {
             abort(403, 'Unauthorized');
         }
 
@@ -42,7 +41,7 @@ class AttachmentTypeController extends Controller
      */
     public function store(Request $request)
     {
-        if (!auth()->user()->can('attachment-types.create')) {
+        if (! auth()->user()->can('attachment-types.create')) {
             abort(403, 'Unauthorized');
         }
 
@@ -61,7 +60,7 @@ class AttachmentTypeController extends Controller
      */
     public function show(AttachmentType $attachmentType)
     {
-        if (!auth()->user()->can('attachment-types.view')) {
+        if (! auth()->user()->can('attachment-types.view')) {
             abort(403, 'Unauthorized');
         }
 
@@ -75,7 +74,7 @@ class AttachmentTypeController extends Controller
      */
     public function edit(AttachmentType $attachmentType)
     {
-        if (!auth()->user()->can('attachment-types.edit')) {
+        if (! auth()->user()->can('attachment-types.edit')) {
             abort(403, 'Unauthorized');
         }
 
@@ -89,7 +88,7 @@ class AttachmentTypeController extends Controller
      */
     public function update(Request $request, AttachmentType $attachmentType)
     {
-        if (!auth()->user()->can('attachment-types.edit')) {
+        if (! auth()->user()->can('attachment-types.edit')) {
             abort(403, 'Unauthorized');
         }
 
@@ -108,7 +107,7 @@ class AttachmentTypeController extends Controller
      */
     public function destroy(AttachmentType $attachmentType)
     {
-        if (!auth()->user()->can('attachment-types.delete')) {
+        if (! auth()->user()->can('attachment-types.delete')) {
             abort(403, 'Unauthorized');
         }
 

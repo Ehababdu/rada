@@ -33,7 +33,7 @@ class MartyrService
             }
             // If it's a number, search in all numeric fields
             elseif (is_numeric($searchTerm)) {
-                $query->where(function($q) use ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
                     // Search by military number - supports partial matching
                     $q->orWhere('military_number', 'LIKE', '%' . $searchTerm . '%');
                     // Search by national ID - supports partial matching
@@ -47,14 +47,14 @@ class MartyrService
                 // Split search term into words for partial name matching
                 $searchWords = array_filter(explode(' ', $searchTerm));
 
-                if (!empty($searchWords)) {
+                if (! empty($searchWords)) {
                     // For multiple words, find records that contain ALL words (AND logic)
-                    $validWords = array_filter($searchWords, function($word) {
+                    $validWords = array_filter($searchWords, function ($word) {
                         return mb_strlen($word) >= 2; // Only words with at least 2 characters
                     });
 
-                    if (!empty($validWords)) {
-                        $query->where(function($q) use ($validWords) {
+                    if (! empty($validWords)) {
+                        $query->where(function ($q) use ($validWords) {
                             foreach ($validWords as $word) {
                                 // Search for each word in the full_name field using LIKE
                                 $q->where('full_name', 'LIKE', '%' . $word . '%');
@@ -160,7 +160,7 @@ class MartyrService
             'employer:id,name_ar,name_en',
             'employerLocation:id,name_ar,name_en',
             'previousEmployer:id,name_ar,name_en',
-            'previousEmployerLocation:id,name_ar,name_en'
+            'previousEmployerLocation:id,name_ar,name_en',
         ]);
 
         return $paginator;
@@ -240,14 +240,14 @@ class MartyrService
             $searchQuery = Martyr::query();
 
             // Apply search if provided
-            if (!empty($searchWords)) {
+            if (! empty($searchWords)) {
                 // For multiple words, find records that contain ALL words (AND logic)
-                $validWords = array_filter($searchWords, function($word) {
+                $validWords = array_filter($searchWords, function ($word) {
                     return mb_strlen($word) >= 2; // Only words with at least 2 characters
                 });
 
-                if (!empty($validWords)) {
-                    $searchQuery->where(function($q) use ($validWords) {
+                if (! empty($validWords)) {
+                    $searchQuery->where(function ($q) use ($validWords) {
                         foreach ($validWords as $word) {
                             // Search for each word in the full_name field using LIKE
                             $q->where('full_name', 'LIKE', '%' . $word . '%');
@@ -294,9 +294,9 @@ class MartyrService
 
         return Martyr::where(function ($q) use ($searchTerm) {
             $q->where('full_name', 'LIKE', $searchTerm)
-              ->orWhere('national_id', 'LIKE', $searchTerm)
-              ->orWhere('military_number', 'LIKE', $searchTerm)
-              ->orWhere('decision_number', 'LIKE', $searchTerm);
+                ->orWhere('national_id', 'LIKE', $searchTerm)
+                ->orWhere('military_number', 'LIKE', $searchTerm)
+                ->orWhere('decision_number', 'LIKE', $searchTerm);
         })->take($limit)->get()->map(function ($martyr) {
             return [
                 'id' => $martyr->id,

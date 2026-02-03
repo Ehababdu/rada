@@ -13,7 +13,7 @@ test('update method updates compensation', function () {
     $martyr = Martyr::factory()->create();
     $compensation = Compensation::factory()->forMartyr($martyr)->create();
 
-    $request = Request::create('/compensations/'.$compensation->id, 'PUT', [
+    $request = Request::create('/compensations/' . $compensation->id, 'PUT', [
         'martyr_id' => $martyr->id,
         'recipient_name' => 'Jane Doe',
         'recipient_passport_number' => 'B987654321',
@@ -36,7 +36,7 @@ test('destroy method deletes compensation', function () {
     $martyr = Martyr::factory()->create();
     $compensation = Compensation::factory()->forMartyr($martyr)->create();
 
-    $request = Request::create('/compensations/'.$compensation->id, 'DELETE');
+    $request = Request::create('/compensations/' . $compensation->id, 'DELETE');
 
     $response = $controller->destroy($compensation);
 

@@ -13,7 +13,7 @@ Alert::create([
     'title' => 'Real-time Test Alert',
     'message' => 'This alert should appear in real-time via WebSocket',
     'type' => 'success',
-    'read_at' => null
+    'read_at' => null,
 ]);
 
 echo "Real-time alert created successfully!\n";

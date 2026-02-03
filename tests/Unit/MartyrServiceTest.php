@@ -6,8 +6,6 @@ use App\Models\Martyr;
 use App\Services\MartyrService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class MartyrServiceTest extends TestCase

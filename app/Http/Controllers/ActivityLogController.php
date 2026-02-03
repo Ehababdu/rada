@@ -30,7 +30,7 @@ class ActivityLogController extends Controller
             ->when($user, function ($query) use ($user) {
                 $query->whereHas('causer', function ($q) use ($user) {
                     $q->where('name', 'like', "%{$user}%")
-                      ->orWhere('email', 'like', "%{$user}%");
+                        ->orWhere('email', 'like', "%{$user}%");
                 });
             })
             ->when($date_from, function ($query) use ($date_from) {

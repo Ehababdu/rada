@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Reverb\Protocols\Pusher\Channels\ChannelManager;
 
 class ReverbServiceProvider extends ServiceProvider
 {

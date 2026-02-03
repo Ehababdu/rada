@@ -24,9 +24,9 @@ class AttachmentFactory extends Factory
 
         // Create a fake file
         $file = UploadedFile::fake()->create(
-            $this->faker->word.'.pdf',
+            $this->faker->word . '.pdf',
             $this->faker->numberBetween(100, 10000), // Size in KB
-            'application/pdf'
+            'application/pdf',
         );
 
         return [

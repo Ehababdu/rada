@@ -16,7 +16,9 @@ class ExportMartyrs implements ShouldQueue
     protected $user;
 
     protected $filters;
+
     protected $columns;
+
     protected $ids;
 
     /**
@@ -35,8 +37,8 @@ class ExportMartyrs implements ShouldQueue
      */
     public function handle(): void
     {
-        $fileName = 'martyrs_'.now()->format('Y-m-d_H-i-s').'.xlsx';
-        $path = 'exports/'.$fileName;
+        $fileName = 'martyrs_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        $path = 'exports/' . $fileName;
 
         // Queue the export job using the Excel queue (so that heavy export work happens on the queue worker)
         Excel::queue(new MartyrsExport($this->filters, $this->columns ?? [], $this->ids ?? []), $path, 'public');

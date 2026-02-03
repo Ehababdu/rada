@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__ . '/../vendor/autoload.php';
 $app = require __DIR__ . '/../bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
@@ -7,7 +8,7 @@ $kernel->bootstrap();
 use Illuminate\Support\Facades\Storage;
 
 $dir = storage_path('app/public/exports');
-if (!is_dir($dir)) {
+if (! is_dir($dir)) {
     echo json_encode(['error' => 'no_export_dir']);
     exit;
 }

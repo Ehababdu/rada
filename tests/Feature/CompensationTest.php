@@ -27,7 +27,7 @@ it('user can view compensations list', function () {
     $response->assertStatus(200);
     $response->assertInertia(fn ($page) => $page
         ->component('Compensations/Index')
-        ->has('compensations.data', 1)
+        ->has('compensations.data', 1),
     );
 });
 
@@ -84,7 +84,7 @@ it('user can view compensation details', function () {
     $response->assertStatus(200);
     $response->assertInertia(fn ($page) => $page
         ->component('Compensations/Show')
-        ->has('compensation')
+        ->has('compensation'),
     );
 });
 
@@ -166,6 +166,6 @@ it('only shows married martyrs in compensation creation', function () {
     $response->assertInertia(fn ($page) => $page
         ->component('Compensations/Create')
         ->has('martyrs', 1) // Only married martyr should be included
-        ->where('martyrs.0.id', $marriedMartyr->id)
+        ->where('martyrs.0.id', $marriedMartyr->id),
     );
 });

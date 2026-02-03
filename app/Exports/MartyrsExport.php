@@ -10,7 +10,9 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 class MartyrsExport implements FromQuery, WithHeadings, WithMapping
 {
     protected $filters;
+
     protected $columns;
+
     protected $ids;
 
     public function __construct($filters = [], $columns = [], $ids = [])
@@ -28,13 +30,13 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
         $query = Martyr::with(['parentsStatus', 'maritalStatus', 'employmentStatus', 'militaryRank', 'bank', 'branch']);
 
         // If specific IDs are provided, only export those
-        if (!empty($this->ids)) {
+        if (! empty($this->ids)) {
             $query->whereIn('id', $this->ids);
         } else {
             // Apply filters only if no specific IDs are provided
             if (! empty($this->filters['search'])) {
-                $query->where('full_name', 'like', '%'.$this->filters['search'].'%')
-                    ->orWhere('national_id', 'like', '%'.$this->filters['search'].'%');
+                $query->where('full_name', 'like', '%' . $this->filters['search'] . '%')
+                    ->orWhere('national_id', 'like', '%' . $this->filters['search'] . '%');
             }
 
             // Apply advanced filters if provided
@@ -114,7 +116,7 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
         ];
 
         // If columns requested, include those in order, otherwise return full set in default order
-        if (!empty($this->columns)) {
+        if (! empty($this->columns)) {
             $row = [];
             foreach ($this->columns as $col) {
                 // map potential alias keys
@@ -177,7 +179,7 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
             'updated_at' => 'تاريخ التحديث',
         ];
 
-        if (!empty($this->columns)) {
+        if (! empty($this->columns)) {
             $heads = [];
             foreach ($this->columns as $col) {
                 $key = $col;

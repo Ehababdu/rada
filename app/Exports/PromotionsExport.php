@@ -24,7 +24,7 @@ class PromotionsExport implements FromQuery, WithHeadings, WithMapping
         $query = Promotion::with(['martyr', 'militaryRank', 'promotionRank', 'currentJobGrade', 'promotionJobGrade']);
 
         // Apply tab filter
-        if (!empty($this->filters['tab'])) {
+        if (! empty($this->filters['tab'])) {
             if ($this->filters['tab'] === 'military') {
                 $query->whereNull('current_job_grade_id')->whereNull('promotion_job_grade_id');
             } elseif ($this->filters['tab'] === 'employees') {
@@ -35,15 +35,15 @@ class PromotionsExport implements FromQuery, WithHeadings, WithMapping
         }
 
         // Apply search
-        if (!empty($this->filters['search'])) {
+        if (! empty($this->filters['search'])) {
             $query->whereHas('martyr', function ($q) {
                 $q->where('full_name', 'like', '%' . $this->filters['search'] . '%')
-                  ->orWhere('national_id', 'like', '%' . $this->filters['search'] . '%');
+                    ->orWhere('national_id', 'like', '%' . $this->filters['search'] . '%');
             });
         }
 
         // Apply martyr_id
-        if (!empty($this->filters['martyr_id'])) {
+        if (! empty($this->filters['martyr_id'])) {
             $query->where('martyr_id', $this->filters['martyr_id']);
         }
 

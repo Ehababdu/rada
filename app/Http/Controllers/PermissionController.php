@@ -13,7 +13,7 @@ class PermissionController extends Controller
 {
     public function index(): Response
     {
-        if (!auth()->user()->can('permissions.view')) {
+        if (! auth()->user()->can('permissions.view')) {
             abort(403, 'Unauthorized');
         }
         $permissions = Permission::orderBy('name')->paginate(15);
@@ -26,15 +26,16 @@ class PermissionController extends Controller
 
     public function create(): Response
     {
-        if (!auth()->user()->can('permissions.create')) {
+        if (! auth()->user()->can('permissions.create')) {
             abort(403, 'Unauthorized');
         }
+
         return Inertia::render('Permissions/Create');
     }
 
     public function store(Request $request): RedirectResponse
     {
-        if (!auth()->user()->can('permissions.create')) {
+        if (! auth()->user()->can('permissions.create')) {
             abort(403, 'Unauthorized');
         }
         $validated = $request->validate([
@@ -50,9 +51,10 @@ class PermissionController extends Controller
 
     public function show(Permission $permission): Response
     {
-        if (!auth()->user()->can('permissions.view')) {
+        if (! auth()->user()->can('permissions.view')) {
             abort(403, 'Unauthorized');
         }
+
         return Inertia::render('Permissions/Show', [
             'permission' => $permission,
         ]);
@@ -60,9 +62,10 @@ class PermissionController extends Controller
 
     public function edit(Permission $permission): Response
     {
-        if (!auth()->user()->can('permissions.edit')) {
+        if (! auth()->user()->can('permissions.edit')) {
             abort(403, 'Unauthorized');
         }
+
         return Inertia::render('Permissions/Edit', [
             'permission' => $permission,
         ]);
@@ -70,7 +73,7 @@ class PermissionController extends Controller
 
     public function update(Request $request, Permission $permission): RedirectResponse
     {
-        if (!auth()->user()->can('permissions.edit')) {
+        if (! auth()->user()->can('permissions.edit')) {
             abort(403, 'Unauthorized');
         }
         $validated = $request->validate([
@@ -86,7 +89,7 @@ class PermissionController extends Controller
 
     public function destroy(Permission $permission): RedirectResponse
     {
-        if (!auth()->user()->can('permissions.delete')) {
+        if (! auth()->user()->can('permissions.delete')) {
             abort(403, 'Unauthorized');
         }
         $permission->delete();
@@ -97,7 +100,7 @@ class PermissionController extends Controller
 
     public function apiIndex(Request $request)
     {
-        if (!auth()->user()->can('permissions.view')) {
+        if (! auth()->user()->can('permissions.view')) {
             abort(403, 'Unauthorized');
         }
         $search = $request->get('search', '');

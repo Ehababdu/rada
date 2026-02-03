@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Bank extends Model
 {
-    use Searchable, LogsActivity;
+    use LogsActivity, Searchable;
 
     protected $fillable = [
         'name_ar',

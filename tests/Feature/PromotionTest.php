@@ -1,10 +1,9 @@
 <?php
 
-use App\Models\Martyr;
-use App\Models\Promotion;
-use App\Models\MilitaryRank;
 use App\Models\JobGrade;
-use App\Models\EmploymentStatus;
+use App\Models\Martyr;
+use App\Models\MilitaryRank;
+use App\Models\Promotion;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -36,7 +35,7 @@ it('displays promotions index page', function () {
         ->component('Promotions/Index')
         ->has('promotions.data', 1)
         ->where('promotions.data.0.current_rank_date', '2023-01-15')
-        ->where('promotions.data.0.next_due_date_formatted', '15/01/2026')
+        ->where('promotions.data.0.next_due_date_formatted', '15/01/2026'),
     );
 });
 
@@ -65,7 +64,7 @@ it('formats current_rank_date correctly in the UI', function () {
     $response->assertInertia(fn (Assert $page) => $page
         ->component('Promotions/Index')
         ->has('promotions.data', 1)
-        ->where('promotions.data.0.current_rank_date', '2023-01-15')
+        ->where('promotions.data.0.current_rank_date', '2023-01-15'),
     );
 });
 
@@ -94,7 +93,7 @@ it('displays formatted dates correctly', function () {
     $response->assertInertia(fn (Assert $page) => $page
         ->component('Promotions/Index')
         ->has('promotions.data', 1)
-        ->where('promotions.data.0.next_due_date_formatted', '15/01/2026')
+        ->where('promotions.data.0.next_due_date_formatted', '15/01/2026'),
     );
 });
 
@@ -170,7 +169,7 @@ it('updates promotion status based on due date', function () {
         ->component('Promotions/Index')
         ->has('promotions.data', 2)
         ->where('promotions.data.0.status', 'overdue') // First promotion should be overdue
-        ->where('promotions.data.1.status', 'pending') // Second promotion should still be pending
+        ->where('promotions.data.1.status', 'pending'), // Second promotion should still be pending
     );
 });
 

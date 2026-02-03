@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\User;
-use Spatie\Activitylog\Models\Activity;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Activitylog\Models\Activity;
 
 uses(RefreshDatabase::class);
 
@@ -13,9 +13,9 @@ it('logs user creation', function () {
     ]);
 
     $activities = Activity::where('subject_type', User::class)
-                         ->where('subject_id', $user->id)
-                         ->where('event', 'created')
-                         ->get();
+        ->where('subject_id', $user->id)
+        ->where('event', 'created')
+        ->get();
 
     expect($activities)->toHaveCount(1);
     expect($activities->first()->description)->toBe('created');
@@ -31,9 +31,9 @@ it('logs user update', function () {
     $user->update(['name' => 'Updated Name']);
 
     $activities = Activity::where('subject_type', User::class)
-                         ->where('subject_id', $user->id)
-                         ->where('event', 'updated')
-                         ->get();
+        ->where('subject_id', $user->id)
+        ->where('event', 'updated')
+        ->get();
 
     expect($activities)->toHaveCount(1);
     expect($activities->first()->changes)->toHaveKey('attributes');

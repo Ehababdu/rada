@@ -18,13 +18,13 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        if (!auth()->user()->can('users.view')) {
+        if (! auth()->user()->can('users.view')) {
             abort(403, 'Unauthorized');
         }
         $users = User::with('roles')
             ->when($request->search, function ($query) use ($request) {
-                $query->where('name', 'like', '%'.$request->search.'%')
-                    ->orWhere('email', 'like', '%'.$request->search.'%');
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
             })
             ->when($request->role, function ($query) use ($request) {
                 $query->whereHas('roles', function ($q) use ($request) {
@@ -52,7 +52,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        if (!auth()->user()->can('users.create')) {
+        if (! auth()->user()->can('users.create')) {
             abort(403, 'Unauthorized');
         }
         $roles = Role::all();
@@ -67,7 +67,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        if (!auth()->user()->can('users.create')) {
+        if (! auth()->user()->can('users.create')) {
             abort(403, 'Unauthorized');
         }
         $data = $request->validated();
@@ -91,7 +91,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        if (!auth()->user()->can('users.view')) {
+        if (! auth()->user()->can('users.view')) {
             abort(403, 'Unauthorized');
         }
         $user->load(['roles', 'permissions']);
@@ -106,7 +106,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        if (!auth()->user()->can('users.edit')) {
+        if (! auth()->user()->can('users.edit')) {
             abort(403, 'Unauthorized');
         }
         $user->load('roles');
@@ -123,7 +123,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        if (!auth()->user()->can('users.edit')) {
+        if (! auth()->user()->can('users.edit')) {
             abort(403, 'Unauthorized');
         }
         $data = $request->validated();
@@ -152,7 +152,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if (!auth()->user()->can('users.delete')) {
+        if (! auth()->user()->can('users.delete')) {
             abort(403, 'Unauthorized');
         }
         // Prevent deleting the current authenticated user

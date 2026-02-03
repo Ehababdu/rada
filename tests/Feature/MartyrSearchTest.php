@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Martyr;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
 class MartyrSearchTest extends TestCase

@@ -26,7 +26,7 @@ describe('Martyrs Index Page', function () {
                 ->has('martyrs.data')
                 ->has('filters')
                 ->has('maritalStatuses')
-                ->has('employmentStatuses')
+                ->has('employmentStatuses'),
             );
     });
 
@@ -41,7 +41,7 @@ describe('Martyrs Index Page', function () {
             ->assertStatus(200)
             ->assertInertia(fn ($page) => $page
                 ->component('Martyrs/Index')
-                ->has('martyrs.data')
+                ->has('martyrs.data'),
             );
     });
 
@@ -56,7 +56,7 @@ describe('Martyrs Index Page', function () {
             ->assertInertia(fn ($page) => $page
                 ->component('Martyrs/Index')
                 ->has('martyrs.data', 1)
-                ->where('martyrs.data.0.marital_status_id', $status1->id)
+                ->where('martyrs.data.0.marital_status_id', $status1->id),
             );
     });
 
@@ -71,7 +71,7 @@ describe('Martyrs Index Page', function () {
             ->assertInertia(fn ($page) => $page
                 ->component('Martyrs/Index')
                 ->has('martyrs.data', 1)
-                ->where('martyrs.data.0.employment_status_id', $status1->id)
+                ->where('martyrs.data.0.employment_status_id', $status1->id),
             );
     });
 
@@ -85,7 +85,7 @@ describe('Martyrs Index Page', function () {
                 ->has('martyrs.data', 10)
                 ->where('martyrs.per_page', 10)
                 ->where('martyrs.current_page', 1)
-                ->where('martyrs.last_page', 3)
+                ->where('martyrs.last_page', 3),
             );
     });
 
@@ -99,7 +99,7 @@ describe('Martyrs Index Page', function () {
                 ->component('Martyrs/Index')
                 ->has('martyrs.data', 2)
                 ->where('martyrs.data.0.full_name', 'Alice First')
-                ->where('martyrs.data.1.full_name', 'Zoe Last')
+                ->where('martyrs.data.1.full_name', 'Zoe Last'),
             );
     });
 
@@ -113,7 +113,7 @@ describe('Martyrs Index Page', function () {
                 ->component('Martyrs/Index')
                 ->has('martyrs.data', 2)
                 ->where('martyrs.data.0.full_name', 'Zoe Last')
-                ->where('martyrs.data.1.full_name', 'Alice First')
+                ->where('martyrs.data.1.full_name', 'Alice First'),
             );
     });
 
@@ -129,7 +129,7 @@ describe('Martyrs Index Page', function () {
                 ->where('martyrs.per_page', 5)
                 ->where('martyrs.total', 15)
                 ->where('martyrs.last_page', 3)
-                ->has('martyrs.links')
+                ->has('martyrs.links'),
             );
     });
 
@@ -143,7 +143,7 @@ describe('Martyrs Index Page', function () {
                 ->component('Martyrs/Index')
                 ->has('maritalStatuses', 3)
                 ->has('employmentStatuses', 2)
-                ->has('filters')
+                ->has('filters'),
             );
     });
 
@@ -164,7 +164,7 @@ describe('Martyrs Index Page', function () {
                 ->where('filters.marital_status_id', '1')
                 ->where('filters.employment_status_id', '2')
                 ->where('filters.date_from', '2024-01-01')
-                ->where('filters.date_to', '2024-12-31')
+                ->where('filters.date_to', '2024-12-31'),
             );
     });
 
@@ -173,7 +173,7 @@ describe('Martyrs Index Page', function () {
             ->assertStatus(200)
             ->assertInertia(fn ($page) => $page
                 ->component('Martyrs/Index')
-                ->where('filters.per_page', '25')
+                ->where('filters.per_page', '25'),
             );
     });
 });

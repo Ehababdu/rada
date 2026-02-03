@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Attachment extends Model implements HasMedia
 {
-    use HasFactory, Searchable, InteractsWithMedia, LogsActivity;
+    use HasFactory, InteractsWithMedia, LogsActivity, Searchable;
 
     protected $fillable = [
         'martyr_id',
@@ -31,7 +31,7 @@ class Attachment extends Model implements HasMedia
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        
+
         $this->registerMediaCollections();
     }
 
@@ -77,23 +77,25 @@ class Attachment extends Model implements HasMedia
     public function getFormattedFileSizeAttribute(): string
     {
         $bytes = $this->file_size;
-        if (!$bytes) {
+        if (! $bytes) {
             // Try to get size from media if available
             $media = $this->getFirstMedia('attachments');
             if ($media) {
                 $bytes = $media->size;
             }
         }
-        
-        if (!$bytes) return '0 B';
-        
+
+        if (! $bytes) {
+            return '0 B';
+        }
+
         $units = ['B', 'KB', 'MB', 'GB'];
 
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
             $bytes /= 1024;
         }
 
-        return round($bytes, 2).' '.$units[$i];
+        return round($bytes, 2) . ' ' . $units[$i];
     }
 
     /**
@@ -119,4 +121,3 @@ class Attachment extends Model implements HasMedia
             ->dontSubmitEmptyLogs();
     }
 }
-

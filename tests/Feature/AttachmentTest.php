@@ -7,7 +7,6 @@ use App\Models\Martyr;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AttachmentTest extends TestCase
@@ -47,7 +46,7 @@ class AttachmentTest extends TestCase
             ->component('Attachments/Index')
             ->has('martyr')
             ->has('attachments.data', 3)
-            ->has('attachmentTypes')
+            ->has('attachmentTypes'),
         );
     }
 
@@ -103,7 +102,7 @@ class AttachmentTest extends TestCase
             ->component('Attachments/Show')
             ->has('martyr')
             ->has('attachment')
-            ->where('attachment.id', $attachment->id)
+            ->where('attachment.id', $attachment->id),
         );
     }
 
@@ -213,7 +212,7 @@ class AttachmentTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page
             ->has('attachments.data', 1)
-            ->where('attachments.data.0.attachment_type.id', 1)
+            ->where('attachments.data.0.attachment_type.id', 1),
         );
     }
 
@@ -233,7 +232,7 @@ class AttachmentTest extends TestCase
         $response->assertInertia(fn ($page) => $page
             ->has('attachments.data', 15) // Should show 15 per page
             ->where('attachments.current_page', 1)
-            ->where('attachments.last_page', 2)
+            ->where('attachments.last_page', 2),
         );
     }
 }

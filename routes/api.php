@@ -1,12 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\BankController;
-use App\Http\Controllers\Api\EmploymentStatusController;
 use App\Http\Controllers\Api\EmployerController;
+use App\Http\Controllers\Api\EmploymentStatusController;
 use App\Http\Controllers\Api\MilitaryRankController;
 use App\Http\Controllers\Api\ParentsStatusController;
 use App\Http\Controllers\MartyrController;
-use App\Models\Attachment;
 use Illuminate\Http\Request;
 
 Route::get('/user', function (Request $request) {

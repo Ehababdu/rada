@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\JobGrade;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class JobGradeSeeder extends Seeder

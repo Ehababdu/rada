@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Martyr;
-use App\Models\Promotion;
-use App\Models\MilitaryRank;
 use App\Models\JobGrade;
+use App\Models\Martyr;
+use App\Models\MilitaryRank;
+use App\Models\Promotion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -19,7 +19,7 @@ class PromotionController extends Controller
      */
     public function index(Request $request): Response
     {
-        if (!auth()->user()->can('promotions.view')) {
+        if (! auth()->user()->can('promotions.view')) {
             abort(403, 'Unauthorized');
         }
         // Update promotion statuses
@@ -91,7 +91,7 @@ class PromotionController extends Controller
      */
     public function create(Request $request): Response
     {
-        if (!auth()->user()->can('promotions.create')) {
+        if (! auth()->user()->can('promotions.create')) {
             abort(403, 'Unauthorized');
         }
         $martyrs = Martyr::select('id', 'full_name', 'national_id', 'military_rank_id', 'job_grade_id', 'employment_status_id')
@@ -300,7 +300,7 @@ class PromotionController extends Controller
      */
     public function update(Request $request, Promotion $promotion): RedirectResponse
     {
-        if (!auth()->user()->can('promotions.edit')) {
+        if (! auth()->user()->can('promotions.edit')) {
             abort(403, 'Unauthorized');
         }
         $validated = $request->validate([
@@ -315,7 +315,7 @@ class PromotionController extends Controller
             'description' => 'nullable|string|max:1000',
         ]);
         // Convert job grade names to IDs
-        if (!empty($validated['current_job_grade'])) {
+        if (! empty($validated['current_job_grade'])) {
             $currentJobGrade = \App\Models\JobGrade::where('name_ar', $validated['current_job_grade'])
                 ->orWhere('name_en', $validated['current_job_grade'])
                 ->first();
@@ -324,7 +324,7 @@ class PromotionController extends Controller
             $validated['current_job_grade_id'] = null;
         }
 
-        if (!empty($validated['promotion_job_grade'])) {
+        if (! empty($validated['promotion_job_grade'])) {
             $promotionJobGrade = \App\Models\JobGrade::where('name_ar', $validated['promotion_job_grade'])
                 ->orWhere('name_en', $validated['promotion_job_grade'])
                 ->first();
@@ -348,7 +348,7 @@ class PromotionController extends Controller
     {
         $martyr = $promotion->martyr;
 
-        if (!$martyr) {
+        if (! $martyr) {
             return redirect()->route('promotions.index')
                 ->with('error', 'الشهيد غير موجود');
         }
@@ -386,14 +386,15 @@ class PromotionController extends Controller
 
     public function export(Request $request)
     {
-        if (!auth()->user()->can('promotions.export')) {
+        if (! auth()->user()->can('promotions.export')) {
             abort(403, 'Unauthorized');
         }
         $filters = $request->only(['tab', 'search', 'martyr_id']);
 
         // If client requested a synchronous download (e.g. ?sync=1), return the file directly.
         if ($request->boolean('sync')) {
-            $fileName = 'promotions_'.now()->format('Y-m-d_H-i-s').'.xlsx';
+            $fileName = 'promotions_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
             return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\PromotionsExport($filters), $fileName);
         }
 
@@ -409,12 +410,12 @@ class PromotionController extends Controller
     {
         $dir = storage_path('app/public/exports');
 
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             abort(404, 'No exports directory');
         }
 
         $files = array_values(array_filter(scandir($dir), function ($f) use ($dir) {
-            return is_file($dir.DIRECTORY_SEPARATOR.$f) && str_starts_with($f, 'promotions_');
+            return is_file($dir . DIRECTORY_SEPARATOR . $f) && str_starts_with($f, 'promotions_');
         }));
 
         if (empty($files)) {
@@ -422,12 +423,12 @@ class PromotionController extends Controller
         }
 
         usort($files, function ($a, $b) use ($dir) {
-            return filemtime($dir.DIRECTORY_SEPARATOR.$b) <=> filemtime($dir.DIRECTORY_SEPARATOR.$a);
+            return filemtime($dir . DIRECTORY_SEPARATOR . $b) <=> filemtime($dir . DIRECTORY_SEPARATOR . $a);
         });
 
         $latest = $files[0];
 
-        $publicUrl = url('storage/exports/'.$latest);
+        $publicUrl = url('storage/exports/' . $latest);
 
         return redirect($publicUrl);
     }

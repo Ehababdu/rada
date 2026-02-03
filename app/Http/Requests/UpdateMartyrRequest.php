@@ -56,9 +56,9 @@ class UpdateMartyrRequest extends FormRequest
 
         return [
             // Basic Information (Required)
-            'file_number' => ['required', 'string', 'max:50', 'unique:martyrs,file_number,'.$martyrId],
+            'file_number' => ['required', 'string', 'max:50', 'unique:martyrs,file_number,' . $martyrId],
             'full_name' => ['required', 'string', 'min:3', 'max:255', 'regex:/^[\p{Arabic}\s]+$/u'],
-            'national_id' => ['required', 'string', 'digits:12', 'unique:martyrs,national_id,'.$martyrId],
+            'national_id' => ['required', 'string', 'digits:12', 'unique:martyrs,national_id,' . $martyrId],
             'address' => ['required', 'string', 'min:5', 'max:500'],
             'death_date' => ['required', 'date', 'before_or_equal:today'],
             'has_martyr_decision' => ['boolean'],
@@ -212,14 +212,14 @@ class UpdateMartyrRequest extends FormRequest
                     if ($this->children_count && $this->children_count > 0) {
                         $validator->errors()->add(
                             'children_count',
-                            'عدد الأطفال يجب أن يكون فارغاً للحالة الاجتماعية "أعزب/عزباء". | Children count must be empty for single marital status.'
+                            'عدد الأطفال يجب أن يكون فارغاً للحالة الاجتماعية "أعزب/عزباء". | Children count must be empty for single marital status.',
                         );
                     }
                 } elseif ($maritalStatus && stripos($maritalStatus->name_ar, 'متزوج') !== false) {
-                    if (!$this->wife_status) {
+                    if (! $this->wife_status) {
                         $validator->errors()->add(
                             'wife_status',
-                            'حالة الزوجة مطلوبة للحالة الاجتماعية "متزوج". | Wife status is required for married marital status.'
+                            'حالة الزوجة مطلوبة للحالة الاجتماعية "متزوج". | Wife status is required for married marital status.',
                         );
                     }
                 }
@@ -233,14 +233,14 @@ class UpdateMartyrRequest extends FormRequest
                     if (! $this->military_number) {
                         $validator->errors()->add(
                             'military_number',
-                            'الرقم العسكري مطلوب للحالة الوظيفية العسكرية. | Military number is required for military employment status.'
+                            'الرقم العسكري مطلوب للحالة الوظيفية العسكرية. | Military number is required for military employment status.',
                         );
                     }
 
                     if (! $this->military_rank_id) {
                         $validator->errors()->add(
                             'military_rank_id',
-                            'الرتبة العسكرية مطلوبة للحالة الوظيفية العسكرية. | Military rank is required for military employment status.'
+                            'الرتبة العسكرية مطلوبة للحالة الوظيفية العسكرية. | Military rank is required for military employment status.',
                         );
                     }
                 }
@@ -250,7 +250,7 @@ class UpdateMartyrRequest extends FormRequest
             if ($this->branch_id && ! $this->bank_id) {
                 $validator->errors()->add(
                     'bank_id',
-                    'يجب اختيار البنك عند اختيار الفرع. | Bank must be selected when branch is selected.'
+                    'يجب اختيار البنك عند اختيار الفرع. | Bank must be selected when branch is selected.',
                 );
             }
         });

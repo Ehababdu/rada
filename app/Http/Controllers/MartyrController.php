@@ -20,7 +20,7 @@ class MartyrController extends Controller
 
     public function index(Request $request)
     {
-        if (!auth()->user()->can('martyrs.view')) {
+        if (! auth()->user()->can('martyrs.view')) {
             abort(403, 'Unauthorized');
         }
 
@@ -42,7 +42,7 @@ class MartyrController extends Controller
 
     public function create()
     {
-        if (!auth()->user()->can('martyrs.create')) {
+        if (! auth()->user()->can('martyrs.create')) {
             abort(403, 'Unauthorized');
         }
 
@@ -60,7 +60,7 @@ class MartyrController extends Controller
 
     public function store(StoreMartyrRequest $request)
     {
-        if (!auth()->user()->can('martyrs.create')) {
+        if (! auth()->user()->can('martyrs.create')) {
             abort(403, 'Unauthorized');
         }
         $data = $request->validated();
@@ -74,7 +74,7 @@ class MartyrController extends Controller
 
     public function show(Martyr $martyr)
     {
-        if (!auth()->user()->can('martyrs.view')) {
+        if (! auth()->user()->can('martyrs.view')) {
             abort(403, 'Unauthorized');
         }
 
@@ -87,7 +87,7 @@ class MartyrController extends Controller
 
     public function edit(Martyr $martyr)
     {
-        if (!auth()->user()->can('martyrs.edit')) {
+        if (! auth()->user()->can('martyrs.edit')) {
             abort(403, 'Unauthorized');
         }
         $martyr->load(['militaryRank', 'bank', 'branch', 'employmentStatus', 'parentsStatus', 'maritalStatus', 'jobGrade', 'employer', 'employerLocation', 'previousEmployer', 'previousEmployerLocation']);
@@ -107,7 +107,7 @@ class MartyrController extends Controller
 
     public function update(UpdateMartyrRequest $request, Martyr $martyr)
     {
-        if (!auth()->user()->can('martyrs.edit')) {
+        if (! auth()->user()->can('martyrs.edit')) {
             abort(403, 'Unauthorized');
         }
 
@@ -134,7 +134,7 @@ class MartyrController extends Controller
 
     public function destroy(Martyr $martyr)
     {
-        if (!auth()->user()->can('martyrs.delete')) {
+        if (! auth()->user()->can('martyrs.delete')) {
             abort(403, 'Unauthorized');
         }
 
@@ -147,7 +147,7 @@ class MartyrController extends Controller
 
     public function export(Request $request)
     {
-        if (!auth()->user()->can('martyrs.export')) {
+        if (! auth()->user()->can('martyrs.export')) {
             abort(403, 'Unauthorized');
         }
         $filters = $request->only(['search', 'marital_status_id', 'employment_status_id', 'bank_id', 'branch_id', 'death_date_from', 'death_date_to', 'has_martyr_decision', 'parents_status_id']);
@@ -163,7 +163,8 @@ class MartyrController extends Controller
 
         // If client requested a synchronous download (e.g. ?sync=1), return the file directly.
         if ($request->boolean('sync')) {
-            $fileName = 'martyrs_'.now()->format('Y-m-d_H-i-s').'.xlsx';
+            $fileName = 'martyrs_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
             return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\MartyrsExport($filters, $columns, $ids), $fileName);
         }
 
@@ -179,12 +180,12 @@ class MartyrController extends Controller
     {
         $dir = storage_path('app/public/exports');
 
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             abort(404, 'No exports directory');
         }
 
         $files = array_values(array_filter(scandir($dir), function ($f) use ($dir) {
-            return is_file($dir.DIRECTORY_SEPARATOR.$f);
+            return is_file($dir . DIRECTORY_SEPARATOR . $f);
         }));
 
         if (empty($files)) {
@@ -192,12 +193,12 @@ class MartyrController extends Controller
         }
 
         usort($files, function ($a, $b) use ($dir) {
-            return filemtime($dir.DIRECTORY_SEPARATOR.$b) <=> filemtime($dir.DIRECTORY_SEPARATOR.$a);
+            return filemtime($dir . DIRECTORY_SEPARATOR . $b) <=> filemtime($dir . DIRECTORY_SEPARATOR . $a);
         });
 
         $latest = $files[0];
 
-        $publicUrl = url('storage/exports/'.$latest);
+        $publicUrl = url('storage/exports/' . $latest);
 
         return redirect($publicUrl);
     }
@@ -209,12 +210,12 @@ class MartyrController extends Controller
     {
         $dir = storage_path('app/public/exports');
 
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             return response()->json(['exists' => false]);
         }
 
         $files = array_values(array_filter(scandir($dir), function ($f) use ($dir) {
-            return is_file($dir.DIRECTORY_SEPARATOR.$f);
+            return is_file($dir . DIRECTORY_SEPARATOR . $f);
         }));
 
         if (empty($files)) {
@@ -222,11 +223,11 @@ class MartyrController extends Controller
         }
 
         usort($files, function ($a, $b) use ($dir) {
-            return filemtime($dir.DIRECTORY_SEPARATOR.$b) <=> filemtime($dir.DIRECTORY_SEPARATOR.$a);
+            return filemtime($dir . DIRECTORY_SEPARATOR . $b) <=> filemtime($dir . DIRECTORY_SEPARATOR . $a);
         });
 
         $latest = $files[0];
-        $publicUrl = url('storage/exports/'.$latest);
+        $publicUrl = url('storage/exports/' . $latest);
 
         return response()->json(['exists' => true, 'file' => $latest, 'url' => $publicUrl]);
     }
@@ -244,7 +245,7 @@ class MartyrController extends Controller
 
             return response()->json($results);
         } catch (\Exception $e) {
-            \Log::error('Martyr search failed: '.$e->getMessage());
+            \Log::error('Martyr search failed: ' . $e->getMessage());
 
             return response()->json([], 500);
         }

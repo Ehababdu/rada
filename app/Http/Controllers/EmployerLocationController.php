@@ -135,7 +135,7 @@ class EmployerLocationController extends Controller
             'location_id' => $location ? $location->id : 'null',
         ]);
 
-        if (!$location) {
+        if (! $location) {
             \Log::error('Location not found', [
                 'employer_id' => $employer->id,
                 'route_params' => $request->route()->parameters(),

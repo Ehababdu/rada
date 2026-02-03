@@ -27,14 +27,14 @@ class MartyrFactory extends Factory
         if (! $bank) {
             $user = \App\Models\User::first() ?? \App\Models\User::factory()->create();
             $bank = \App\Models\Bank::create([
-                'name_ar' => 'مصرف '.$this->faker->unique()->word,
+                'name_ar' => 'مصرف ' . $this->faker->unique()->word,
                 'created_by' => $user->id,
             ]);
         }
 
         $branch = \App\Models\Branch::where('bank_id', $bank->id)->inRandomOrder()->first() ?? \App\Models\Branch::create([
             'bank_id' => $bank->id,
-            'name_ar' => 'فرع '.$this->faker->city,
+            'name_ar' => 'فرع ' . $this->faker->city,
         ]);
 
         $militaryRankId = null;

@@ -34,11 +34,11 @@ class AttachmentSeeder extends Seeder
                 $attachmentType = $attachmentTypes[array_rand($attachmentTypes)];
 
                 // Create a fake file in storage
-                $fileName = 'sample_'.$attachmentType.'_'.($i + 1).'.pdf';
-                $filePath = 'attachments/'.$fileName;
+                $fileName = 'sample_' . $attachmentType . '_' . ($i + 1) . '.pdf';
+                $filePath = 'attachments/' . $fileName;
 
                 // Create a dummy file content (in real scenario, you'd have actual files)
-                Storage::disk('public')->put($filePath, 'Sample file content for '.$attachmentType);
+                Storage::disk('public')->put($filePath, 'Sample file content for ' . $attachmentType);
 
                 Attachment::create([
                     'martyr_id' => $martyr->id,
@@ -47,7 +47,7 @@ class AttachmentSeeder extends Seeder
                     'original_filename' => $fileName,
                     'mime_type' => 'application/pdf',
                     'file_size' => rand(10000, 500000), // Random file size
-                    'description' => 'Sample attachment for '.$martyr->full_name,
+                    'description' => 'Sample attachment for ' . $martyr->full_name,
                 ]);
             }
         }

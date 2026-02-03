@@ -31,8 +31,8 @@ class ExportPromotions implements ShouldQueue
      */
     public function handle(): void
     {
-        $fileName = 'promotions_'.now()->format('Y-m-d_H-i-s').'.xlsx';
-        $path = 'exports/'.$fileName;
+        $fileName = 'promotions_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        $path = 'exports/' . $fileName;
 
         // Queue the export job using the Excel queue (so that heavy export work happens on the queue worker)
         Excel::queue(new PromotionsExport($this->filters), $path, 'public');

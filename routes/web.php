@@ -1,18 +1,18 @@
 <?php
 
-use App\Http\Controllers\Api\MaritalStatusesController;
-use App\Http\Controllers\Api\ParentsStatusesController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AlertController;
+use App\Http\Controllers\Api\MaritalStatusesController;
+use App\Http\Controllers\Api\ParentsStatusesController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AttachmentTypeController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CompensationController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\EmploymentStatusController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\EmployerLocationController;
+use App\Http\Controllers\EmploymentStatusController;
 use App\Http\Controllers\JobGradeController;
 use App\Http\Controllers\MartyrController;
 use App\Http\Controllers\MilitaryRankController;
@@ -80,5 +80,5 @@ Route::get('api/parents-statuses', [ParentsStatusesController::class, 'index'])-
 Route::get('api/marital-statuses', [MaritalStatusesController::class, 'index'])->name('api.marital-statuses.index');
 Route::get('api/permissions', [PermissionController::class, 'apiIndex'])->name('api.permissions.index');
 
-require __DIR__.'/auth.php';
-require __DIR__.'/settings.php';
+require __DIR__ . '/auth.php';
+require __DIR__ . '/settings.php';

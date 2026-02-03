@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\Session\Session as SessionContract;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
-use Illuminate\Contracts\Session\Session as SessionContract;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthenticatedSessionController extends Controller

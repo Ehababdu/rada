@@ -68,7 +68,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $admin = Role::firstOrCreate(['name' => 'Admin']);
 
         $adminPermissions = array_filter($permissions, function ($permission) {
-            return !str_contains($permission, 'permissions.') && !str_contains($permission, 'users.delete');
+            return ! str_contains($permission, 'permissions.') && ! str_contains($permission, 'users.delete');
         });
         $admin->syncPermissions($adminPermissions);
 
