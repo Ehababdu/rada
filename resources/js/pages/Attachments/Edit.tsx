@@ -80,6 +80,7 @@ export default function Edit({ martyr, attachment, attachmentTypes }: Props) {
                 const event = progressEvent as {
                     total?: number;
                     lengthComputable?: boolean;
+                    loaded?: number;
                 };
                 const total =
                     typeof event?.total === 'number'
@@ -88,8 +89,8 @@ export default function Edit({ martyr, attachment, attachmentTypes }: Props) {
                           ? event.total
                           : undefined;
                 const loaded =
-                    typeof (progressEvent as any)?.loaded === 'number'
-                        ? (progressEvent as any).loaded
+                    typeof event?.loaded === 'number'
+                        ? event.loaded
                         : undefined;
                 if (
                     typeof total === 'number' &&

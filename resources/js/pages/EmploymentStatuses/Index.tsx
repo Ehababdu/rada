@@ -97,17 +97,16 @@ export default function Index({ employmentStatuses, filters }: Props) {
         },
     ];
 
-    const performSearch = useCallback((params: Record<string, unknown>) => {
-        router.get(
-            employmentStatusesIndex.url(),
-            params as any,
-            {
+    const performSearch = useCallback(
+        (params: Record<string, string | number | boolean>) => {
+            router.get(employmentStatusesIndex.url(), params, {
                 preserveState: true,
                 replace: true,
                 preserveScroll: true,
-            },
-        );
-    }, []);
+            });
+        },
+        [],
+    );
 
     const handleSearchInput = (value: string) => {
         setSearchTerm(value);

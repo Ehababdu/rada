@@ -210,21 +210,23 @@ export default function Show({ alert }: Props) {
                     </CardHeader>
 
                     <CardContent className="space-y-6">
-                        {(
-                            <div>
-                                <h3 className="mb-2 font-semibold">
-                                    {t('alerts.message', 'الرسالة')}
-                                </h3>
-                                <div className="rounded-lg border bg-muted/30 p-4">
-                                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                                        {alert.message ? String(alert.message) : 'No message'}
-                                    </p>
-                                </div>
+                        <div>
+                            <h3 className="mb-2 font-semibold">
+                                {t('alerts.message', 'الرسالة')}
+                            </h3>
+                            <div className="rounded-lg border bg-muted/30 p-4">
+                                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                                    {alert.message
+                                        ? String(alert.message)
+                                        : 'No message'}
+                                </p>
                             </div>
-                        ) as React.ReactNode}
+                        </div>
 
-                        {/* Additional Data */}
-                        {alert.data && (alert.data as any) && Object.keys(alert.data as any).length > 0 && (
+                        {alert.data &&
+                        typeof alert.data === 'object' &&
+                        alert.data !== null &&
+                        Object.keys(alert.data).length > 0 ? (
                             <div>
                                 <h3 className="mb-2 font-semibold">
                                     {t(
@@ -234,11 +236,18 @@ export default function Show({ alert }: Props) {
                                 </h3>
                                 <div className="rounded-lg border bg-muted/30 p-4">
                                     <pre className="overflow-x-auto text-xs text-muted-foreground">
-                                        {JSON.stringify(alert.data, null, 2)}
+                                        {JSON.stringify(
+                                            alert.data as Record<
+                                                string,
+                                                unknown
+                                            >,
+                                            null,
+                                            2,
+                                        )}
                                     </pre>
                                 </div>
                             </div>
-                        )}
+                        ) : null}
 
                         {/* Timestamps */}
                         <div className="flex flex-col gap-2 border-t pt-4">

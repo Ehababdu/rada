@@ -475,7 +475,7 @@ export default function Edit({
     >([]);
     const [loadingBranches, setLoadingBranches] = useState(false);
 
-    const [employersState, setEmployersState] =
+    const [employersState, setEmployersState] = // eslint-disable-line @typescript-eslint/no-unused-vars
         useState<{ id: number; name_ar: string; name_en: string | null }[]>(
             employers,
         );

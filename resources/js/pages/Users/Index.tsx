@@ -168,7 +168,10 @@ export default function Index({
                     sortDirection === 'desc' ? `-${sortBy}` : sortBy;
             }
 
-            const query: Record<string, unknown> = {
+            const query: Record<
+                string,
+                string | number | boolean | string[] | null | undefined
+            > = {
                 page: effectivePage,
                 per_page: effectivePerPage,
                 ...(effectiveSort && { sort: effectiveSort }),
@@ -178,7 +181,7 @@ export default function Index({
             };
 
             router.visit('/users', {
-                data: query as any,
+                data: query,
                 preserveState: true,
                 preserveScroll: true,
                 only: ['users', 'filters'],

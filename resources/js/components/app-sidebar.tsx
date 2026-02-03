@@ -56,7 +56,10 @@ const footerNavItems: NavItem[] = [
 ];
 
 export const AppSidebar = memo(function AppSidebar() {
-    const { props } = usePage<{ navAccess?: Record<string, boolean>; auth: any }>();
+    const { props } = usePage<{
+        navAccess?: Record<string, boolean>;
+        auth: { user?: { roles?: Array<{ name: string }> } };
+    }>();
     const { t, i18n } = useTranslation();
     const sidebarSide = i18n.language === 'ar' ? 'right' : 'left';
 

@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type User } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
+import i18n from 'i18next';
 import {
     ArrowLeft,
     Calendar,
@@ -28,7 +29,6 @@ import {
     User as UserIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import i18n from 'i18next';
 
 interface Props {
     user: User;

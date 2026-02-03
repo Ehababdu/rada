@@ -127,13 +127,16 @@ export default function Index({ banks, filters }: Props) {
     ];
 
     // Search Logic
-    const performSearch = useCallback((params: Record<string, unknown>) => {
-        router.get('/banks', params as any, {
-            preserveState: true,
-            replace: true,
-            preserveScroll: true,
-        });
-    }, []);
+    const performSearch = useCallback(
+        (params: Record<string, string | number | boolean>) => {
+            router.get('/banks', params, {
+                preserveState: true,
+                replace: true,
+                preserveScroll: true,
+            });
+        },
+        [],
+    );
 
     const handleSearchInput = (value: string) => {
         setSearchTerm(value);

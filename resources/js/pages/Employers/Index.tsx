@@ -131,13 +131,16 @@ export default function Index({ employers, filters }: Props) {
     ];
 
     // Search Logic
-    const performSearch = useCallback((params: Record<string, unknown>) => {
-        router.get('/employers', params as any, {
-            preserveState: true,
-            replace: true,
-            preserveScroll: true,
-        });
-    }, []);
+    const performSearch = useCallback(
+        (params: Record<string, string | number | boolean>) => {
+            router.get('/employers', params, {
+                preserveState: true,
+                replace: true,
+                preserveScroll: true,
+            });
+        },
+        [],
+    );
 
     const handleSearchInput = (value: string) => {
         setSearchTerm(value);

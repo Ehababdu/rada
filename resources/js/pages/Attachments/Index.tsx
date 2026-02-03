@@ -52,7 +52,7 @@ interface Props {
 export default function Index({
     martyr,
     attachments,
-    attachmentTypes,
+    attachmentTypes, // eslint-disable-line @typescript-eslint/no-unused-vars
     attachmentStats,
 }: Props) {
     const { t, i18n } = useTranslation();

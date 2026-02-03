@@ -7,7 +7,7 @@ interface AuthUser {
     roles?: Array<{ name: string }>;
 }
 
-interface AuthData {
+export interface AuthData {
     user?: AuthUser;
     permissions?: string[];
     roles?: string[];
