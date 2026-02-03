@@ -12,10 +12,11 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { Column } from '@tanstack/react-table';
 import { useTranslation } from 'react-i18next';
 
 interface DateRangeFilterProps<TData> {
-    column?: any;
+    column?: Column<TData, unknown>;
     title: string;
 }
 

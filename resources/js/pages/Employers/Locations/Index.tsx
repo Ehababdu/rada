@@ -81,7 +81,11 @@ interface Props {
         total: number;
         from?: number;
         to?: number;
-        links: any[];
+        links: {
+            url: string | null;
+            label: string;
+            active: boolean;
+        }[];
     };
     filters: {
         search?: string;

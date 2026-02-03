@@ -38,11 +38,12 @@ import {
     Shield,
     UserCheck,
     Users,
+    type LucideIcon,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
     Activity,
     Bell,
     LayoutGrid,
@@ -257,7 +258,7 @@ export function GlobalSearch() {
                                 if (!acc[groupName]) acc[groupName] = [];
                                 acc[groupName].push(result);
                                 return acc;
-                            }, {} as Record<string, any[]>),
+                            }, {} as Record<string, SearchResult[]>),
                         ).map(([group, groupResults]) => (
                             <CommandGroup key={group} heading={group}>
                                 {groupResults.map((result) => {

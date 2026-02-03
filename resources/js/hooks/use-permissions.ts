@@ -2,6 +2,16 @@ import { UserPermissions, getUserPermissions } from '@/lib/permissions';
 import { usePage } from '@inertiajs/react';
 import { useMemo } from 'react';
 
+interface PageProps {
+    auth: {
+        user?: {
+            permissions?: Array<{ name: string }>;
+            roles?: Array<{ name: string }>;
+        };
+        roles?: Array<{ name: string }>;
+    };
+}
+
 export interface UsePermissionsReturn {
     permissions: UserPermissions;
     can: (action: keyof UserPermissions) => boolean;
@@ -13,7 +23,7 @@ export interface UsePermissionsReturn {
  * Hook for checking user permissions for a specific resource
  */
 export function usePermissions(resource: string): UsePermissionsReturn {
-    const { auth } = usePage().props as any;
+    const { auth } = usePage().props as PageProps;
 
     const permissions = useMemo(() => {
         return getUserPermissions(auth, resource);
@@ -43,7 +53,7 @@ export function usePermissions(resource: string): UsePermissionsReturn {
  * Direct permission check function
  */
 export function can(action: keyof UserPermissions, resource: string): boolean {
-    const { auth } = usePage().props as any;
+    const { auth } = usePage().props as PageProps;
     const permissions = getUserPermissions(auth, resource);
     return permissions[action] ?? false;
 }

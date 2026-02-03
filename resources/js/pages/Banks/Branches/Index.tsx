@@ -100,7 +100,7 @@ export default function Index({ bank, branches, filters }: Props) {
 
     const columnHelper = createColumnHelper<Branch>();
 
-    const columns = useMemo<ColumnDef<Branch, any>[]>(
+    const columns = useMemo<ColumnDef<Branch, unknown>[]>(
         () => [
             columnHelper.accessor('id', {
                 header: '#',

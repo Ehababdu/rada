@@ -19,10 +19,10 @@ interface Activity {
     causer_email?: string;
     created_at: string;
     changes?: {
-        old?: Record<string, any>;
-        new?: Record<string, any>;
+        old?: Record<string, unknown>;
+        new?: Record<string, unknown>;
     };
-    properties?: Record<string, any>;
+    properties?: Record<string, unknown>;
 }
 
 interface Props {
@@ -54,7 +54,7 @@ export default function Show({ activity }: Props) {
         }
     };
 
-    const renderChanges = (changes: { old?: Record<string, any>; new?: Record<string, any> } | undefined) => {
+    const renderChanges = (changes: { old?: Record<string, unknown>; new?: Record<string, unknown> } | undefined) => {
         if (!changes || (!changes.old && !changes.new)) {
             return <span className="text-muted-foreground">لا توجد تغييرات</span>;
         }

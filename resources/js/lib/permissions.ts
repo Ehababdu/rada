@@ -2,6 +2,17 @@
  * Permission utilities for data table operations
  */
 
+interface AuthUser {
+    permissions?: Array<{ name: string }>;
+    roles?: Array<{ name: string }>;
+}
+
+interface AuthData {
+    user?: AuthUser;
+    permissions?: string[];
+    roles?: string[];
+}
+
 export interface UserPermissions {
     canCreate: boolean;
     canRead: boolean;
@@ -45,10 +56,10 @@ export function hasAnyPermission(permissions: UserPermissions): boolean {
 /**
  * Check if user is super admin
  */
-export function isUserSuperAdmin(auth: any): boolean {
+export function isUserSuperAdmin(auth: AuthData): boolean {
     if (!auth?.user) return false;
     const userRoles: string[] =
-        auth.roles || auth.user?.roles?.map((r: any) => r.name) || [];
+        auth.roles || auth.user?.roles?.map((r) => r.name) || [];
     return userRoles.includes('Super Admin');
 }
 
@@ -57,7 +68,7 @@ export function isUserSuperAdmin(auth: any): boolean {
  * This should be implemented based on your authentication system
  */
 export function getUserPermissions(
-    auth: any,
+    auth: AuthData,
     resource: string,
 ): UserPermissions {
     if (!auth?.user) return DEFAULT_PERMISSIONS;
@@ -65,12 +76,12 @@ export function getUserPermissions(
     // Collect permission names from shared props or embedded user relations
     const userPermissions: string[] =
         auth.permissions ||
-        auth.user?.permissions?.map((p: any) => p.name) ||
+        auth.user?.permissions?.map((p) => p.name) ||
         [];
 
     // Collect role names from shared props or embedded user relations
     const userRoles: string[] =
-        auth.roles || auth.user?.roles?.map((r: any) => r.name) || [];
+        auth.roles || auth.user?.roles?.map((r) => r.name) || [];
 
     // Super Admin gets everything by default
     const isSuperAdmin = userRoles.includes('Super Admin');

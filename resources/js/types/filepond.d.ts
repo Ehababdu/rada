@@ -17,12 +17,12 @@ declare module 'react-filepond' {
         allowMultiple?: boolean;
         acceptedFileTypes?: string[];
         onupdatefiles?: (fileItems: FilePondFile[]) => void;
-        [key: string]: any;
+        [key: string]: unknown;
     }
 
     export class FilePond extends React.Component<FilePondProps> {}
 
-    export function registerPlugin(...plugins: any[]): void;
+    export function registerPlugin(...plugins: unknown[]): void;
 }
 
 declare module 'filepond-plugin-image-preview';

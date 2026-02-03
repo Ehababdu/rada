@@ -97,8 +97,8 @@ export default function Index({ employmentStatuses, filters }: Props) {
         },
     ];
 
-    const performSearch = useCallback((params: Record<string, any>) => {
-        router.get(employmentStatusesIndex.url(), params as any, {
+    const performSearch = useCallback((params: Record<string, unknown>) => {
+        router.get(employmentStatusesIndex.url(), params as Record<string, unknown>, {
             preserveState: true,
             replace: true,
             preserveScroll: true,

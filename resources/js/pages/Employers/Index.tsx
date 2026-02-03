@@ -131,8 +131,8 @@ export default function Index({ employers, filters }: Props) {
     ];
 
     // Search Logic
-    const performSearch = useCallback((params: Record<string, any>) => {
-        router.get('/employers', params as any, {
+    const performSearch = useCallback((params: Record<string, unknown>) => {
+        router.get('/employers', params as Record<string, unknown>, {
             preserveState: true,
             replace: true,
             preserveScroll: true,
@@ -166,7 +166,7 @@ export default function Index({ employers, filters }: Props) {
 
     const columnHelper = createColumnHelper<Employer>();
 
-    const columns = useMemo<ColumnDef<Employer, any>[]>(
+    const columns = useMemo<ColumnDef<Employer, unknown>[]>(
         () => [
             columnHelper.accessor('id', {
                 header: '#',

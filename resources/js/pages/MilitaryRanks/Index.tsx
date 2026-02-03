@@ -118,8 +118,8 @@ export default function Index({ militaryRanks, filters }: Props) {
     ];
 
     // Search Logic
-    const performSearch = useCallback((params: Record<string, any>) => {
-        router.get('/military-ranks', params as any, {
+    const performSearch = useCallback((params: Record<string, unknown>) => {
+        router.get('/military-ranks', params as Record<string, unknown>, {
             preserveState: true,
             replace: true,
             preserveScroll: true,
@@ -153,7 +153,7 @@ export default function Index({ militaryRanks, filters }: Props) {
 
     const columnHelper = createColumnHelper<MilitaryRank>();
 
-    const columns = useMemo<ColumnDef<MilitaryRank, any>[]>(
+    const columns = useMemo<ColumnDef<MilitaryRank, unknown>[]>(
         () => [
             columnHelper.accessor('id', {
                 header: '#',

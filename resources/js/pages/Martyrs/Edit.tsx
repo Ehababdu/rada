@@ -310,6 +310,26 @@ interface Martyr {
     agent_relationship: string | null;
     profile_image: string | null;
     agent_passport_number: string | null;
+    employer?: {
+        id: number;
+        name_ar: string;
+        name_en: string | null;
+    } | null;
+    employer_location?: {
+        id: number;
+        name_ar: string;
+        name_en: string | null;
+    } | null;
+    previous_employer?: {
+        id: number;
+        name_ar: string;
+        name_en: string | null;
+    } | null;
+    previous_employer_location?: {
+        id: number;
+        name_ar: string;
+        name_en: string | null;
+    } | null;
 }
 
 interface Props {
@@ -345,7 +365,7 @@ export default function Edit({
 }: Props) {
     const { t } = useTranslation();
 
-    const formatDateForInput = (d: any): string => {
+    const formatDateForInput = (d: unknown): string => {
         if (!d) return '';
         const s = String(d);
         // Try native parse (ISO)
@@ -388,11 +408,11 @@ export default function Edit({
         job_grade_id: number | null;
         workplace: string | null;
         previous_workplace: string | null;
-        employer_id?: number | null;
-        employer_location_id?: number | null;
-        has_previous_workplace?: boolean;
-        previous_employer_id?: number | null;
-        previous_employer_location_id?: number | null;
+        employer_id: number | null;
+        employer_location_id: number | null;
+        has_previous_workplace: boolean;
+        previous_employer_id: number | null;
+        previous_employer_location_id: number | null;
         military_number: string | null;
         military_rank_id: number | null;
         bank_id: number | null;
@@ -408,10 +428,10 @@ export default function Edit({
         full_name: martyr.full_name,
         national_id: martyr.national_id,
         address: martyr.address,
-        death_date: formatDateForInput((martyr as any).death_date),
+        death_date: formatDateForInput(martyr.death_date),
         has_martyr_decision: martyr.has_martyr_decision || false,
         decision_number: martyr.decision_number || '',
-        decision_date: formatDateForInput((martyr as any).decision_date),
+        decision_date: formatDateForInput(martyr.decision_date),
         parents_status_id: martyr.parents_status_id,
         marital_status_id: martyr.marital_status_id,
         children_count: martyr.children_count,
@@ -421,19 +441,19 @@ export default function Edit({
         workplace: martyr.workplace,
         previous_workplace: martyr.previous_workplace,
         employer_id:
-            (martyr as any).employer_id ?? (martyr as any).employer?.id ?? null,
+            martyr.employer_id ?? martyr.employer?.id ?? null,
         employer_location_id:
-            (martyr as any).employer_location_id ??
-            (martyr as any).employer_location?.id ??
+            martyr.employer_location_id ??
+            martyr.employer_location?.id ??
             null,
-        has_previous_workplace: (martyr as any).has_previous_workplace ?? false,
+        has_previous_workplace: martyr.has_previous_workplace ?? false,
         previous_employer_id:
-            (martyr as any).previous_employer_id ??
-            (martyr as any).previous_employer?.id ??
+            martyr.previous_employer_id ??
+            martyr.previous_employer?.id ??
             null,
         previous_employer_location_id:
-            (martyr as any).previous_employer_location_id ??
-            (martyr as any).previous_employer_location?.id ??
+            martyr.previous_employer_location_id ??
+            martyr.previous_employer_location?.id ??
             null,
         military_number: martyr.military_number,
         military_rank_id: martyr.military_rank_id,
@@ -482,11 +502,11 @@ export default function Edit({
         setLoadingPreviousEmployerLocations,
     ] = useState(false);
     const prevEmployerIdRef = useRef<number | null>(
-        (martyr as any).employer_id ?? (martyr as any).employer?.id ?? null,
+        martyr.employer_id ?? martyr.employer?.id ?? null,
     );
     const prevPreviousEmployerIdRef = useRef<number | null>(
-        (martyr as any).previous_employer_id ??
-            (martyr as any).previous_employer?.id ??
+        martyr.previous_employer_id ??
+            martyr.previous_employer?.id ??
             null,
     );
 
@@ -527,7 +547,7 @@ export default function Edit({
 
     // image preview: show existing saved image or newly selected file preview
     const [previewUrl, setPreviewUrl] = useState<string | null>(
-        (martyr as any).profile_image ?? null,
+        martyr.profile_image ?? null,
     );
     const previewObjectUrlRef = useRef<string | null>(null);
 
@@ -547,29 +567,29 @@ export default function Edit({
         );
         setData(
             'employer_id',
-            (martyr as any).employer_id ??
-                (martyr as any).employer?.id ??
+            martyr.employer_id ??
+                martyr.employer?.id ??
                 data.employer_id ??
                 null,
         );
         setData(
             'employer_location_id',
-            (martyr as any).employer_location_id ??
-                (martyr as any).employer_location?.id ??
+            martyr.employer_location_id ??
+                martyr.employer_location?.id ??
                 data.employer_location_id ??
                 null,
         );
         setData(
             'previous_employer_id',
-            (martyr as any).previous_employer_id ??
-                (martyr as any).previous_employer?.id ??
+            martyr.previous_employer_id ??
+                martyr.previous_employer?.id ??
                 data.previous_employer_id ??
                 null,
         );
         setData(
             'previous_employer_location_id',
-            (martyr as any).previous_employer_location_id ??
-                (martyr as any).previous_employer_location?.id ??
+            martyr.previous_employer_location_id ??
+                martyr.previous_employer_location?.id ??
                 data.previous_employer_location_id ??
                 null,
         );
@@ -639,10 +659,10 @@ export default function Edit({
     // load previous employer locations when previous_employer changes
     useEffect(() => {
         let mounted = true;
-        if ((data as any).previous_employer_id) {
+        if (data.previous_employer_id) {
             setLoadingPreviousEmployerLocations(true);
             fetch(
-                `/api/employers/${(data as any).previous_employer_id}/locations`,
+                `/api/employers/${data.previous_employer_id}/locations`,
             )
                 .then((r) => r.json())
                 .then((d) => {
@@ -658,7 +678,7 @@ export default function Edit({
                 );
             if (
                 prevPreviousEmployerIdRef.current !==
-                (data as any).previous_employer_id
+                data.previous_employer_id
             ) {
                 setData('previous_employer_location_id', null);
             }
@@ -668,18 +688,18 @@ export default function Edit({
         }
 
         prevPreviousEmployerIdRef.current =
-            (data as any).previous_employer_id ?? null;
+            data.previous_employer_id ?? null;
 
         return () => {
             mounted = false;
         };
-    }, [(data as any).previous_employer_id]);
+    }, [data.previous_employer_id]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         const formData = new FormData();
-        Object.entries(data as any).forEach(([key, value]) => {
+        Object.entries(data as Record<string, unknown>).forEach(([key, value]) => {
             // skip undefined or null to avoid clearing server values
             if (value === undefined || value === null) return;
 
@@ -1083,7 +1103,7 @@ export default function Edit({
                                     error={errors.employer_id}
                                 >
                                     <SearchableSelect
-                                        value={(data as any).employer_id}
+                                        value={data.employer_id}
                                         onChange={(value) =>
                                             setData(
                                                 'employer_id',
@@ -1106,7 +1126,7 @@ export default function Edit({
                                 >
                                     <SearchableSelect
                                         value={
-                                            (data as any).employer_location_id
+                                            data.employer_location_id
                                         }
                                         onChange={(value) =>
                                             setData(
@@ -1169,7 +1189,7 @@ export default function Edit({
                                     type="checkbox"
                                     id="has_previous_workplace"
                                     checked={Boolean(
-                                        (data as any).has_previous_workplace,
+                                        data.has_previous_workplace,
                                     )}
                                     onChange={(e) =>
                                         setData(
@@ -1189,7 +1209,7 @@ export default function Edit({
                             </div>
                         </FormField>
 
-                        {(data as any).has_previous_workplace && (
+                        {data.has_previous_workplace && (
                             <FormField
                                 icon={Briefcase}
                                 label={
@@ -1199,7 +1219,7 @@ export default function Edit({
                                 error={errors.previous_employer_id}
                             >
                                 <SearchableSelect
-                                    value={(data as any).previous_employer_id}
+                                    value={data.previous_employer_id}
                                     onChange={(value) =>
                                         setData(
                                             'previous_employer_id',
@@ -1216,7 +1236,7 @@ export default function Edit({
                             </FormField>
                         )}
 
-                        {(data as any).has_previous_workplace && (
+                        {data.has_previous_workplace && (
                             <FormField
                                 icon={MapPin}
                                 label={
@@ -1227,8 +1247,7 @@ export default function Edit({
                             >
                                 <SearchableSelect
                                     value={
-                                        (data as any)
-                                            .previous_employer_location_id
+                                        data.previous_employer_location_id
                                     }
                                     onChange={(value) =>
                                         setData(
@@ -1485,7 +1504,7 @@ export default function Edit({
                                 onChange={(e) => {
                                     const file =
                                         e.target.files?.[0] || undefined;
-                                    setData('profile_image', file as any);
+                                    setData('profile_image', file);
                                     // revoke previous object URL
                                     if (previewObjectUrlRef.current) {
                                         URL.revokeObjectURL(
@@ -1499,7 +1518,7 @@ export default function Edit({
                                         setPreviewUrl(obj);
                                     } else {
                                         setPreviewUrl(
-                                            (martyr as any).profile_image ??
+                                            martyr.profile_image ??
                                                 null,
                                         );
                                     }

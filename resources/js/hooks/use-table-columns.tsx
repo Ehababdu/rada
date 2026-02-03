@@ -20,11 +20,11 @@ export function useTableColumns<TData extends Record<string, unknown>>(
         onEdit?: (item: TData) => void;
         onDelete?: (item: TData) => void;
     },
-): ColumnDef<TData, any>[] {
+): ColumnDef<TData, unknown>[] {
     const { t } = useTranslation();
 
-    const columns = useMemo<ColumnDef<TData, any>[]>(() => {
-        const baseColumns: ColumnDef<TData, any>[] = [];
+    const columns = useMemo<ColumnDef<TData, unknown>[]>(() => {
+        const baseColumns: ColumnDef<TData, unknown>[] = [];
 
         // Add resource-specific columns
         switch (resource) {

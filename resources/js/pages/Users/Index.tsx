@@ -194,7 +194,7 @@ export default function Index({
             effectiveSort = sortDirection === 'desc' ? `-${sortBy}` : sortBy;
         }
 
-        const query: Record<string, any> = {
+        const query: Record<string, unknown> = {
             page: effectivePage,
             per_page: effectivePerPage,
             ...(effectiveSort && { sort: effectiveSort }),
@@ -270,7 +270,7 @@ export default function Index({
 
     // Column definitions
     const columnHelper = createColumnHelper<User>();
-    const columns = useMemo<ColumnDef<User, any>[]>(() => {
+    const columns = useMemo<ColumnDef<User, unknown>[]>(() => {
         const allColumns = [
             columnHelper.display({
                 id: 'id',
@@ -310,7 +310,7 @@ export default function Index({
                     }
                     return (
                         <div className="flex flex-wrap gap-1">
-                            {roles.map((role: any) => (
+                            {roles.map((role: { id: number; name: string; display_name?: string }) => (
                                 <Badge
                                     key={role.id}
                                     variant="secondary"

@@ -5,7 +5,7 @@
 declare module '@shadcn/ui' {
     import type { Command } from 'commander';
 
-    export type Component = any;
+    export type Component = string;
 
     export type AddOptions = {
         components: Component[];

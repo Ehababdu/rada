@@ -133,7 +133,7 @@ export default function Index({ alerts, filters }: Props) {
         if (!auth?.user?.id) return;
 
         const channel = window.Echo?.private(`alerts.${auth.user.id}`)
-            .listen('.alert.created', (e: any) => {
+            .listen('.alert.created', (e: unknown) => {
                 setRealTimeAlerts(prev => [e, ...prev]);
                 toast({
                     title: e.title,
@@ -156,8 +156,8 @@ export default function Index({ alerts, filters }: Props) {
     }, [alerts.data, realTimeAlerts]);
 
     // Search Logic
-    const performSearch = useCallback((params: Record<string, any>) => {
-        router.get('/alerts', params as any, {
+    const performSearch = useCallback((params: Record<string, unknown>) => {
+        router.get('/alerts', params as Record<string, unknown>, {
             preserveState: true,
             replace: true,
             preserveScroll: true,
@@ -244,7 +244,7 @@ export default function Index({ alerts, filters }: Props) {
 
     const columnHelper = createColumnHelper<Alert>();
 
-    const columns = useMemo<ColumnDef<Alert, any>[]>(
+    const columns = useMemo<ColumnDef<Alert, unknown>[]>(
         () => [
             columnHelper.accessor('id', {
                 header: '#',

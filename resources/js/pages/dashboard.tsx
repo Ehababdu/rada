@@ -206,6 +206,17 @@ export default function Dashboard({ stats }: DashboardProps) {
 }
 
 // مكون كرت الإحصائيات (متوافق مع شادكان والوضع الداكن)
+interface StatCardProps {
+    title: string;
+    value: string | number;
+    icon: React.ComponentType<{ className?: string }>;
+    variant: 'blue' | 'amber' | 'green';
+    isVisible: boolean;
+    delay: number;
+    subContent?: React.ReactNode;
+    isCurrency: boolean;
+}
+
 function StatCard({
     title,
     value,
@@ -215,8 +226,8 @@ function StatCard({
     delay,
     subContent,
     isCurrency,
-}: any) {
-    const variants: any = {
+}: StatCardProps) {
+    const variants: Record<string, string> = {
         blue: 'text-blue-600 dark:text-blue-400 border-blue-200/50 dark:border-blue-800/50 bg-blue-50/50 dark:bg-blue-900/10',
         amber: 'text-amber-600 dark:text-amber-400 border-amber-200/50 dark:border-amber-800/50 bg-amber-50/50 dark:bg-amber-900/10',
         green: 'text-green-600 dark:text-green-400 border-green-200/50 dark:border-green-800/50 bg-green-50/50 dark:bg-green-900/10',
@@ -269,7 +280,14 @@ function StatCard({
 }
 
 // مكون الإجراء السريع
-function QuickAction({ icon: Icon, title, href, color }: any) {
+interface QuickActionProps {
+    icon: React.ComponentType<{ className?: string }>;
+    title: string;
+    href: string;
+    color: string;
+}
+
+function QuickAction({ icon: Icon, title, href, color }: QuickActionProps) {
     return (
         <Link
             href={href}

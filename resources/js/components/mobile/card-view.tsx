@@ -8,7 +8,7 @@ interface MobileCardViewProps<TData> {
     columns: {
         key: keyof TData;
         label: string;
-        render?: (value: any, item: TData) => React.ReactNode;
+        render?: (value: unknown, item: TData) => React.ReactNode;
         badge?: boolean;
         className?: string;
     }[];

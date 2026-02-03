@@ -18,7 +18,7 @@ import { formatFileSize, getFileIcon } from './utils';
 
 interface StatsOverviewProps {
     stats: AttachmentStats;
-    t: (key: string, params?: any) => string;
+    t: (key: string, params?: unknown) => string;
     attachmentTypes: Record<string, string>;
     martyrId: number;
     canCreate: boolean;

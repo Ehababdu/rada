@@ -1,5 +1,6 @@
 import { Check, Plus } from 'lucide-react';
 import * as React from 'react';
+import { Column } from '@tanstack/react-table';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,7 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
 interface DataTableFacetedFilterProps<TData> {
-    column?: any;
+    column?: Column<TData, unknown>;
     title?: string;
     options: {
         label: string;

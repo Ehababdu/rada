@@ -57,7 +57,7 @@ const InfoCard = ({
 }: {
     title: string;
     children: React.ReactNode;
-    icon: any;
+    icon: React.ComponentType<{ className?: string }>;
 }) => (
     <div className="relative overflow-hidden rounded-xl border border-sidebar-border/70 bg-white shadow-sm transition-shadow duration-200 hover:shadow-md dark:border-sidebar-border dark:bg-gray-800 dark:hover:shadow-lg">
         <div className="p-6">
@@ -87,7 +87,7 @@ const InfoField = ({
 }: {
     label: string;
     value: string | number | null;
-    icon?: any;
+    icon?: React.ComponentType<{ className?: string }>;
     noDataText: string;
 }) => (
     <div className="space-y-2">

@@ -109,8 +109,8 @@ export default function Index({ roles, filters }: Props) {
     ];
 
     // Search Logic
-    const performSearch = useCallback((params: Record<string, any>) => {
-        router.get('/roles', params as any, {
+    const performSearch = useCallback((params: Record<string, unknown>) => {
+        router.get('/roles', params as Record<string, unknown>, {
             preserveState: true,
             replace: true,
             preserveScroll: true,
@@ -144,7 +144,7 @@ export default function Index({ roles, filters }: Props) {
 
     const columnHelper = createColumnHelper<Role>();
 
-    const columns = useMemo<ColumnDef<Role, any>[]>(
+    const columns = useMemo<ColumnDef<Role, unknown>[]>(
         () => [
             columnHelper.accessor('id', {
                 header: '#',

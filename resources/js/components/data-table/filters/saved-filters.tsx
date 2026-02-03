@@ -1,5 +1,6 @@
 import { Bookmark, BookmarkCheck, Trash2 } from 'lucide-react';
 import * as React from 'react';
+import { Column, Table } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -26,13 +27,13 @@ import { useTranslation } from 'react-i18next';
 interface SavedFilter {
     id: string;
     name: string;
-    filters: Record<string, any>;
+    filters: Record<string, unknown>;
     createdAt: Date;
 }
 
 interface SavedFiltersProps<TData> {
-    table: any;
-    onApplyFilter: (filters: Record<string, any>) => void;
+    table: Table<TData>;
+    onApplyFilter: (filters: Record<string, unknown>) => void;
 }
 
 export function SavedFilters<TData>({
@@ -51,7 +52,7 @@ export function SavedFilters<TData>({
             try {
                 const parsed = JSON.parse(saved);
                 setSavedFilters(
-                    parsed.map((filter: any) => ({
+                    parsed.map((filter: { id: string; name: string; filters: Record<string, unknown>; createdAt: string }) => ({
                         ...filter,
                         createdAt: new Date(filter.createdAt),
                     })),
@@ -71,9 +72,9 @@ export function SavedFilters<TData>({
     }, [savedFilters]);
 
     const getCurrentFilters = () => {
-        const filters: Record<string, any> = {};
+        const filters: Record<string, unknown> = {};
 
-        table.getAllColumns().forEach((column: any) => {
+        table.getAllColumns().forEach((column: Column<TData, unknown>) => {
             const filterValue = column.getFilterValue();
             if (filterValue !== undefined) {
                 filters[column.id] = filterValue;
@@ -111,7 +112,7 @@ export function SavedFilters<TData>({
 
     const hasActiveFilters = table
         .getAllColumns()
-        .some((column: any) => column.getFilterValue() !== undefined);
+        .some((column: Column<TData, unknown>) => column.getFilterValue() !== undefined);
 
     return (
         <>

@@ -132,11 +132,11 @@ export default function Create({ martyr, attachmentTypes }: Props) {
             // ensure Inertia sends the payload as multipart/form-data
             forceFormData: true,
             // Inertia progress event provides progress in event.detail.progress (0-100)
-            onProgress: (event: any) => {
-                const p = event?.detail?.progress ?? null;
+            onProgress: (event: unknown) => {
+                const p = (event as { detail?: { progress?: number } })?.detail?.progress ?? null;
                 setUploadProgress(p !== null ? Math.round(p) : null);
             },
-            onSuccess: (page: any) => {
+            onSuccess: (page: unknown) => {
                 toast({ title: 'تم إضافة المرفق بنجاح', variant: 'success' });
                 setProcessing(false);
                 setUploadProgress(null);

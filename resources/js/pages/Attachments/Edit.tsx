@@ -76,12 +76,13 @@ export default function Edit({ martyr, attachment, attachmentTypes }: Props) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post(`/martyrs/${martyr.id}/attachments/${attachment.id}`, {
-            onProgress: (progressEvent?: any) => {
+            onProgress: (progressEvent?: unknown) => {
+                const event = progressEvent as { total?: number; lengthComputable?: boolean };
                 const total =
-                    typeof progressEvent?.total === 'number'
-                        ? progressEvent.total
-                        : progressEvent?.lengthComputable
-                          ? progressEvent.total
+                    typeof event?.total === 'number'
+                        ? event.total
+                        : event?.lengthComputable
+                          ? event.total
                           : undefined;
                 const loaded =
                     typeof progressEvent?.loaded === 'number'

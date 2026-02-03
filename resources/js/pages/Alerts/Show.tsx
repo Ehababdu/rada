@@ -22,7 +22,7 @@ interface Alert {
     title: string;
     message: string;
     type: 'info' | 'warning' | 'error' | 'success';
-    data: any;
+    data: unknown;
     read_at: string | null;
     created_at: string;
     is_read: boolean;
