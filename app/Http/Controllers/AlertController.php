@@ -136,7 +136,7 @@ class AlertController extends Controller
 
         $alert->delete();
 
-        return redirect()->route('ؤ.index')
+        return redirect()->route('alerts.index')
             ->with('success', __('Alert deleted successfully.'));
     }
 }

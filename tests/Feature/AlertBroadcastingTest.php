@@ -36,9 +36,10 @@ it('alert creation event broadcasts to correct channel', function () {
 
     $event = new AlertCreated($alert);
 
-    expect($event->broadcastOn())->toBe([
-        "Illuminate\Broadcasting\PrivateChannel" => "alerts.{$user->id}"
-    ]);
+    $channels = $event->broadcastOn();
+    expect($channels)->toHaveCount(1);
+    expect($channels[0])->toBeInstanceOf(\Illuminate\Broadcasting\PrivateChannel::class);
+    expect($channels[0]->name)->toBe("private-alerts.{$user->id}");
 
     expect($event->broadcastAs())->toBe('alert.created');
 });

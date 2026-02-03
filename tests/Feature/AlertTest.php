@@ -40,7 +40,7 @@ class AlertTest extends TestCase
         $user = $this->createUser();
         $alert = Alert::factory()->create(['user_id' => $user->id, 'read_at' => null]);
 
-        $response = $this->actingAs($user)->withoutMiddleware()->post("/alerts/{$alert->id}/mark-as-read");
+        $response = $this->actingAs($user)->post("/alerts/{$alert->id}/mark-as-read");
 
         $response->assertRedirect();
         $this->assertNotNull($alert->fresh()->read_at);
@@ -51,7 +51,7 @@ class AlertTest extends TestCase
         $user = $this->createUser();
         $alert = Alert::factory()->create(['user_id' => $user->id, 'read_at' => now()]);
 
-        $response = $this->actingAs($user)->withoutMiddleware()->post("/alerts/{$alert->id}/mark-as-unread");
+        $response = $this->actingAs($user)->post("/alerts/{$alert->id}/mark-as-unread");
 
         $response->assertRedirect();
         $this->assertNull($alert->fresh()->read_at);
@@ -62,7 +62,7 @@ class AlertTest extends TestCase
         $user = $this->createUser();
         $alert = Alert::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->actingAs($user)->withoutMiddleware()->delete("/alerts/{$alert->id}");
+        $response = $this->actingAs($user)->delete("/alerts/{$alert->id}");
 
         $response->assertRedirect();
         $this->assertNull(Alert::find($alert->id));

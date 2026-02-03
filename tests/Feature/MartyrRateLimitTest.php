@@ -11,11 +11,11 @@ class MartyrRateLimitTest extends TestCase
 
     public function test_search_api_is_rate_limited()
     {
-        // Make a number of requests greater than throttle limit (10 per minute)
-        for ($i = 0; $i < 12; $i++) {
+        // Make a number of requests greater than throttle limit (60 per minute)
+        for ($i = 0; $i < 65; $i++) {
             $response = $this->getJson('/api/martyrs/search?q=test');
             // After limit exceeded, expect 429
-            if ($i >= 10) {
+            if ($i >= 60) {
                 $this->assertEquals(429, $response->getStatusCode());
 
                 return;

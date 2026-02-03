@@ -38,7 +38,7 @@ class ExportMartyrsTest extends TestCase
 
         Notification::fake();
         Storage::shouldReceive('disk')->with('public')->andReturnSelf();
-        Storage::shouldReceive('temporaryUrl')->andReturn('http://example.com/export.xlsx');
+        Storage::shouldReceive('url')->andReturn('http://example.com/export.xlsx');
 
         // Ensure the actual store call is intercepted when the queued job runs
         Excel::shouldReceive('store')->once()->andReturnTrue();
