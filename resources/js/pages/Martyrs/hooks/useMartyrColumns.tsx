@@ -1,7 +1,7 @@
 import { Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 // Shadcn UI Components
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -41,7 +41,7 @@ export function useMartyrColumns({
 }: UseMartyrColumnsProps) {
     const { t } = useTranslation();
 
-    // Columns Configuration
+    // Columns Configuration - Memoized to prevent unnecessary recalculations
     const availableColumns = useMemo(
         () => [
             { key: '#', label: '#', required: true },
@@ -193,10 +193,30 @@ export function useMartyrColumns({
         [availableColumns, basicKeys],
     );
 
-    const areAllBasicSelected = basicKeys.length > 0 && basicKeys.every((k) => visibleColumns.includes(k));
-    const areSomeBasicSelected = basicKeys.some((k) => visibleColumns.includes(k)) && !areAllBasicSelected;
-    const areAllAdditionalSelected = additionalKeys.length > 0 && additionalKeys.every((k) => visibleColumns.includes(k));
-    const areSomeAdditionalSelected = additionalKeys.some((k) => visibleColumns.includes(k)) && !areAllAdditionalSelected;
+    const areAllBasicSelected = useMemo(() =>
+        basicKeys.length > 0 && basicKeys.every((k) => visibleColumns.includes(k)),
+        [basicKeys, visibleColumns]
+    );
+
+    const areSomeBasicSelected = useMemo(() =>
+        basicKeys.some((k) => visibleColumns.includes(k)) && !areAllBasicSelected,
+        [basicKeys, visibleColumns, areAllBasicSelected]
+    );
+
+    const areAllAdditionalSelected = useMemo(() =>
+        additionalKeys.length > 0 && additionalKeys.every((k) => visibleColumns.includes(k)),
+        [additionalKeys, visibleColumns]
+    );
+
+    const areSomeAdditionalSelected = useMemo(() =>
+        additionalKeys.some((k) => visibleColumns.includes(k)) && !areAllAdditionalSelected,
+        [additionalKeys, visibleColumns, areAllAdditionalSelected]
+    );
+
+    // Memoized callbacks to prevent unnecessary re-renders
+    const setVisibleColumnsCallback = useCallback((columns: string[]) => {
+        setVisibleColumns(columns);
+    }, []);
 
     // Persist Columns
     useEffect(() => {
@@ -218,14 +238,6 @@ export function useMartyrColumns({
             // Ignore errors
         }
     }, [availableColumns]);
-
-    useEffect(() => {
-        if (typeof window !== 'undefined')
-            localStorage.setItem(
-                VISIBLE_COLUMNS_KEY,
-                JSON.stringify(visibleColumns),
-            );
-    }, [visibleColumns]);
 
     // Columns Definition
     const columns = useMemo<ColumnDef<Martyr>[]>(
@@ -614,15 +626,20 @@ export function useMartyrColumns({
         [t, isRTL, canViewAttachments, canViewDetails, canUpdate, canDelete],
     );
 
-    const filteredColumns = columns.filter(
-        (col) =>
-            visibleColumns.includes(col.id as string) || col.id === 'actions',
+    // Filtered Columns - Memoized to prevent unnecessary recalculations
+    const filteredColumns = useMemo(
+        () =>
+            columns.filter(
+                (col) =>
+                    visibleColumns.includes(col.id as string) || col.id === 'actions',
+            ),
+        [columns, visibleColumns],
     );
 
     return {
         availableColumns,
         visibleColumns,
-        setVisibleColumns,
+        setVisibleColumns: setVisibleColumnsCallback,
         basicKeys,
         additionalKeys,
         areAllBasicSelected,

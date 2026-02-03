@@ -1,3 +1,4 @@
+import React from 'react';
 import { DataTable } from '@/components/ui/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import type { Martyr } from '../types/martyr';
@@ -11,14 +12,14 @@ interface MartyrsTableProps {
     onRowSelectionChange: (selection: Record<string, boolean>) => void;
 }
 
-export function MartyrsTable({
+export const MartyrsTable = React.memo<MartyrsTableProps>(({
     columns,
     data,
     columnVisibility,
     enableRowSelection,
     rowSelection,
     onRowSelectionChange,
-}: MartyrsTableProps) {
+}: MartyrsTableProps) => {
     return (
         <DataTable
             columns={columns}
@@ -29,4 +30,4 @@ export function MartyrsTable({
             onRowSelectionChange={onRowSelectionChange}
         />
     );
-}
+});

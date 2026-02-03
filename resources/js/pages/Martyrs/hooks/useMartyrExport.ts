@@ -17,22 +17,37 @@ export function useMartyrExport({
     const [latestExportAvailable, setLatestExportAvailable] = useState<boolean | null>(null);
     const [latestExportUrl, setLatestExportUrl] = useState<string | null>(null);
 
-    // Check Export Status
+    // Check Export Status - Only once on mount
     useEffect(() => {
         let mounted = true;
-        fetch('/martyrs/export/status')
-            .then((res) => res.json())
-            .then((data) => {
+        let timeoutId: NodeJS.Timeout;
+
+        const checkStatus = async () => {
+            try {
+                const res = await fetch('/martyrs/export/status');
+                const data = await res.json();
                 if (mounted) {
                     setLatestExportAvailable(!!data.exists);
                     setLatestExportUrl(data.url);
                 }
-            })
-            .catch(() => mounted && setLatestExportAvailable(false));
+            } catch {
+                if (mounted) setLatestExportAvailable(false);
+            }
+        };
+
+        // Initial check
+        checkStatus();
+
+        // Set up periodic checks with longer intervals
+        timeoutId = setTimeout(() => {
+            if (mounted) checkStatus();
+        }, 30000); // Check every 30 seconds instead of constantly
+
         return () => {
             mounted = false;
+            clearTimeout(timeoutId);
         };
-    }, []);
+    }, []); // Empty dependency array - only run once
 
     const handleExport = async (e: React.MouseEvent) => {
         e.preventDefault();

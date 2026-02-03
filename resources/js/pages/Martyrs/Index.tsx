@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, useDeferredValue, startTransition } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Shadcn UI Components
@@ -50,10 +50,20 @@ export default function Index({
     const canCreate = can('canCreate');
     const canExport = can('canExport');
 
-    // State
-    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-    const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
+    // Deferred search for better performance
+    const [searchTerm, setSearchTerm] = useState(filters.search || '');
+    const deferredSearchTerm = useDeferredValue(searchTerm);
+
+    // Table state
     const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
+    const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
+    // Memoized callbacks to prevent unnecessary re-renders
+    const handleDeleteClick = useCallback((id: number) => {
+        setDeletingId(id);
+        setDeleteOpen(true);
+    }, []);
 
     // Hooks
     const {
@@ -83,10 +93,7 @@ export default function Index({
         canUpdate,
         canDelete,
         isRTL,
-        onDelete: (id) => {
-            setDeletingId(id);
-            setDeleteOpen(true);
-        },
+        onDelete: handleDeleteClick,
     });
 
     const {
@@ -94,23 +101,30 @@ export default function Index({
         latestExportUrl,
         handleExport,
     } = useMartyrExport({
-        cleanFilters: (f) => Object.entries(f).reduce<Record<string, string>>(
-            (acc, [k, v]) => {
-                if (v && v.trim() !== '') acc[k] = v;
-                return acc;
-            },
-            {},
-        ),
+        cleanFilters,
         localFilters,
         visibleColumns,
         selectedRows,
     });
+
+    // Memoized column visibility to prevent recalculation on every render
+    const columnVisibility = useMemo(() =>
+        availableColumns.reduce(
+            (acc, col) => ({
+                ...acc,
+                [col.key]: visibleColumns.includes(col.key),
+            }),
+            {},
+        ),
+        [availableColumns, visibleColumns]
+    );
 
     const {
         deleteOpen,
         setDeleteOpen,
         deletingId,
         setDeletingId,
+        isDeleting,
         handleDelete,
     } = useMartyrDelete();
 
@@ -168,8 +182,11 @@ export default function Index({
                                 <Input
                                     placeholder={t('martyrs.search_placeholder')}
                                     className="bg-background pl-9 transition-all focus:ring-2 focus:ring-primary/20"
-                                    defaultValue={filters.search || ''}
-                                    onChange={(e) => handleSearchChange(e.target.value)}
+                                    value={searchTerm}
+                                    onChange={(e) => {
+                                        setSearchTerm(e.target.value);
+                                        handleSearchChange(e.target.value);
+                                    }}
                                 />
                             </div>
                         </div>
@@ -216,16 +233,14 @@ export default function Index({
                     <MartyrsTable
                         columns={filteredColumns}
                         data={martyrs.data}
-                        columnVisibility={availableColumns.reduce(
-                            (acc, col) => ({
-                                ...acc,
-                                [col.key]: visibleColumns.includes(col.key),
-                            }),
-                            {},
-                        )}
+                        columnVisibility={columnVisibility}
                         enableRowSelection={true}
                         rowSelection={selectedRows}
-                        onRowSelectionChange={setSelectedRows}
+                        onRowSelectionChange={(selection) => {
+                            startTransition(() => {
+                                setSelectedRows(selection);
+                            });
+                        }}
                     />
 
                     {/* Pagination */}
@@ -311,7 +326,7 @@ export default function Index({
                 <MartyrsDeleteDialog
                     deleteOpen={deleteOpen}
                     setDeleteOpen={setDeleteOpen}
-                    isDeleting={false} // Will be handled in hook
+                    isDeleting={isDeleting}
                     handleDelete={handleDelete}
                 />
             </AppLayout>

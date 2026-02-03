@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -38,7 +39,7 @@ interface MartyrsActionsProps {
     isRTL: boolean;
 }
 
-export function MartyrsActions({
+export const MartyrsActions = React.memo<MartyrsActionsProps>(({
     canCreate,
     canExport,
     handleExport,
@@ -56,7 +57,7 @@ export function MartyrsActions({
     areAllAdditionalSelected,
     areSomeAdditionalSelected,
     isRTL,
-}: MartyrsActionsProps) {
+}: MartyrsActionsProps) => {
     const { t } = useTranslation();
 
     return (
@@ -213,4 +214,4 @@ export function MartyrsActions({
             )}
         </>
     );
-}
+});
