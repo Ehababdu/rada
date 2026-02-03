@@ -2,8 +2,9 @@
 
 return [
     App\Providers\AppServiceProvider::class,
-    App\Providers\FortifyServiceProvider::class,
     App\Providers\AuthServiceProvider::class,
-    Laravel\Scout\ScoutServiceProvider::class,
+    App\Providers\FortifyServiceProvider::class,
+    App\Providers\TelescopeServiceProvider::class,
     Laravel\Boost\BoostServiceProvider::class,
+    Laravel\Scout\ScoutServiceProvider::class,
 ];

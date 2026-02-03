@@ -1,30 +1,16 @@
 import { Button } from '@/components/ui/button';
 import Combobox from '@/components/ui/combobox';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Progress from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { index as attachmentTypesIndex } from '@/routes/attachment-types';
 import { type BreadcrumbItem, type Martyr } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Settings, Upload } from 'lucide-react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useToast } from '@/hooks/use-toast';
+import { ArrowLeft, Settings, Upload, File, X } from 'lucide-react';
 import React, { useState, useEffect, useRef } from 'react';
-import { FilePond, registerPlugin } from 'react-filepond';
-import 'filepond/dist/filepond.min.css';
-import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
-import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
-import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
-import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
-import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
-import '../../../css/filepond-custom.css';
-
-// Register FilePond plugins as recommended in the official documentation
-registerPlugin(
-    FilePondPluginImageExifOrientation,
-    FilePondPluginImagePreview,
-    FilePondPluginFileValidateType,
-    FilePondPluginFileValidateSize
-);
 
 interface Props {
     martyr: Martyr;
@@ -32,15 +18,17 @@ interface Props {
 }
 
 export default function Create({ martyr, attachmentTypes }: Props) {
+    const { errors } = usePage().props;
+    const { toast } = useToast();
     const [attachment_type, setAttachmentType] = useState('');
-    const [files, setFiles] = useState<any[]>([]);
+    const [file, setFile] = useState<File | null>(null);
     const [description, setDescription] = useState('');
     const [remoteOptions, setRemoteOptions] = useState(attachmentTypes);
     const [isLoading, setIsLoading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
     const [processing, setProcessing] = useState(false);
 
-    const pondRef = useRef<FilePond | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const queryDebounceRef = useRef<number | null>(null);
 
     useEffect(() => {
@@ -60,12 +48,16 @@ export default function Create({ martyr, attachmentTypes }: Props) {
         };
     }, []);
 
-    const handleInit = () => {
-        console.log("FilePond instance has initialised", pondRef.current);
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files?.[0] || null;
+        setFile(selectedFile);
     };
 
-    const handleFileUpdate = (fileItems: any[]) => {
-        setFiles(fileItems);
+    const handleRemoveFile = () => {
+        setFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
     };
 
     const handleAttachmentTypeChange = (value: string) => {
@@ -129,18 +121,23 @@ export default function Create({ martyr, attachmentTypes }: Props) {
         e.preventDefault();
         setProcessing(true);
 
-        router.post(`/martyrs/${martyr.id}/attachments`, {
-            attachment_type,
-            file: files.length > 0 ? files[0].file : null,
-            description,
-        }, {
-            onProgress: (progress: any) => {
-                setUploadProgress(progress.percentage);
+        const formData = new FormData();
+        formData.append('attachment_type', attachment_type);
+        formData.append('description', description);
+        if (file) {
+            formData.append('file', file);
+        }
+
+        router.post(`/martyrs/${martyr.id}/attachments`, formData, {
+            // ensure Inertia sends the payload as multipart/form-data
+            forceFormData: true,
+            // Inertia progress event provides progress in event.detail.progress (0-100)
+            onProgress: (event: any) => {
+                const p = event?.detail?.progress ?? null;
+                setUploadProgress(p !== null ? Math.round(p) : null);
             },
-            onSuccess: () => {
-                setAttachmentType('');
-                setFiles([]);
-                setDescription('');
+            onSuccess: (page: any) => {
+                toast({ title: 'تم إضافة المرفق بنجاح', variant: 'success' });
                 setProcessing(false);
                 setUploadProgress(null);
             },
@@ -196,6 +193,16 @@ export default function Create({ martyr, attachmentTypes }: Props) {
                 {/* Form */}
                 <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
                         <form onSubmit={handleSubmit} className="space-y-6">
+                            {Object.keys(errors).length > 0 && (
+                                <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                                    <h3 className="text-sm font-medium text-red-800 dark:text-red-200">خطأ في التحقق</h3>
+                                    <ul className="mt-2 list-disc list-inside text-sm text-red-700 dark:text-red-300">
+                                        {Object.values(errors).map((error, index) => (
+                                            <li key={index}>{error}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                             {/* Attachment Type */}
                             <div>
                                 <div className="mb-2 flex items-center justify-between">
@@ -222,48 +229,49 @@ export default function Create({ martyr, attachmentTypes }: Props) {
                                     isLoading={isLoading}
                                     placeholder="اختر خيار"
                                 />
+                                {errors.attachment_type && (
+                                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.attachment_type}</p>
+                                )}
                             </div>
 
                             {/* File Upload */}
                             <div>
-                                <label className="mb-2 block text-sm font-medium text-muted-foreground">
+                                <Label className="mb-2 block text-sm font-medium text-muted-foreground">
                                     الملف{' '}
                                     <span className="text-red-500">*</span>
-                                </label>
-                                <FilePond
-                                    ref={pondRef}
-                                    files={files}
-                                    onupdatefiles={handleFileUpdate}
-                                    oninit={handleInit}
-                                    allowMultiple={false}
-                                    allowReorder={true}
-                                    maxFiles={1}
-                                    server={null}
-                                    name="file"
-                                    acceptedFileTypes={[
-                                        'application/pdf',
-                                        'application/msword',
-                                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                                        'image/jpeg',
-                                        'image/png',
-                                        'image/jpg'
-                                    ]}
-                                    maxFileSize="10MB"
-                                    labelIdle='اسحب الملف هنا أو <span class="filepond--label-action">تصفح</span>'
-                                    labelFileProcessing="جاري المعالجة"
-                                    labelFileProcessingComplete="تم الانتهاء"
-                                    labelFileProcessingAborted="تم الإلغاء"
-                                    labelFileProcessingError="خطأ في المعالجة"
-                                    labelTapToCancel="اضغط للإلغاء"
-                                    labelTapToRetry="اضغط لإعادة المحاولة"
-                                    labelTapToUndo="اضغط للتراجع"
-                                    instantUpload={false}
-                                    stylePanelLayout="compact"
-                                    styleLoadIndicatorPosition="center bottom"
-                                    styleProgressIndicatorPosition="right bottom"
-                                    styleButtonRemoveItemPosition="left bottom"
-                                    styleButtonProcessItemPosition="right bottom"
-                                />
+                                </Label>
+                                <div className="space-y-4">
+                                    <Input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                        onChange={handleFileChange}
+                                        className="cursor-pointer"
+                                    />
+                                    {errors.file && (
+                                        <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.file}</p>
+                                    )}
+                                    {file && (
+                                        <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3">
+                                            <File size={24} className="text-muted-foreground" />
+                                            <div className="flex-1">
+                                                <p className="text-sm font-medium">{file.name}</p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                                                </p>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={handleRemoveFile}
+                                                className="text-muted-foreground hover:text-destructive"
+                                            >
+                                                <X size={16} />
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Description */}
@@ -278,6 +286,9 @@ export default function Create({ martyr, attachmentTypes }: Props) {
                                     className="border-border"
                                     placeholder="وصف اختياري"
                                 />
+                                {errors.description && (
+                                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
+                                )}
                             </div>
 
                             {/* Actions */}

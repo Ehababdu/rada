@@ -47,6 +47,11 @@ class Attachment extends Model implements HasMedia
             ->singleFile();
     }
 
+    public function getMediaModel(): string
+    {
+        return Media::class;
+    }
+
     public function martyr(): BelongsTo
     {
         return $this->belongsTo(Martyr::class);

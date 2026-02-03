@@ -9,6 +9,7 @@ services:
         WWWGROUP: '${WWWGROUP:-1000}'
     image: erp_system_app
     container_name: laravel.test
+    restart: always
     hostname: laravel.test
     # ضبط المستخدم ليتوافق مع مستخدم جهازك في أوبنتو
     user: '${WWWUSER:-1000}:${WWWGROUP:-1000}'
@@ -22,9 +23,7 @@ services:
       - /var/www/html/vendor
       - /var/www/html/node_modules
     ports:
-      - "5173:5173" # منفذ Vite الأساسي للـ Hot Reload
-      - "5174:5174" # منفذ Vite الاحتياطي 1
-      - "5175:5175" # منفذ Vite الاحتياطي 2
+      - "5173:5173" # منفذ Vite للـ Hot Reload
     depends_on:
       - db
       - redis

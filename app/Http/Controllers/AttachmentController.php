@@ -44,7 +44,7 @@ class AttachmentController extends Controller
                 $uploadedCount++;
             } else {
                 $notUploadedTypes[] = [
-                    'id' => null,
+                    'id' => (int) $typeId,
                     'attachment_type' => [
                         'id' => (int) $typeId,
                         'label' => $typeLabel
@@ -101,10 +101,21 @@ class AttachmentController extends Controller
      */
     public function store(StoreAttachmentRequest $request, Martyr $martyr)
     {
-        $this->attachmentService->createAttachment($martyr, $request->validated(), $request);
+        // Debug: dump incoming payload to locate upload problem.
+        // Triggered when ?dd=1 is present.
+        if ($request->query('dd') === '1') {
+            dd([
+                'validated' => $request->validated(),
+                'all' => $request->all(),
+                'files' => $request->allFiles(),
+                'headers' => $request->headers->all(),
+                'content_type' => $request->header('content-type'),
+            ]);
+        }
 
-        return redirect()->route('martyrs.attachments.index', $martyr)
-            ->with('success', 'تم إضافة المرفق بنجاح');
+        $attachment = $this->attachmentService->createAttachment($martyr, $request->validated(), $request);
+
+        return redirect()->route('martyrs.attachments.index', $martyr)->with('success', 'تم تحميل المرفق بنجاح.');
     }
 
     /**

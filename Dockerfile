@@ -18,7 +18,8 @@ COPY docker/php/*.ini /usr/local/etc/php/conf.d/
 
 # Install PHP deps via Composer (cache layer)
 COPY composer.json composer.lock* ./
-RUN if [ -f composer.json ]; then composer install --no-dev --optimize-autoloader --no-interaction --no-progress || true; fi
+# Install including dev dependencies so packages required for local/dev (like laravel/boost) are available
+RUN if [ -f composer.json ]; then composer install --optimize-autoloader --no-interaction --no-progress || true; fi
 
 COPY . .
 

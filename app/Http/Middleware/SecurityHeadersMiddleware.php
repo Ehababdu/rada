@@ -79,16 +79,20 @@ class SecurityHeadersMiddleware
         $directives = [
             'default-src' => "'self'",
             'script-src' => $isDevelopment
-                ? "'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5173 http://127.0.0.1:5173 http://0.0.0.0:5173 http://localhost:5174 http://127.0.0.1:5174 http://0.0.0.0:5174 http://localhost:5175 http://127.0.0.1:5175 http://0.0.0.0:5175"
+                ? "'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5173 http://127.0.0.1:5173 http://0.0.0.0:5173 http://laravel.test:5173 http://localhost:3001 http://127.0.0.1:3001 http://0.0.0.0:3001 http://laravel.test:3001"
                 : "'self' 'nonce-{$nonce}' 'sha256-NeX6BkQ/dL2xGqNL0hx0Qt1D9OBsViVY0GIuBkpTJTQ=' 'sha256-SzlVd60UNZ/TldNgHS9eD898St9DDjMaBZ89PhinRe4=' http://127.0.0.1:5173",
             'style-src' => $isDevelopment
-                ? "'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net http://localhost:5173 http://127.0.0.1:5173 http://0.0.0.0:5173 http://localhost:5174 http://127.0.0.1:5174 http://0.0.0.0:5174 http://localhost:5175 http://127.0.0.1:5175 http://0.0.0.0:5175"
+                ? "'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net http://localhost:5173 http://127.0.0.1:5173 http://0.0.0.0:5173 http://laravel.test:5173 http://localhost:3001 http://127.0.0.1:3001 http://0.0.0.0:3001 http://laravel.test:3001"
                 : "'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net",
             'img-src' => "'self' data: blob: https:",
             'font-src' => "'self' data: https://fonts.gstatic.com https://fonts.bunny.net",
             'connect-src' => $isDevelopment
-                ? "'self' ws: wss: http://localhost:* http://127.0.0.1:*"
+                ? "'self' ws: wss: http://localhost:* http://127.0.0.1:* http://laravel.test:*"
                 : "'self'",
+            // Allow workers created from blob: (used by FilePond image preview and others)
+            'worker-src' => $isDevelopment
+                ? "'self' blob: http://localhost:5173 http://127.0.0.1:5173"
+                : "'self' blob:",
             'frame-src' => "'self'",
             'object-src' => "'none'",
             'base-uri' => "'self'",

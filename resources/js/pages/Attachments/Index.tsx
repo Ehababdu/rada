@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
 import { usePermissions } from '@/hooks/use-permissions';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
@@ -57,6 +58,7 @@ export default function Index({
 }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
+    const { toast } = useToast();
     const { can } = usePermissions('attachments');
     const canCreate = can('canCreate');
     const canDelete = can('canDelete');
@@ -84,6 +86,7 @@ export default function Index({
             setIsLoading(true);
             router.delete(`/martyrs/${martyr.id}/attachments/${deletingId}`, {
                 onSuccess: () => {
+                    toast({ title: t('attachment_deleted_successfully') });
                     setDeleteOpen(false);
                     setDeletingId(null);
                     setIsLoading(false);

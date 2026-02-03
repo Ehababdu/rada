@@ -37,7 +37,7 @@ class StoreAttachmentRequest extends FormRequest
                     }
                 },
             ],
-            'file' => 'required|file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png',
+            'file' => 'required|file|max:20480|mimes:pdf,doc,docx,jpg,jpeg,png',
             'description' => 'nullable|string|max:500',
         ];
     }

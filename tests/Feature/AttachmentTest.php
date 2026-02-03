@@ -31,6 +31,9 @@ class AttachmentTest extends TestCase
 
         // Create a test martyr
         $this->martyr = Martyr::factory()->create();
+
+        // Disable CSRF protection for tests
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
     }
 
     public function test_user_can_view_attachments_index()
@@ -52,11 +55,12 @@ class AttachmentTest extends TestCase
     {
         $file = UploadedFile::fake()->createWithContent('test.pdf', '%PDF-1.4 test content', 'application/pdf');
 
-        $response = $this->post("/martyrs/{$this->martyr->id}/attachments", [
-            'attachment_type' => 1,
-            'file' => $file,
-            'description' => 'Test attachment description',
-        ]);
+        $response = $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class)
+            ->post("/martyrs/{$this->martyr->id}/attachments", [
+                'attachment_type' => 1,
+                'file' => $file,
+                'description' => 'Test attachment description',
+            ]);
 
         $response->assertRedirect("/martyrs/{$this->martyr->id}/attachments");
 
@@ -80,7 +84,9 @@ class AttachmentTest extends TestCase
 
     public function test_attachment_creation_validates_required_fields()
     {
-        $response = $this->post("/martyrs/{$this->martyr->id}/attachments", []);
+        $response = $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class)
+            ->post("/martyrs/{$this->martyr->id}/attachments", [
+            ]);
 
         $response->assertRedirect();
         $response->assertSessionHasErrors(['attachment_type', 'file']);
@@ -116,11 +122,12 @@ class AttachmentTest extends TestCase
         $attachment = Attachment::factory()->forMartyr($this->martyr)->create();
         $newFile = UploadedFile::fake()->createWithContent('updated.pdf', '%PDF-1.4 updated content', 'application/pdf');
 
-        $response = $this->put("/martyrs/{$this->martyr->id}/attachments/{$attachment->id}", [
-            'attachment_type' => 2,
-            'file' => $newFile,
-            'description' => 'Updated description',
-        ]);
+        $response = $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class)
+            ->put("/martyrs/{$this->martyr->id}/attachments/{$attachment->id}", [
+                'attachment_type' => 2,
+                'file' => $newFile,
+                'description' => 'Updated description',
+            ]);
 
         $response->assertRedirect("/martyrs/{$this->martyr->id}/attachments");
 
@@ -145,10 +152,11 @@ class AttachmentTest extends TestCase
     {
         $attachment = Attachment::factory()->forMartyr($this->martyr)->create();
 
-        $response = $this->put("/martyrs/{$this->martyr->id}/attachments/{$attachment->id}", [
-            'attachment_type' => 3,
-            'description' => 'Updated description without file',
-        ]);
+        $response = $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class)
+            ->put("/martyrs/{$this->martyr->id}/attachments/{$attachment->id}", [
+                'attachment_type' => 3,
+                'description' => 'Updated description without file',
+            ]);
 
         $response->assertRedirect("/martyrs/{$this->martyr->id}/attachments");
 
@@ -164,7 +172,8 @@ class AttachmentTest extends TestCase
         $attachment = Attachment::factory()->forMartyr($this->martyr)->create();
         $mediaId = $attachment->getFirstMedia('attachments')?->id;
 
-        $response = $this->delete("/martyrs/{$this->martyr->id}/attachments/{$attachment->id}");
+        $response = $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class)
+            ->delete("/martyrs/{$this->martyr->id}/attachments/{$attachment->id}");
 
         $response->assertRedirect("/martyrs/{$this->martyr->id}/attachments");
 
@@ -183,7 +192,8 @@ class AttachmentTest extends TestCase
         $otherMartyr = Martyr::factory()->create();
         $attachment = Attachment::factory()->forMartyr($otherMartyr)->create();
 
-        $response = $this->delete("/martyrs/{$this->martyr->id}/attachments/{$attachment->id}");
+        $response = $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class)
+            ->delete("/martyrs/{$this->martyr->id}/attachments/{$attachment->id}");
 
         $response->assertStatus(404);
 

@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
             BankSeeder::class,
             ParentsStatusesSeeder::class,
             MaritalStatusesSeeder::class,
+            MartyrsSeeder::class,
             // BranchSeeder::class,
             // MartyrSeeder::class,
             // AttachmentSeeder::class,

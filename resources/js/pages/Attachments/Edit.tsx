@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, type Martyr } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, FileText, Save, Upload, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +32,7 @@ interface Props {
 
 export default function Edit({ martyr, attachment, attachmentTypes }: Props) {
     const { t } = useTranslation();
+    const { toast } = useToast();
 
     const { data, setData, post, processing, errors } = useForm({
         attachment_type: attachment.attachment_type,
@@ -94,6 +96,7 @@ export default function Edit({ martyr, attachment, attachmentTypes }: Props) {
                 }
             },
             onSuccess: () => {
+                toast({ title: 'تم تحديث المرفق بنجاح', variant: 'success' });
                 setUploadProgress(null);
             },
             onError: () => {
