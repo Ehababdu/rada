@@ -9,3 +9,10 @@ storage/
 public/storage
 .env
 docker-compose.override.yml
+tests/
+tools/
+docs/
+*.log
+.DS_Store
+.vscode/
+.idea/

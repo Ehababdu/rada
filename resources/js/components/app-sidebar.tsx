@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/sidebar';
 import { isUserSuperAdmin } from '@/lib/permissions';
 import { dashboard } from '@/routes';
+import { index as activityLogIndex } from '@/routes/activity-log';
 import { index as attachmentTypesIndex } from '@/routes/attachment-types';
 import { index as banksIndex } from '@/routes/banks';
 import { index as compensationsIndex } from '@/routes/compensations';
@@ -36,6 +37,7 @@ import {
     DollarSign,
     FileText,
     GraduationCap,
+    History,
     LayoutGrid,
     Lock,
     Settings,
@@ -134,6 +136,12 @@ export const AppSidebar = memo(function AppSidebar() {
             title: t('navigation.system_management'),
             icon: Settings,
             items: [
+                {
+                    title: 'سجل الأنشطة',
+                    href: activityLogIndex.definition?.url ?? activityLogIndex(),
+                    icon: History,
+                    resource: 'activity-log',
+                },
                 {
                     title: t('navigation.attachment_types') || 'أنواع المرفقات',
                     href:

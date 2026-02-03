@@ -12,6 +12,10 @@ declare global {
         absolute?: boolean,
         config?: Config,
     ): string;
+
+    interface Window {
+        Echo?: any;
+    }
 }
 
 export interface Auth {

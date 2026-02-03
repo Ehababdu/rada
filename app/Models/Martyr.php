@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Martyr extends Model
 {
-    use HasFactory, Searchable, SoftDeletes;
+    use HasFactory, Searchable, SoftDeletes, LogsActivity;
 
     protected static function bootScout()
     {
@@ -264,5 +266,27 @@ class Martyr extends Model
             'created_at' => $this->created_at?->format('Y-m-d'),
             'updated_at' => $this->updated_at?->format('Y-m-d'),
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'full_name',
+                'father_name',
+                'mother_name',
+                'birth_date',
+                'death_date',
+                'military_rank_id',
+                'job_grade_id',
+                'employment_status_id',
+                'bank_id',
+                'branch_id',
+                'status',
+                'wife_status',
+                'children_count'
+            ])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

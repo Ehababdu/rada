@@ -6,13 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Attachment extends Model implements HasMedia
 {
-    use HasFactory, Searchable, InteractsWithMedia;
+    use HasFactory, Searchable, InteractsWithMedia, LogsActivity;
 
     protected $fillable = [
         'martyr_id',
@@ -108,4 +110,13 @@ class Attachment extends Model implements HasMedia
             'description' => $this->description,
         ];
     }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['martyr_id', 'attachment_type', 'original_filename', 'description'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 }
+

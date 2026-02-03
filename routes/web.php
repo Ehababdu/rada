@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\MaritalStatusesController;
 use App\Http\Controllers\Api\ParentsStatusesController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\AlertController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AttachmentTypeController;
 use App\Http\Controllers\BankController;
@@ -59,6 +61,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('permissions', PermissionController::class);
     Route::resource('roles', RoleController::class);
+    Route::resource('alerts', AlertController::class)->only(['index', 'show', 'destroy']);
+    Route::post('alerts/{alert}/mark-as-read', [AlertController::class, 'markAsRead'])->name('alerts.mark-as-read');
+    Route::post('alerts/{alert}/mark-as-unread', [AlertController::class, 'markAsUnread'])->name('alerts.mark-as-unread');
+    Route::post('alerts/mark-all-as-read', [AlertController::class, 'markAllAsRead'])->name('alerts.mark-all-as-read');
+    Route::resource('activity-log', ActivityLogController::class)->only(['index', 'show', 'destroy']);
     Route::get('api/search', [\App\Http\Controllers\Api\SearchController::class, 'search'])->name('api.search');
 });
 
