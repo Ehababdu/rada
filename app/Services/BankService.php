@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Bank;
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
 
 class BankService
 {

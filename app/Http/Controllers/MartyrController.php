@@ -267,20 +267,20 @@ class MartyrController extends Controller
         $martyrs = $query->with('militaryRank:id,name_ar', 'jobGrade:id,name_ar')->limit(500)->get()
             /** @phpstan-ignore-next-line */
             ->map(function (\App\Models\Martyr $m) {
-            return [
-                'id' => $m->id,
-                'full_name' => $m->full_name,
-                'national_id' => $m->national_id,
-                'job_grade_id' => $m->job_grade_id,
-                'jobGrade' => $m->jobGrade ? [
-                    'id' => $m->jobGrade->id,
-                    'name_ar' => $m->jobGrade->name_ar,
-                ] : null,
-                'military_rank' => $m->militaryRank?->name_ar,
-                'military_rank_id' => $m->military_rank_id,
-                'employment_status_id' => $m->employment_status_id,
-            ];
-        });
+                return [
+                    'id' => $m->id,
+                    'full_name' => $m->full_name,
+                    'national_id' => $m->national_id,
+                    'job_grade_id' => $m->job_grade_id,
+                    'jobGrade' => $m->jobGrade ? [
+                        'id' => $m->jobGrade->id,
+                        'name_ar' => $m->jobGrade->name_ar,
+                    ] : null,
+                    'military_rank' => $m->militaryRank?->name_ar,
+                    'military_rank_id' => $m->military_rank_id,
+                    'employment_status_id' => $m->employment_status_id,
+                ];
+            });
 
         return response()->json($martyrs);
     }
