@@ -33,6 +33,9 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
+// Add useToast import
+import { useToast } from '@/hooks/use-toast';
+
 interface SearchableSelectProps {
     value: string | number | null;
     onChange: (value: string | number | null) => void;
@@ -362,6 +365,7 @@ export default function Edit({
     employerLocations,
 }: Props) {
     const { t } = useTranslation();
+    const { toast } = useToast();
 
     const formatDateForInput = (d: unknown): string => {
         if (!d) return '';
@@ -700,8 +704,18 @@ export default function Edit({
             method: 'post',
             data: formData,
             onSuccess: () => {
+                toast({
+                    title: t('martyrs.updated_successfully'),
+                    variant: 'default',
+                });
                 // Redirect to martyrs list after successful update
                 router.visit('/martyrs');
+            },
+            onError: () => {
+                toast({
+                    title: t('error'),
+                    variant: 'destructive',
+                });
             },
         });
     };

@@ -109,17 +109,13 @@ class EmployerController extends Controller
      */
     public function edit(Employer $employer): \Inertia\Response
     {
-        $locations = EmployerLocation::active()->orderBy('name_ar')->get(['id', 'name_ar', 'name_en']);
-
         return Inertia::render('Employers/Edit', [
             'employer' => [
                 'id' => $employer->id,
                 'name_ar' => $employer->name_ar,
                 'name_en' => $employer->name_en,
-                'employer_location_id' => $employer->employer_location_id,
                 'is_active' => $employer->is_active,
             ],
-            'locations' => $locations,
         ]);
     }
 

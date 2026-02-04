@@ -33,6 +33,9 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
+// Add useToast import
+import { useToast } from '@/hooks/use-toast';
+
 interface SearchableSelectProps {
     value: string | number | null;
     onChange: (value: string | number | null) => void;
@@ -268,6 +271,7 @@ export default function Create({
     employerLocations,
 }: Props) {
     const { t } = useTranslation();
+    const { toast } = useToast();
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -447,7 +451,20 @@ export default function Create({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/martyrs');
+        post('/martyrs', {
+            onSuccess: () => {
+                toast({
+                    title: t('martyrs.created_successfully'),
+                    variant: 'default',
+                });
+            },
+            onError: () => {
+                toast({
+                    title: t('error'),
+                    variant: 'destructive',
+                });
+            },
+        });
     };
 
     return (

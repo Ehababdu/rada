@@ -101,8 +101,7 @@ class CompensationController extends Controller
      */
     public function create(Request $request): Response
     {
-        $martyrs = Martyr::where('marital_status_id', 1) // 1 = married
-            ->select('id', 'full_name', 'national_id', 'military_rank_id', 'parents_status_id', 'marital_status_id', 'children_count', 'wife_status')
+        $martyrs = Martyr::select('id', 'full_name', 'national_id', 'military_rank_id', 'parents_status_id', 'marital_status_id', 'children_count', 'wife_status')
             ->with('militaryRank:id,name_ar,name_en')
             ->orderBy('full_name')
             ->get()
@@ -194,8 +193,7 @@ class CompensationController extends Controller
     {
         $compensation->load('martyr');
 
-        $martyrs = Martyr::where('marital_status_id', 1) // 1 = married
-            ->select('id', 'full_name', 'national_id', 'military_rank_id')
+        $martyrs = Martyr::select('id', 'full_name', 'national_id', 'military_rank_id', 'parents_status_id', 'marital_status_id', 'children_count', 'wife_status')
             ->with('militaryRank:id,name_ar,name_en')
             ->orderBy('full_name')
             ->get()
@@ -206,6 +204,10 @@ class CompensationController extends Controller
                     'full_name' => $martyr->full_name,
                     'national_id' => $martyr->national_id,
                     'military_rank' => $martyr->militaryRank?->name_ar,
+                    'parents_status_id' => $martyr->parents_status_id,
+                    'marital_status_id' => $martyr->marital_status_id,
+                    'children_count' => $martyr->children_count,
+                    'wife_status' => $martyr->wife_status,
                 ];
             });
 
@@ -219,6 +221,8 @@ class CompensationController extends Controller
                 'recipient_passport_number' => $compensation->recipient_passport_number,
                 'amount' => $compensation->amount,
                 'receipt_date' => $compensation->receipt_date->format('Y-m-d'),
+                'months' => $compensation->months,
+                'martyr' => $compensation->martyr,
             ],
             'martyrs' => $martyrs,
         ]);

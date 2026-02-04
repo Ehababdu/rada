@@ -285,7 +285,7 @@ export default function Index({ attachmentTypes }: Props) {
                                                 {new Date(
                                                     attachmentType.created_at,
                                                 ).toLocaleDateString(
-                                                    isRTL ? 'ar-EG' : 'en-US',
+                                                    isRTL ? 'en-US' : 'en-US',
                                                 )}
                                             </TableCell>
                                             <TableCell>

@@ -35,7 +35,6 @@ class UpdateEmployerRequest extends FormRequest
                 'max:255',
                 Rule::unique('employers')->ignore($this->route('employer')->id),
             ],
-            'employer_location_id' => 'nullable|exists:employer_locations,id',
             'is_active' => 'boolean',
         ];
     }
@@ -46,7 +45,6 @@ class UpdateEmployerRequest extends FormRequest
             'name_ar.required' => __('Employer Arabic name is required.'),
             'name_ar.unique' => __('Employer Arabic name must be unique.'),
             'name_en.unique' => __('Employer English name must be unique.'),
-            'employer_location_id.exists' => __('Selected location does not exist.'),
         ];
     }
 
