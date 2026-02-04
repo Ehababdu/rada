@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alert;
 use App\Models\Compensation;
 use App\Models\Martyr;
 use App\Models\Promotion;
@@ -24,12 +25,19 @@ class DashboardController extends Controller
         // 3. Total Receipts (Compensations) paid in the current year
         $totalReceiptsThisYear = Compensation::whereYear('receipt_date', $currentYear)->sum('amount');
 
+        // 4. Recent Alerts (last 5 unread alerts)
+        $recentAlerts = Alert::unread()
+            ->latest()
+            ->take(5)
+            ->get(['id', 'title', 'message', 'created_at']);
+
         return Inertia::render('dashboard', [
             'stats' => [
                 'totalMartyrs' => $totalMartyrs,
                 'promotionsDueThisYear' => $promotionsDueThisYear,
                 'totalReceiptsThisYear' => $totalReceiptsThisYear,
             ],
+            'alerts' => $recentAlerts,
         ]);
     }
 }

@@ -1,6 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
+import { create as martyrsCreate, index as martyrsIndex } from '@/actions/App/Http/Controllers/MartyrController';
+import { index as promotionsIndex } from '@/actions/App/Http/Controllers/PromotionController';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import {
@@ -40,9 +42,15 @@ interface DashboardProps {
         promotionsDueThisYear: number;
         totalReceiptsThisYear: number;
     };
+    alerts: Array<{
+        id: number;
+        title: string;
+        message: string;
+        created_at: string;
+    }>;
 }
 
-export default function Dashboard({ stats }: DashboardProps) {
+export default function Dashboard({ stats, alerts }: DashboardProps) {
     const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(false);
 
@@ -147,19 +155,19 @@ export default function Dashboard({ stats }: DashboardProps) {
                                 <QuickAction
                                     icon={UserPlus}
                                     title="شهيد جديد"
-                                    href="#"
+                                    href={martyrsCreate().url}
                                     color="bg-blue-500"
                                 />
                                 <QuickAction
                                     icon={FileCheck}
                                     title="مراجعة ملفات"
-                                    href="#"
+                                    href={promotionsIndex().url}
                                     color="bg-purple-500"
                                 />
                                 <QuickAction
                                     icon={TrendingUp}
                                     title="الإحصائيات"
-                                    href="#"
+                                    href={dashboard().url}
                                     color="bg-emerald-500"
                                 />
                             </div>
@@ -180,19 +188,23 @@ export default function Dashboard({ stats }: DashboardProps) {
                                 التنبيهات الأخيرة
                             </h2>
                             <div className="space-y-6">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="group flex gap-4">
-                                        <div className="mt-1 size-2 rounded-full bg-primary/40 shadow-[0_0_10px_rgba(var(--primary),0.5)] transition-colors group-hover:bg-primary" />
-                                        <div className="space-y-1">
-                                            <p className="text-sm font-semibold text-foreground/90">
-                                                تحديث في رتبة الشهيد #2041
-                                            </p>
-                                            <p className="text-xs text-muted-foreground italic">
-                                                منذ 15 دقيقة
-                                            </p>
+                                {alerts.length > 0 ? (
+                                    alerts.map((alert) => (
+                                        <div key={alert.id} className="group flex gap-4">
+                                            <div className="mt-1 size-2 rounded-full bg-primary/40 shadow-[0_0_10px_rgba(var(--primary),0.5)] transition-colors group-hover:bg-primary" />
+                                            <div className="space-y-1">
+                                                <p className="text-sm font-semibold text-foreground/90">
+                                                    {alert.title}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground italic">
+                                                    {new Date(alert.created_at).toLocaleString('ar-LY')}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-muted-foreground">لا توجد تنبيهات جديدة</p>
+                                )}
                             </div>
                         </div>
                     </div>
