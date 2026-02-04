@@ -21,6 +21,10 @@ COPY composer.json composer.lock* ./
 # Install including dev dependencies so packages required for local/dev (like laravel/boost) are available
 RUN if [ -f composer.json ]; then composer install --optimize-autoloader --no-interaction --no-progress || true; fi
 
+# Install Node.js dependencies
+COPY package.json package-lock.json* ./
+RUN if [ -f package.json ]; then npm install --no-progress; fi
+
 # لا نسخ باقي الملفات هنا - سيتم ربطها عبر الأحجام
 # COPY . .  # <-- أزل هذا السطر
 
