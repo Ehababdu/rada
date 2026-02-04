@@ -80,5 +80,10 @@ Route::get('api/parents-statuses', [ParentsStatusesController::class, 'index'])-
 Route::get('api/marital-statuses', [MaritalStatusesController::class, 'index'])->name('api.marital-statuses.index');
 Route::get('api/permissions', [PermissionController::class, 'apiIndex'])->name('api.permissions.index');
 
+// Health check for production monitoring
+Route::get('/health', function () {
+    return response('OK', 200);
+});
+
 require __DIR__ . '/auth.php';
 require __DIR__ . '/settings.php';

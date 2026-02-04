@@ -8,6 +8,8 @@ storage/framework/testing
 storage/
 public/storage
 .env
+.env.*
+!.env.example
 docker-compose.override.yml
 tests/
 tools/
@@ -16,3 +18,15 @@ docs/
 .DS_Store
 .vscode/
 .idea/
+.phpunit.result.cache
+sail
+.php-cs-fixer.cache
+pint.json
+eslint.config.js
+postcss.config.js
+tailwind.config.js
+tsconfig.json
+jsconfig.json
+*.md
+!README.md
+!PRODUCTION_README.md

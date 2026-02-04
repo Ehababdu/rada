@@ -21,7 +21,8 @@ COPY composer.json composer.lock* ./
 # Install including dev dependencies so packages required for local/dev (like laravel/boost) are available
 RUN if [ -f composer.json ]; then composer install --optimize-autoloader --no-interaction --no-progress || true; fi
 
-COPY . .
+# لا نسخ باقي الملفات هنا - سيتم ربطها عبر الأحجام
+# COPY . .  # <-- أزل هذا السطر
 
 RUN chown -R sail:sail /var/www/html && chmod -R 755 /var/www/html/storage || true
 

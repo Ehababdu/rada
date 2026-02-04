@@ -7,7 +7,7 @@ services:
       args:
         # لتجنب مشاكل الصلاحيات في أوبنتو
         WWWGROUP: '${WWWGROUP:-1000}'
-    image: erp_system_app
+    image: rada_system_app
     container_name: laravel.test
     restart: always
     hostname: laravel.test
@@ -35,6 +35,7 @@ services:
   web:
     image: nginx:1.25-alpine
     container_name: laravel_nginx
+    restart: always
     ports:
       - "8080:80"
     volumes:
@@ -49,6 +50,7 @@ services:
   db:
     image: mysql:8.0
     container_name: laravel_db
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: erp
@@ -65,7 +67,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: laravel_redis
-    restart: unless-stopped
+    restart: always
     ports:
       - "6379:6379"
     networks:
@@ -75,7 +77,7 @@ services:
   meilisearch:
     image: getmeili/meilisearch:v1.8
     container_name: laravel_meilisearch
-    restart: unless-stopped
+    restart: always
     ports:
       - "7700:7700"
     environment:
@@ -89,7 +91,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: laravel_phpmyadmin
-    restart: unless-stopped
+    restart: always
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
