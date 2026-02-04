@@ -5,6 +5,34 @@
 - شهادة SSL صالحة (Let's Encrypt أو شهادة مدفوعة)
 - دومين مسجل ومُعد
 - خادم مع موارد كافية (2GB RAM على الأقل، 20GB مساحة)
+- حساب GitHub مع إعداد GitHub Actions
+
+## إعداد GitHub Integration
+
+### 1. رفع المشروع إلى GitHub
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/your-username/your-repo.git
+git push -u origin main
+```
+
+### 2. إعداد الأسرار في GitHub
+اذهب إلى Settings > Secrets and variables > Actions في مستودع GitHub وأضف:
+
+```
+PRODUCTION_HOST=your-server-ip-or-domain
+PRODUCTION_USER=your-ssh-username
+PRODUCTION_SSH_KEY=your-private-ssh-key-content
+PRODUCTION_PORT=22
+```
+
+### 3. تفعيل GitHub Container Registry
+تأكد من تفعيل "Improved container support" في Settings > Actions > General
+
+## خطوات الإعداد
 
 ## خطوات الإعداد
 
