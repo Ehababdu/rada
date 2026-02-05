@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 import type { Filters } from '../types/martyr';
 
 interface UseMartyrExportProps {
@@ -14,6 +16,8 @@ export function useMartyrExport({
     visibleColumns,
     selectedRows,
 }: UseMartyrExportProps) {
+    const { t } = useTranslation();
+    const { toast } = useToast();
     const [latestExportAvailable, setLatestExportAvailable] = useState<
         boolean | null
     >(null);
@@ -68,9 +72,19 @@ export function useMartyrExport({
                 params.append('ids', selectedIds.join(','));
             }
 
+            toast({
+                title: t('martyrs.export_started'),
+                description: t('martyrs.export_started_description'),
+                variant: 'default',
+            });
+
             window.open(`/martyrs/export?${params.toString()}`, '_blank');
         } catch {
-            // Ignore errors
+            toast({
+                title: t('common.error'),
+                description: t('martyrs.export_failed'),
+                variant: 'destructive',
+            });
         }
     };
 

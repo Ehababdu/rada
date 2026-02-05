@@ -708,8 +708,10 @@ export default function Edit({
                     title: t('martyrs.updated_successfully'),
                     variant: 'default',
                 });
-                // Redirect to martyrs list after successful update
-                router.visit('/martyrs');
+                // Redirect to martyrs list after successful update with a small delay to show the toast
+                setTimeout(() => {
+                    router.visit('/martyrs');
+                }, 1000);
             },
             onError: () => {
                 toast({

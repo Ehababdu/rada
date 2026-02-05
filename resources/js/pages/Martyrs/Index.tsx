@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { Head, router } from '@inertiajs/react';
-import { startTransition, useCallback, useMemo, useState } from 'react';
+import { startTransition, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Shadcn UI Components
@@ -24,6 +24,7 @@ import { type BreadcrumbItem } from '@/types';
 
 // Local imports
 import { usePermissions } from '@/hooks/use-permissions';
+import { useToast } from '@/hooks/use-toast';
 import { MartyrsActions } from './components/MartyrsActions';
 import { MartyrsDeleteDialog } from './components/MartyrsDeleteDialog';
 import { MartyrsFilters } from './components/MartyrsFilters';
@@ -49,6 +50,7 @@ export default function Index({
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
     const { can } = usePermissions('martyrs');
+    const { toast } = useToast();
     const { can: canAttachments } = usePermissions('attachments');
 
     const canViewAttachments = canAttachments('canRead');
@@ -67,6 +69,17 @@ export default function Index({
     );
     const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
+    // Show toast when rows are selected/deselected
+    useEffect(() => {
+        const selectedCount = Object.values(selectedRows).filter(Boolean).length;
+        if (selectedCount > 0) {
+            toast({
+                title: t('martyrs.rows_selected', { count: selectedCount }),
+                variant: 'default',
+            });
+        }
+    }, [selectedRows, toast, t]);
 
     // Hooks
     const {
