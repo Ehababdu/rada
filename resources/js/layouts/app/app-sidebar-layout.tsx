@@ -7,13 +7,14 @@ import { type PropsWithChildren } from 'react';
 
 import { Toaster } from '@/components/ui/sonner';
 import { useToastListener } from '@/hooks/use-toast-listener';
+import useNotifications from '@/hooks/use-notifications';
 
 export default function AppSidebarLayout({
     children,
     breadcrumbs = [],
 }: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[] }>) {
     useToastListener();
-    // useNotifications();
+    useNotifications();
 
     return (
         <AppShell variant="sidebar">

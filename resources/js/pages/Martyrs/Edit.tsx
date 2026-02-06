@@ -697,12 +697,7 @@ export default function Edit({
             },
         );
 
-        // include _method override so Laravel accepts PUT with multipart/form-data
-        formData.append('_method', 'PUT');
-
-        router.visit(`/martyrs/${martyr.id}`, {
-            method: 'post',
-            data: formData,
+        router.put(`/martyrs/${martyr.id}`, formData, {
             onSuccess: () => {
                 toast({
                     title: t('martyrs.updated_successfully'),

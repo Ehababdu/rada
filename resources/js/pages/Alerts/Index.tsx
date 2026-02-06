@@ -291,8 +291,7 @@ export default function Index({ alerts, filters }: Props) {
 
     const columnHelper = createColumnHelper<Alert>();
 
-    const columns = useMemo<ColumnDef<Alert, unknown>[]>(
-        () => [
+    const columns = useMemo(() => [
             columnHelper.accessor('id', {
                 header: '#',
                 cell: (info) => (
@@ -461,7 +460,7 @@ export default function Index({ alerts, filters }: Props) {
 
     const table = useReactTable({
         data: allAlerts,
-        columns,
+        columns: columns as ColumnDef<Alert, any>[],
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
         onColumnVisibilityChange: setColumnVisibility,
