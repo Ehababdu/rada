@@ -1,0 +1,20 @@
+{
+    "title": "التقارير",
+    "description": "نظرة شاملة على بيانات الشهداء والترقيات والمكافآت",
+    "total_martyrs": "إجمالي الشهداء",
+    "martyrs_registered": "شهيد مسجل",
+    "total_promotions": "إجمالي الترقيات",
+    "promotions_total": "ترقية مسجلة",
+    "total_compensations": "إجمالي المكافآت",
+    "compensations_total": "مكافأة مسجلة",
+    "pending_promotions": "الترقيات المعلقة",
+    "promotions_pending": "ترقية معلقة",
+    "martyrs_by_rank": "الشهداء حسب الرتبة",
+    "martyrs_by_rank_description": "توزيع الشهداء حسب رتبهم العسكرية",
+    "promotions_by_year": "الترقيات حسب السنة",
+    "promotions_by_year_description": "عدد الترقيات المستحقة كل سنة",
+    "recent_promotions": "أحدث الترقيات",
+    "recent_promotions_description": "آخر 5 ترقيات تم تسجيلها",
+    "recent_compensations": "أحدث المكافآت",
+    "recent_compensations_description": "آخر 5 مكافآت تم صرفها"
+}

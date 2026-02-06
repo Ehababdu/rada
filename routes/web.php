@@ -18,6 +18,7 @@ use App\Http\Controllers\MartyrController;
 use App\Http\Controllers\MilitaryRankController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('reports', [ReportsController::class, 'index'])->name('reports.index');
 
     Route::resource('martyrs', MartyrController::class);
     Route::get('martyrs/{martyr}/print', [MartyrController::class, 'print'])->name('martyrs.print');
