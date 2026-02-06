@@ -101,7 +101,12 @@ services:
     container_name: laravel_reverb
     restart: always
     working_dir: /var/www/html
-    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8082"]
+    # Wait for DB to be reachable before starting the long-running artisan command.
+    # Uses a short PHP loop (available in the app image) to probe TCP port 3306 on host 'db'.
+    # This prevents the process from starting while MySQL is restarting and avoids immediate
+    # connection-refused failures.
+    # Wait for TCP port 3306 on host 'db' using bash /dev/tcp (avoids PHP quoting issues).
+    command: ["bash", "-lc", "until echo > /dev/tcp/db/3306 2>/dev/null; do echo 'Waiting for db:3306...'; sleep 1; done; php artisan reverb:start --host=0.0.0.0 --port=8082"]
     environment:
       REVERB_HOST: 0.0.0.0
       REVERB_PORT: 8082
