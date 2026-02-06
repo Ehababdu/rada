@@ -252,16 +252,67 @@ export default function Show({ martyr }: Props) {
         },
     ];
 
+    const parentsStatusIdMap: Record<number, string> = {
+        1: 'كلا الوالدين متوفيان',
+        2: 'الأب حي',
+        3: 'الأم حية',
+        4: 'كلا الوالدين أحياء',
+    };
+
     const getParentsStatusLabel = (martyr: Martyr) => {
-        return martyr.parentsStatus?.name_ar || t('martyrs.no_data');
+        if (martyr.parentsStatus) {
+            return (
+                martyr.parentsStatus.name_ar ||
+                martyr.parentsStatus.name_en ||
+                parentsStatusIdMap[martyr.parents_status_id || 0] ||
+                t('martyrs.no_data')
+            );
+        }
+
+        return parentsStatusIdMap[martyr.parents_status_id || 0] || t('martyrs.no_data');
+    };
+
+    const maritalStatusIdMap: Record<number, string> = {
+        1: 'متزوج',
+        2: 'أعزب',
     };
 
     const getMaritalStatusLabel = (martyr: Martyr) => {
-        return martyr.maritalStatus?.name_ar || t('martyrs.no_data');
+        if (martyr.maritalStatus) {
+            return (
+                martyr.maritalStatus.name_ar ||
+                martyr.maritalStatus.name_en ||
+                maritalStatusIdMap[martyr.marital_status_id || 0] ||
+                t('martyrs.no_data')
+            );
+        }
+
+        return maritalStatusIdMap[martyr.marital_status_id || 0] || t('martyrs.no_data');
+    };
+
+    const employmentStatusIdMap: Record<number, string> = {
+        1: 'موظف',
+        2: 'عسكري',
     };
 
     const getEmploymentStatusLabel = (martyr: Martyr) => {
-        return martyr.employmentStatus?.name || t('martyrs.no_data');
+        if (martyr.employmentStatus) {
+            // employmentStatus may have `name` or `name_ar`
+            // prefer Arabic fields when available
+            // @ts-ignore
+            return (
+                // @ts-ignore
+                martyr.employmentStatus.name_ar ||
+                // @ts-ignore
+                martyr.employmentStatus.name ||
+                // @ts-ignore
+                martyr.employmentStatus.name_en ||
+                employmentStatusIdMap[martyr.employment_status_id || 0] ||
+                t('martyrs.no_data')
+            );
+        }
+
+        return employmentStatusIdMap[martyr.employment_status_id || 0] || t('martyrs.no_data');
     };
 
     return (
@@ -443,38 +494,13 @@ export default function Show({ martyr }: Props) {
                                 noDataText={t('martyrs.no_data')}
                             />
                         )}
-                        {martyr.has_previous_workplace && (
-                            <InfoField
-                                label={t('martyrs.has_previous_workplace')}
-                                value={t('common.yes') !== 'common.yes' ? t('common.yes') : 'نعم'}
-                                icon={Briefcase}
-                                noDataText={t('martyrs.no_data')}
-                            />
-                        )}
-                        {martyr.previousEmployer && (
-                            <InfoField
-                                label={t('martyrs.previous_employer')}
-                                value={martyr.previousEmployer.name_ar}
-                                icon={Briefcase}
-                                noDataText={t('martyrs.no_data')}
-                            />
-                        )}
-                        {martyr.previousEmployerLocation && (
-                            <InfoField
-                                label={t('martyrs.previous_employer_location')}
-                                value={martyr.previousEmployerLocation.name_ar}
-                                icon={MapPin}
-                                noDataText={t('martyrs.no_data')}
-                            />
-                        )}
-                        {martyr.previous_workplace && (
-                            <InfoField
-                                label={t('martyrs.previous_workplace')}
-                                value={martyr.previous_workplace}
-                                icon={Briefcase}
-                                noDataText={t('martyrs.no_data')}
-                            />
-                        )}
+                        <InfoField
+                            label={t('martyrs.has_previous_workplace')}
+                            value={martyr.has_previous_workplace ? (t('common.yes') !== 'common.yes' ? t('common.yes') : 'نعم') : 'لا'}
+                            icon={Briefcase}
+                            noDataText={t('martyrs.no_data')}
+                        />
+                        
                     </InfoCard>
 
                     {/* Military Information */}
@@ -496,6 +522,36 @@ export default function Show({ martyr }: Props) {
                                     label={t('martyrs.military_rank')}
                                     value={martyr.militaryRank.name_ar}
                                     icon={Shield}
+                                    noDataText={t('martyrs.no_data')}
+                                />
+                            )}
+                        </InfoCard>
+                    )}
+
+                    {/* Previous Employment */}
+                    {martyr.has_previous_workplace && (
+                        <InfoCard title={t('martyrs.previous_employment')} icon={Briefcase}>
+                            {martyr.previousEmployer && (
+                                <InfoField
+                                    label={t('martyrs.previous_employer')}
+                                    value={martyr.previousEmployer.name_ar}
+                                    icon={Briefcase}
+                                    noDataText={t('martyrs.no_data')}
+                                />
+                            )}
+                            {martyr.previousEmployerLocation && (
+                                <InfoField
+                                    label={t('martyrs.previous_employer_location')}
+                                    value={martyr.previousEmployerLocation.name_ar}
+                                    icon={MapPin}
+                                    noDataText={t('martyrs.no_data')}
+                                />
+                            )}
+                            {martyr.previous_workplace && (
+                                <InfoField
+                                    label={t('martyrs.previous_workplace')}
+                                    value={martyr.previous_workplace}
+                                    icon={Briefcase}
                                     noDataText={t('martyrs.no_data')}
                                 />
                             )}

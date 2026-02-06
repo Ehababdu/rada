@@ -88,6 +88,48 @@ export default function Print({ martyr }: Props) {
         });
     };
 
+    const parentsStatusIdMap: Record<number, string> = {
+        1: 'كلا الوالدين متوفيان',
+        2: 'الأب حي',
+        3: 'الأم حية',
+        4: 'كلا الوالدين أحياء',
+    };
+
+    const getParentsStatusLabel = (m: Martyr) => {
+        if (m.parentsStatus) {
+            return m.parentsStatus.name_ar || m.parentsStatus.name_en || parentsStatusIdMap[m.parents_status_id || 0] || t('martyrs.no_data');
+        }
+
+        return parentsStatusIdMap[m.parents_status_id || 0] || t('martyrs.no_data');
+    };
+
+    const maritalStatusIdMap: Record<number, string> = {
+        1: 'متزوج',
+        2: 'أعزب',
+    };
+
+    const getMaritalStatusLabel = (m: Martyr) => {
+        if (m.maritalStatus) {
+            return m.maritalStatus.name_ar || m.maritalStatus.name_en || maritalStatusIdMap[m.marital_status_id || 0] || t('martyrs.no_data');
+        }
+
+        return maritalStatusIdMap[m.marital_status_id || 0] || t('martyrs.no_data');
+    };
+
+    const employmentStatusIdMap: Record<number, string> = {
+        1: 'موظف',
+        2: 'عسكري',
+    };
+
+    const getEmploymentStatusLabel = (m: Martyr) => {
+        if (m.employmentStatus) {
+            // prefer Arabic, then generic `name`, then English
+            return m.employmentStatus.name_ar || m.employmentStatus.name || m.employmentStatus.name_en || employmentStatusIdMap[m.employment_status_id || 0] || t('martyrs.no_data');
+        }
+
+        return employmentStatusIdMap[m.employment_status_id || 0] || t('martyrs.no_data');
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`${t('martyrs.martyr_details')} - ${martyr.full_name}`} />
@@ -207,14 +249,14 @@ export default function Print({ martyr }: Props) {
                                 <span className="font-medium text-gray-700 dark:text-gray-300">
                                     {t('martyrs.parents_status')}:
                                 </span>
-                                <span className="ml-2">{martyr.parentsStatus?.name_ar || t('martyrs.no_data')}</span>
+                                <span className="ml-2">{getParentsStatusLabel(martyr)}</span>
                             </div>
-                            <div>
-                                <span className="font-medium text-gray-700 dark:text-gray-300">
-                                    {t('martyrs.marital_status')}:
-                                </span>
-                                <span className="ml-2">{martyr.maritalStatus?.name_ar || t('martyrs.no_data')}</span>
-                            </div>
+                                <div>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                                        {t('martyrs.marital_status')}:
+                                    </span>
+                                    <span className="ml-2">{getMaritalStatusLabel(martyr)}</span>
+                                </div>
                             {martyr.children_count && (
                                 <div>
                                     <span className="font-medium text-gray-700 dark:text-gray-300">
@@ -235,7 +277,7 @@ export default function Print({ martyr }: Props) {
                                 <span className="font-medium text-gray-700 dark:text-gray-300">
                                     لديه مكان عمل سابق:
                                 </span>
-                                <span className="ml-2">{martyr.has_previous_workplace ? (t('common.yes') !== 'common.yes' ? t('common.yes') : 'نعم') : t('martyrs.no_data')}</span>
+                                <span className="ml-2">{martyr.has_previous_workplace ? (t('common.yes') !== 'common.yes' ? t('common.yes') : 'نعم') : 'لا'}</span>
                             </div>
                         </div>
                     </CardContent>
