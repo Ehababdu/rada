@@ -144,6 +144,10 @@
     "error": "خطأ",
     "failed_to_load_branches": "فشل في تحميل الفروع",
     "filters": "الفلاتر",
+    "validation": {
+        "errors_occurred": "حدثت أخطاء في التحقق",
+        "please_check_fields": "يرجى التحقق من الحقول المميزة بالأحمر"
+    },
     "banks": {
         "actions": "الإجراءات",
         "active": "نشط",

@@ -17,6 +17,10 @@ services:
       WWWUSER: '${WWWUSER:-1000}'
       # لإجبار Vite على مراقبة التغييرات في Docker
       CHOKIDAR_USEPOLLING: 'true'
+      VITE_REVERB_APP_KEY: 'local'
+      VITE_REVERB_HOST: 'localhost'
+      VITE_REVERB_PORT: '8082'
+      VITE_REVERB_SCHEME: 'http'
     volumes:
       - ./:/var/www/html:delegated
       # حماية المكتبات من التداخل مع ملفات النظام المضيف

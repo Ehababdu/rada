@@ -453,10 +453,7 @@ export default function Create({
         e.preventDefault();
         post('/martyrs', {
             onSuccess: () => {
-                toast({
-                    title: t('martyrs.created_successfully'),
-                    variant: 'default',
-                });
+                // Flash message handled globally
             },
             onError: () => {
                 toast({
@@ -736,62 +733,62 @@ export default function Create({
                         {maritalStatusesState.find(
                             (status) => status.id === data.marital_status_id,
                         )?.name_ar === 'متزوج' && (
-                            <FormField
-                                icon={Users}
-                                label={t('martyrs.children_count')}
-                                placeholder={t('martyrs.enter_children_count')}
-                                error={errors.children_count}
-                            >
-                                <Input
-                                    id="children_count"
-                                    type="number"
-                                    min="0"
-                                    value={
-                                        data.children_count?.toString() || ''
-                                    }
-                                    onChange={(e) =>
-                                        setData(
-                                            'children_count',
-                                            e.target.value
-                                                ? parseInt(e.target.value)
-                                                : null,
-                                        )
-                                    }
-                                    placeholder={t(
-                                        'martyrs.enter_children_count',
-                                    )}
-                                    className="w-full"
-                                />
-                            </FormField>
-                        )}
+                                <FormField
+                                    icon={Users}
+                                    label={t('martyrs.children_count')}
+                                    placeholder={t('martyrs.enter_children_count')}
+                                    error={errors.children_count}
+                                >
+                                    <Input
+                                        id="children_count"
+                                        type="number"
+                                        min="0"
+                                        value={
+                                            data.children_count?.toString() || ''
+                                        }
+                                        onChange={(e) =>
+                                            setData(
+                                                'children_count',
+                                                e.target.value
+                                                    ? parseInt(e.target.value)
+                                                    : null,
+                                            )
+                                        }
+                                        placeholder={t(
+                                            'martyrs.enter_children_count',
+                                        )}
+                                        className="w-full"
+                                    />
+                                </FormField>
+                            )}
 
                         {maritalStatusesState.find(
                             (status) => status.id === data.marital_status_id,
                         )?.name_ar === 'متزوج' && (
-                            <FormField
-                                icon={Heart}
-                                label="حالة الزوجة"
-                                error={errors.wife_status}
-                            >
-                                <Select
-                                    onValueChange={(value) =>
-                                        setData('wife_status', value)
-                                    }
+                                <FormField
+                                    icon={Heart}
+                                    label="حالة الزوجة"
+                                    error={errors.wife_status}
                                 >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="اختر حالة الزوجة" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="ارملة">
-                                            ارملة
-                                        </SelectItem>
-                                        <SelectItem value="متزوجة">
-                                            متزوجة
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormField>
-                        )}
+                                    <Select
+                                        onValueChange={(value) =>
+                                            setData('wife_status', value)
+                                        }
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="اختر حالة الزوجة" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="ارملة">
+                                                ارملة
+                                            </SelectItem>
+                                            <SelectItem value="متزوجة">
+                                                متزوجة
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormField>
+                            )}
 
                         <FormField
                             icon={Briefcase}
@@ -871,29 +868,29 @@ export default function Create({
                                 selectedStatus.name_ar === 'موظف'
                             );
                         })() && (
-                            <FormField
-                                icon={Briefcase}
-                                label={t('martyrs.job_grade')}
-                                error={errors.job_grade_id}
-                            >
-                                <SearchableSelect
-                                    value={data.job_grade_id}
-                                    onChange={(value) =>
-                                        setData(
-                                            'job_grade_id',
-                                            value ? Number(value) : null,
-                                        )
-                                    }
-                                    options={jobGradesState.map((grade) => ({
-                                        id: grade.id,
-                                        name_ar: grade.name_ar,
-                                        name_en: grade.name_en,
-                                    }))}
-                                    placeholder={t('martyrs.select_job_grade')}
-                                    loading={loadingJobGrades}
-                                />
-                            </FormField>
-                        )}
+                                <FormField
+                                    icon={Briefcase}
+                                    label={t('martyrs.job_grade')}
+                                    error={errors.job_grade_id}
+                                >
+                                    <SearchableSelect
+                                        value={data.job_grade_id}
+                                        onChange={(value) =>
+                                            setData(
+                                                'job_grade_id',
+                                                value ? Number(value) : null,
+                                            )
+                                        }
+                                        options={jobGradesState.map((grade) => ({
+                                            id: grade.id,
+                                            name_ar: grade.name_ar,
+                                            name_en: grade.name_en,
+                                        }))}
+                                        placeholder={t('martyrs.select_job_grade')}
+                                        loading={loadingJobGrades}
+                                    />
+                                </FormField>
+                            )}
 
                         <FormField
                             icon={Briefcase}
@@ -977,51 +974,51 @@ export default function Create({
                                 .includes('عسكري')
                         );
                     })() && (
-                        <FormSection title={t('martyrs.military_info')}>
-                            <FormField
-                                icon={Shield}
-                                label={t('martyrs.military_number')}
-                                placeholder={t('martyrs.enter_military_number')}
-                                error={errors.military_number}
-                            >
-                                <Input
-                                    id="military_number"
-                                    value={data.military_number || ''}
-                                    onChange={(e) =>
-                                        setData(
-                                            'military_number',
-                                            e.target.value,
-                                        )
-                                    }
-                                    placeholder={t(
-                                        'martyrs.enter_military_number',
-                                    )}
-                                    className="w-full"
-                                />
-                            </FormField>
+                            <FormSection title={t('martyrs.military_info')}>
+                                <FormField
+                                    icon={Shield}
+                                    label={t('martyrs.military_number')}
+                                    placeholder={t('martyrs.enter_military_number')}
+                                    error={errors.military_number}
+                                >
+                                    <Input
+                                        id="military_number"
+                                        value={data.military_number || ''}
+                                        onChange={(e) =>
+                                            setData(
+                                                'military_number',
+                                                e.target.value,
+                                            )
+                                        }
+                                        placeholder={t(
+                                            'martyrs.enter_military_number',
+                                        )}
+                                        className="w-full"
+                                    />
+                                </FormField>
 
-                            <FormField
-                                icon={Shield}
-                                label={t('martyrs.military_rank')}
-                                error={errors.military_rank_id}
-                            >
-                                <SearchableSelect
-                                    value={data.military_rank_id}
-                                    onChange={(value) =>
-                                        setData(
-                                            'military_rank_id',
-                                            value ? Number(value) : null,
-                                        )
-                                    }
-                                    options={militaryRanksState}
-                                    placeholder={t(
-                                        'martyrs.select_military_rank',
-                                    )}
-                                    loading={loadingRanks}
-                                />
-                            </FormField>
-                        </FormSection>
-                    )}
+                                <FormField
+                                    icon={Shield}
+                                    label={t('martyrs.military_rank')}
+                                    error={errors.military_rank_id}
+                                >
+                                    <SearchableSelect
+                                        value={data.military_rank_id}
+                                        onChange={(value) =>
+                                            setData(
+                                                'military_rank_id',
+                                                value ? Number(value) : null,
+                                            )
+                                        }
+                                        options={militaryRanksState}
+                                        placeholder={t(
+                                            'martyrs.select_military_rank',
+                                        )}
+                                        loading={loadingRanks}
+                                    />
+                                </FormField>
+                            </FormSection>
+                        )}
 
                     {/* Banking Information */}
                     <FormSection title={t('martyrs.banking_info')}>

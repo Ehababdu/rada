@@ -20,7 +20,7 @@ class ReverbServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Broadcast::routes(['middleware' => ['auth']]);
+        Broadcast::routes();
 
         Broadcast::channel('alerts.{id}', function ($user, $id) {
             return (int) $user->id === (int) $id;

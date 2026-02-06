@@ -14,7 +14,7 @@ declare global {
     ): string;
 
     interface Window {
-        Echo?: unknown;
+        Echo?: any;
     }
 }
 
