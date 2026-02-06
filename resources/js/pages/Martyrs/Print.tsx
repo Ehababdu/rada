@@ -202,18 +202,18 @@ export default function Print({ martyr }: Props) {
                         <CardTitle className="text-xl">{t('martyrs.family_status')}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <span className="font-medium text-gray-700 dark:text-gray-300">
                                     {t('martyrs.parents_status')}:
                                 </span>
-                                <span className="ml-2">{martyr.parentsStatus?.name_ar}</span>
+                                <span className="ml-2">{martyr.parentsStatus?.name_ar || t('martyrs.no_data')}</span>
                             </div>
                             <div>
                                 <span className="font-medium text-gray-700 dark:text-gray-300">
                                     {t('martyrs.marital_status')}:
                                 </span>
-                                <span className="ml-2">{martyr.maritalStatus?.name_ar}</span>
+                                <span className="ml-2">{martyr.maritalStatus?.name_ar || t('martyrs.no_data')}</span>
                             </div>
                             {martyr.children_count && (
                                 <div>
@@ -231,6 +231,12 @@ export default function Print({ martyr }: Props) {
                                     <span className="ml-2">{martyr.wife_status}</span>
                                 </div>
                             )}
+                            <div>
+                                <span className="font-medium text-gray-700 dark:text-gray-300">
+                                    لديه مكان عمل سابق:
+                                </span>
+                                <span className="ml-2">{martyr.has_previous_workplace ? (t('common.yes') !== 'common.yes' ? t('common.yes') : 'نعم') : t('martyrs.no_data')}</span>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

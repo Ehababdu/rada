@@ -181,7 +181,23 @@ class MartyrService
             $data['art_image'] = $request->file('art_image')->store('martyrs/art', 'public');
         }
 
-        return Martyr::create($data);
+        $martyr = Martyr::create($data);
+
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تمت إضافة شهيد جديد",
+                'message' => "تمت إضافة الشهيد {$martyr->full_name} بنجاح.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'martyr_id' => $martyr->id,
+                    'action' => 'create'
+                ]
+            ]);
+        }
+
+        return $martyr;
     }
 
     public function updateMartyr(Martyr $martyr, array $data, Request $request): Martyr
@@ -231,7 +247,24 @@ class MartyrService
 
     public function deleteMartyr(Martyr $martyr): void
     {
+        $martyrId = $martyr->id;
+        $martyrName = $martyr->full_name;
+        
         $martyr->delete();
+
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "حذف شهيد",
+                'message' => "تم حذف الشهيد {$martyrName}",
+                'type' => 'warning',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'martyr_id' => $martyrId,
+                    'action' => 'delete'
+                ]
+            ]);
+        }
     }
 
     /**

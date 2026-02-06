@@ -10,6 +10,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Models\Alert;
 
 class RoleController extends Controller
 {
@@ -66,6 +67,20 @@ class RoleController extends Controller
             $role->syncPermissions($data['permissions']);
         }
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تمت إضافة دور جديد",
+                'message' => "تمت إضافة الدور {$role->name} بنجاح.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'role_id' => $role->id,
+                    'action' => 'create'
+                ]
+            ]);
+        }
+
         return redirect()->route('roles.index')
             ->with('success', 'تم إنشاء الدور بنجاح');
     }
@@ -115,6 +130,20 @@ class RoleController extends Controller
             $role->syncPermissions($data['permissions']);
         }
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تحديث بيانات الدور",
+                'message' => "تم تحديث بيانات الدور {$role->name} بنجاح.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'role_id' => $role->id,
+                    'action' => 'update'
+                ]
+            ]);
+        }
+
         return redirect()->route('roles.index')
             ->with('success', 'تم تحديث الدور بنجاح');
     }
@@ -130,7 +159,24 @@ class RoleController extends Controller
             return back()->withErrors(['error' => 'لا يمكن حذف الدور لأنه مرتبط بمستخدمين']);
         }
 
+        $roleId = $role->id;
+        $roleName = $role->name;
+
         $role->delete();
+
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "حذف دور",
+                'message' => "تم حذف الدور {$roleName}",
+                'type' => 'warning',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'role_id' => $roleId,
+                    'action' => 'delete'
+                ]
+            ]);
+        }
 
         return redirect()->route('roles.index')
             ->with('success', 'تم حذف الدور بنجاح');

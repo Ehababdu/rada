@@ -446,7 +446,7 @@ export default function Show({ martyr }: Props) {
                         {martyr.has_previous_workplace && (
                             <InfoField
                                 label={t('martyrs.has_previous_workplace')}
-                                value={t('common.yes')}
+                                value={t('common.yes') !== 'common.yes' ? t('common.yes') : 'نعم'}
                                 icon={Briefcase}
                                 noDataText={t('martyrs.no_data')}
                             />
@@ -464,6 +464,14 @@ export default function Show({ martyr }: Props) {
                                 label={t('martyrs.previous_employer_location')}
                                 value={martyr.previousEmployerLocation.name_ar}
                                 icon={MapPin}
+                                noDataText={t('martyrs.no_data')}
+                            />
+                        )}
+                        {martyr.previous_workplace && (
+                            <InfoField
+                                label={t('martyrs.previous_workplace')}
+                                value={martyr.previous_workplace}
+                                icon={Briefcase}
                                 noDataText={t('martyrs.no_data')}
                             />
                         )}
