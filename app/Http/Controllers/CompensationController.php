@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Compensation;
 use App\Models\Martyr;
+use App\Models\Alert;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -156,7 +157,22 @@ class CompensationController extends Controller
             $validated['amount'] = $baseAmount * $monthsCount;
         }
 
-        Compensation::create($validated);
+        $compensation = Compensation::create($validated);
+
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تمت إضافة مكافأة جديدة",
+                'message' => "تمت إضافة مكافأة مالية للشهيد #{$martyr->id}",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'compensation_id' => $compensation->id,
+                    'martyr_id' => $martyr->id,
+                    'action' => 'create'
+                ]
+            ]);
+        }
 
         return redirect()->route('compensations.index')
             ->with('success', 'تم إضافة المكافاة بنجاح');
@@ -243,6 +259,21 @@ class CompensationController extends Controller
 
         $compensation->update($validated);
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تحديث بيانات المكافأة",
+                'message' => "تم تحديث بيانات المكافأة للشهيد #{$compensation->martyr_id}",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'compensation_id' => $compensation->id,
+                    'martyr_id' => $compensation->martyr_id,
+                    'action' => 'update'
+                ]
+            ]);
+        }
+
         return redirect()->route('compensations.index')
             ->with('success', 'تم تحديث المكافاة بنجاح');
     }
@@ -252,7 +283,22 @@ class CompensationController extends Controller
      */
     public function destroy(Compensation $compensation): RedirectResponse
     {
+        $martyrId = $compensation->martyr_id;
         $compensation->delete();
+
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "حذف مكافأة",
+                'message' => "تم حذف مكافأة للشهيد #{$martyrId}",
+                'type' => 'warning',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'martyr_id' => $martyrId,
+                    'action' => 'delete'
+                ]
+            ]);
+        }
 
         return redirect()->route('compensations.index')
             ->with('success', 'تم حذف المكافاة بنجاح');

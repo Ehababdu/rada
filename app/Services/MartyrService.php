@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Martyr;
+use App\Models\Alert;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
@@ -210,6 +211,20 @@ class MartyrService
         }
 
         $martyr->update($data);
+
+        // Create alert for the update
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تحديث بيانات الشهيد #{$martyr->id}",
+                'message' => "تم تحديث بيانات الشهيد {$martyr->full_name} بنجاح.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'martyr_id' => $martyr->id,
+                    'action' => 'update'
+                ]
+            ]);
+        }
 
         return $martyr;
     }

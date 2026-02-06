@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateAttachmentRequest;
 use App\Models\Attachment;
 use App\Models\AttachmentType;
 use App\Models\Martyr;
+use App\Models\Alert;
 use App\Services\AttachmentService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -116,6 +117,21 @@ class AttachmentController extends Controller
 
         $attachment = $this->attachmentService->createAttachment($martyr, $request->validated(), $request);
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تم تحميل مرفق جديد",
+                'message' => "تم تحميل مرفق جديد للشهيد #{$martyr->id}",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'attachment_id' => $attachment->id,
+                    'martyr_id' => $martyr->id,
+                    'action' => 'create'
+                ]
+            ]);
+        }
+
         return redirect()->route('martyrs.attachments.index', $martyr)->with('success', 'تم تحميل المرفق بنجاح.');
     }
 
@@ -165,6 +181,21 @@ class AttachmentController extends Controller
 
         $this->attachmentService->updateAttachment($attachment, $request->validated(), $request);
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تحديث مرفق",
+                'message' => "تم تحديث بيانات ملف مرفق للشهيد #{$martyr->id}",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'attachment_id' => $attachment->id,
+                    'martyr_id' => $martyr->id,
+                    'action' => 'update'
+                ]
+            ]);
+        }
+
         return redirect()->route('martyrs.attachments.index', $martyr)
             ->with('success', 'تم تحديث المرفق بنجاح');
     }
@@ -180,6 +211,20 @@ class AttachmentController extends Controller
         }
 
         $this->attachmentService->deleteAttachment($attachment);
+
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "حذف مرفق",
+                'message' => "تم حذف ملف مرفق للشهيد #{$martyr->id}",
+                'type' => 'warning',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'martyr_id' => $martyr->id,
+                    'action' => 'delete'
+                ]
+            ]);
+        }
 
         return redirect()->route('martyrs.attachments.index', $martyr)
             ->with('success', 'تم حذف المرفق بنجاح');
