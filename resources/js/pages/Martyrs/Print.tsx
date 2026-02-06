@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { Printer, ArrowLeft } from 'lucide-react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,7 +44,7 @@ interface Martyr {
     militaryRank?: { id: number; name_ar: string; name_en: string | null };
     bank?: { id: number; name_ar: string; name_en: string | null };
     branch?: { id: number; name_ar: string; name_en: string | null };
-    employmentStatus?: { id: number; name: string };
+    employmentStatus?: { id: number; name?: string; name_ar?: string; name_en?: string };
     parentsStatus?: { id: number; name_ar: string; name_en: string | null };
     maritalStatus?: { id: number; name_ar: string; name_en: string | null };
     employer?: { id: number; name_ar: string; name_en: string | null };
@@ -59,7 +59,6 @@ interface Props {
 
 export default function Print({ martyr }: Props) {
     const { t } = useTranslation();
-    const { data } = useForm();
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
