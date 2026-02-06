@@ -28,16 +28,34 @@ import {
     Trash2,
     User as UserIcon,
 } from 'lucide-react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
     user: User;
+    flash: {
+        success?: string;
+        error?: string;
+        message?: string;
+    };
 }
 
-export default function Show({ user }: Props) {
+export default function Show({ user, flash }: Props) {
     const { t } = useTranslation();
     const { toast } = useToast();
     const { can } = usePermissions('users');
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -53,11 +71,7 @@ export default function Show({ user }: Props) {
     const handleDelete = () => {
         router.delete(`/users/${user.id}`, {
             onSuccess: () => {
-                toast(t('users.delete_success'), { variant: 'success' });
                 router.visit('/users');
-            },
-            onError: () => {
-                toast(t('common.error'), { variant: 'destructive' });
             },
         });
     };

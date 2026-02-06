@@ -12,9 +12,30 @@ import {
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
+import { useEffect } from 'react';
 
-export default function Create() {
+interface Props {
+    flash: {
+        success?: string;
+        error?: string;
+        message?: string;
+    };
+}
+
+export default function Create({ flash }: Props) {
     const { toast } = useToast();
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
 
     const { data, setData, post, processing, errors, reset } = useForm({
         label: '',
@@ -22,21 +43,7 @@ export default function Create() {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(attachmentTypesStore.url(), {
-            onSuccess: () => {
-                toast({
-                    title: 'تم الإنشاء',
-                    description: 'تم إضافة نوع المرفق بنجاح',
-                });
-            },
-            onError: () => {
-                toast({
-                    title: 'خطأ',
-                    description: 'حدث خطأ أثناء إضافة نوع المرفق',
-                    variant: 'destructive',
-                });
-            },
-        });
+        post(attachmentTypesStore.url());
     };
 
     const breadcrumbs: BreadcrumbItem[] = [

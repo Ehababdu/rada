@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use App\Models\Alert;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {

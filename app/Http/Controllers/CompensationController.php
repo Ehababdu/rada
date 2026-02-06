@@ -163,7 +163,7 @@ class CompensationController extends Controller
         if (auth()->check()) {
             Alert::create([
                 'title' => "تمت إضافة مكافأة جديدة",
-                'message' => "تمت إضافة مكافأة مالية للشهيد #{$martyr->id}",
+                'message' => "تمت إضافة مكافأة مالية للشهيد {$martyr->full_name}",
                 'type' => 'success',
                 'user_id' => auth()->id(),
                 'data' => [
@@ -263,7 +263,7 @@ class CompensationController extends Controller
         if (auth()->check()) {
             Alert::create([
                 'title' => "تحديث بيانات المكافأة",
-                'message' => "تم تحديث بيانات المكافأة للشهيد #{$compensation->martyr_id}",
+                'message' => "تم تحديث بيانات المكافأة للشهيد {$compensation->martyr->full_name}",
                 'type' => 'success',
                 'user_id' => auth()->id(),
                 'data' => [
@@ -290,7 +290,7 @@ class CompensationController extends Controller
         if (auth()->check()) {
             Alert::create([
                 'title' => "حذف مكافأة",
-                'message' => "تم حذف مكافأة للشهيد #{$martyrId}",
+                'message' => "تم حذف مكافأة للشهيد {$compensation->martyr->full_name}",
                 'type' => 'warning',
                 'user_id' => auth()->id(),
                 'data' => [

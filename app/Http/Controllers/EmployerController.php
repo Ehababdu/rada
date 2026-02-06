@@ -36,11 +36,6 @@ class EmployerController extends Controller
                 'id' => $employer->id,
                 'name_ar' => $employer->name_ar,
                 'name_en' => $employer->name_en,
-                'location' => $employer->location ? [
-                    'id' => $employer->location->id,
-                    'name_ar' => $employer->location->name_ar,
-                    'name_en' => $employer->location->name_en,
-                ] : null,
                 'is_active' => $employer->is_active,
                 'created_at' => $employer->created_at->format('d/m/Y'),
                 'updated_at' => $employer->updated_at->format('d/m/Y'),
@@ -58,10 +53,7 @@ class EmployerController extends Controller
      */
     public function create(): \Inertia\Response
     {
-        $locations = EmployerLocation::active()->orderBy('name_ar')->get(['id', 'name_ar', 'name_en']);
-
         return Inertia::render('Employers/Create', [
-            'locations' => $locations,
         ]);
     }
 
@@ -73,7 +65,6 @@ class EmployerController extends Controller
         Employer::create([
             'name_ar' => $request->name_ar,
             'name_en' => $request->name_en,
-            'employer_location_id' => $request->employer_location_id,
             'is_active' => $request->is_active ?? true,
             'created_by' => auth()->id(),
         ]);
@@ -92,11 +83,6 @@ class EmployerController extends Controller
                 'id' => $employer->id,
                 'name_ar' => $employer->name_ar,
                 'name_en' => $employer->name_en,
-                'location' => $employer->location ? [
-                    'id' => $employer->location->id,
-                    'name_ar' => $employer->location->name_ar,
-                    'name_en' => $employer->location->name_en,
-                ] : null,
                 'is_active' => $employer->is_active,
                 'created_at' => $employer->created_at->format('d/m/Y H:i'),
                 'updated_at' => $employer->updated_at->format('d/m/Y H:i'),
@@ -158,7 +144,7 @@ class EmployerController extends Controller
             })
             ->where('is_active', true)
             ->orderBy('name_ar')
-            ->get(['id', 'name_ar', 'name_en', 'employer_location_id']);
+            ->get(['id', 'name_ar', 'name_en']);
 
         return response()->json($employers);
     }

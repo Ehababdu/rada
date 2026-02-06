@@ -23,6 +23,7 @@ import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, SquarePen, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 
 interface EmploymentStatus {
     id: number;
@@ -39,21 +40,26 @@ interface Props {
     };
 }
 
-export default function Show({ employmentStatus }: Props) {
+export default function Show({ employmentStatus, flash }: Props) {
     const { t } = useTranslation();
     const { toast } = useToast();
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+    }, [flash, toast]);
 
     const handleDelete = () => {
         router.delete(employmentStatusesDestroy(employmentStatus.id).url, {
             onSuccess: () => {
-                toast(t('success'), {
-                    variant: 'default',
-                });
+                toast({ title: t('success'), variant: 'success' });
             },
             onError: () => {
-                toast(t('error'), {
-                    variant: 'destructive',
-                });
+                toast({ title: t('error'), variant: 'destructive' });
             },
         });
     };

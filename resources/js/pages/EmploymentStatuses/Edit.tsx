@@ -8,6 +8,7 @@ import { BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 
 interface EmploymentStatus {
     id: number;
@@ -22,9 +23,18 @@ interface Props {
     };
 }
 
-export default function Edit({ employmentStatus }: Props) {
+export default function Edit({ employmentStatus, flash }: Props) {
     const { t } = useTranslation();
     const { toast } = useToast();
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+    }, [flash, toast]);
 
     const { data, setData, put, processing, errors } = useForm({
         name: employmentStatus.name,
@@ -32,18 +42,7 @@ export default function Edit({ employmentStatus }: Props) {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/employment-statuses/${employmentStatus.id}`, {
-            onSuccess: () => {
-                toast(t('success'), {
-                    variant: 'default',
-                });
-            },
-            onError: () => {
-                toast(t('error'), {
-                    variant: 'destructive',
-                });
-            },
-        });
+        put(`/employment-statuses/${employmentStatus.id}`);
     };
 
     const breadcrumbs: BreadcrumbItem[] = [

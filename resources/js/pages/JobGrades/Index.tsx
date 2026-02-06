@@ -15,6 +15,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/data-table';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
@@ -32,7 +33,7 @@ import {
     Trash2,
     XCircle,
 } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface JobGrade {
@@ -62,11 +63,29 @@ interface Props {
         direction?: string;
         per_page?: number;
     };
+    flash: {
+        success?: string;
+        error?: string;
+        message?: string;
+    };
 }
 
-export default function Index({ jobGrades, filters }: Props) {
+export default function Index({ jobGrades, filters, flash }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
+    const { toast } = useToast();
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
     const [search, setSearch] = useState(filters.search || '');
     const [isActiveFilter, setIsActiveFilter] = useState(
         filters.is_active || '',
@@ -120,7 +139,14 @@ export default function Index({ jobGrades, filters }: Props) {
     };
 
     const handleDelete = (id: number) => {
-        router.delete(`/job-grades/${id}`);
+        router.delete(`/job-grades/${id}`, {
+            onSuccess: () => {
+                // Flash message will be handled by useEffect
+            },
+            onError: () => {
+                // Flash message will be handled by useEffect
+            },
+        });
     };
 
     const columns: ColumnDef<JobGrade>[] = [

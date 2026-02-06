@@ -22,6 +22,7 @@ import {
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, SquarePen, Trash2 } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface AttachmentType {
     id: number;
@@ -35,28 +36,27 @@ interface Props {
     flash: {
         success?: string;
         error?: string;
+        message?: string;
     };
 }
 
-export default function Show({ attachmentType }: Props) {
+export default function Show({ attachmentType, flash }: Props) {
     const { toast } = useToast();
 
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
+
     const handleDelete = () => {
-        router.delete(attachmentTypesDestroy.url(attachmentType.id), {
-            onSuccess: () => {
-                toast({
-                    title: 'تم الحذف',
-                    description: 'تم حذف نوع المرفق بنجاح',
-                });
-            },
-            onError: () => {
-                toast({
-                    title: 'خطأ',
-                    description: 'حدث خطأ أثناء حذف نوع المرفق',
-                    variant: 'destructive',
-                });
-            },
-        });
+        router.delete(attachmentTypesDestroy.url(attachmentType.id));
     };
 
     const breadcrumbs: BreadcrumbItem[] = [

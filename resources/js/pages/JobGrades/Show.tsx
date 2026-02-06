@@ -2,10 +2,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label'; // تأكد من وجود هذا السطر
+import { useToast } from '@/hooks/use-toast';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     ArrowLeft,
     ArrowRight,
@@ -16,6 +17,7 @@ import {
     Edit,
     XCircle,
 } from 'lucide-react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface JobGrade {
@@ -30,11 +32,29 @@ interface JobGrade {
 
 interface Props {
     jobGrade: JobGrade;
+    flash: {
+        success?: string;
+        error?: string;
+        message?: string;
+    };
 }
 
-export default function Show({ jobGrade }: Props) {
+export default function Show({ jobGrade, flash }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
+    const { toast } = useToast();
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: t('job_grades.title'), href: '/job-grades' },

@@ -58,7 +58,7 @@ import {
     Search,
     Trash2,
 } from 'lucide-react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface EmploymentStatus {
@@ -80,12 +80,25 @@ interface Props {
     filters: {
         search?: string;
     };
+    flash: {
+        success?: string;
+        error?: string;
+    };
 }
 
-export default function Index({ employmentStatuses, filters }: Props) {
+export default function Index({ employmentStatuses, filters, flash }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
     const { toast } = useToast();
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+    }, [flash, toast]);
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -125,11 +138,9 @@ export default function Index({ employmentStatuses, filters }: Props) {
         if (deleteId) {
             router.delete(employmentStatusesDestroy(deleteId).url, {
                 onSuccess: () => {
-                    toast({ title: t('success') });
                     setDeleteId(null);
                 },
                 onError: () => {
-                    toast({ title: t('error'), variant: 'destructive' });
                     setDeleteId(null);
                 },
             });

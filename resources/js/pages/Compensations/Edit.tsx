@@ -137,7 +137,7 @@ export default function Edit({ compensation, martyrs }: Props) {
             onSuccess: () => {
                 toast({
                     title: t('compensations.updated_successfully'),
-                    variant: 'default',
+                    variant: 'success',
                 });
             },
             onError: () => {

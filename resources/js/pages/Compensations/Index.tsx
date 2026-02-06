@@ -702,7 +702,7 @@ export default function Index({
                                                             title: t(
                                                                 'compensations.deleted',
                                                             ),
-                                                            variant: 'default',
+                                                            variant: 'destructive',
                                                         });
                                                         setDeleteId(null);
                                                     },

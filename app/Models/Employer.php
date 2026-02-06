@@ -13,7 +13,6 @@ class Employer extends Model
     protected $fillable = [
         'name_ar',
         'name_en',
-        'employer_location_id',
         'is_active',
         'created_by',
     ];
@@ -33,11 +32,6 @@ class Employer extends Model
     /**
      * Get the location for this employer.
      */
-    public function location()
-    {
-        return $this->belongsTo(EmployerLocation::class, 'employer_location_id');
-    }
-
     /**
      * Get the locations for this employer.
      */

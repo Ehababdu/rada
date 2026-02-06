@@ -13,10 +13,27 @@ import { BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 
-export default function Create() {
+interface Props {
+    flash: {
+        success?: string;
+        error?: string;
+    };
+}
+
+export default function Create({ flash }: Props) {
     const { t } = useTranslation();
     const { toast } = useToast();
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+    }, [flash, toast]);
 
     const { data, setData, post, processing, errors } = useForm({
         name: '',
@@ -24,18 +41,7 @@ export default function Create() {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(employmentStatusesStore.url(), {
-            onSuccess: () => {
-                toast(t('success'), {
-                    variant: 'default',
-                });
-            },
-            onError: () => {
-                toast(t('error'), {
-                    variant: 'destructive',
-                });
-            },
-        });
+        post(employmentStatusesStore.url());
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
