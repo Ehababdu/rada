@@ -50,7 +50,7 @@ export const useAppNotifications = (): void => {
             });
         };
 
-        const eventName = 'alert.created';
+        const eventName = '.alert.created';
         channel.listen(eventName, handler);
 
         return () => {

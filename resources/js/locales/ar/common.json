@@ -1,4 +1,29 @@
 {
+    "alerts": {
+        "title": "التنبيهات",
+        "manage_alerts": "إدارة التنبيهات والإشعارات",
+        "search_alerts": "البحث في التنبيهات...",
+        "all_types": "جميع الأنواع",
+        "all_status": "جميع الحالات",
+        "read": "مقروء",
+        "unread": "غير مقروء",
+        "mark_as_read": "تحديد كمقروء",
+        "mark_as_unread": "تحديد كغير مقروء",
+        "mark_all_as_read": "تحديد الكل كمقروء",
+        "no_alerts": "لا يوجد تنبيهات",
+        "message": "الرسالة",
+        "additional_data": "بيانات إضافية",
+        "created_at": "تاريخ الإنشاء",
+        "read_at": "تاريخ القراءة",
+        "type": "النوع",
+        "status": "الحالة",
+        "types": {
+            "info": "معلومات",
+            "warning": "تحذير",
+            "error": "خطأ",
+            "success": "نجاح"
+        }
+    },
     "actions": "الإجراءات",
     "search": "بحث",
     "manage_attachment_types": "إدارة أنواع المرفقات",
@@ -673,7 +698,8 @@
         "view_martyr": "عرض الشهيد",
         "widowed": "أرمل",
         "view_attachments": "عرض المرفقات",
-        "workplace": "مكان العمل"
+        "workplace": "مكان العمل",
+        "print_martyr": "طباعة الشهيد"
     },
     "military_ranks": {
         "actions": "الإجراءات",
@@ -745,7 +771,6 @@
         "personnel_selection": "اختيار الأفراد",
         "new_entry": "إدخال جديد",
         "select_status": "اختر الحالة",
-
         "edit_promotion": "تعديل الترقية",
         "select_promotion_job_grade": "اختر درجة وظيفة الترقية",
         "select_employment_status": "اختر حالة التوظيف",

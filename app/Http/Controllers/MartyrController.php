@@ -78,9 +78,22 @@ class MartyrController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $martyr->load(['militaryRank', 'bank', 'branch', 'employmentStatus', 'parentsStatus', 'maritalStatus', 'employer', 'employerLocation', 'previousEmployer', 'previousEmployerLocation']);
+        $martyr->load(['militaryRank', 'bank', 'branch', 'employmentStatus', 'parentsStatus', 'maritalStatus', 'employer', 'employerLocation', 'previousEmployer', 'previousEmployerLocation', 'jobGrade', 'attachments.attachmentType']);
 
         return Inertia::render('Martyrs/Show', [
+            'martyr' => $martyr,
+        ]);
+    }
+
+    public function print(Martyr $martyr)
+    {
+        if (! auth()->user()->can('martyrs.view')) {
+            abort(403, 'Unauthorized');
+        }
+
+        $martyr->load(['militaryRank', 'bank', 'branch', 'employmentStatus', 'parentsStatus', 'maritalStatus', 'employer', 'employerLocation', 'previousEmployer', 'previousEmployerLocation', 'jobGrade', 'attachments.attachmentType']);
+
+        return Inertia::render('Martyrs/Print', [
             'martyr' => $martyr,
         ]);
     }

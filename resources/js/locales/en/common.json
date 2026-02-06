@@ -385,7 +385,8 @@
         "view_file": "View File",
         "view_martyr": "View Martyr",
         "widowed": "Widowed",
-        "workplace": "Workplace"
+        "workplace": "Workplace",
+        "print_martyr": "Print Martyr"
     },
     "employers": {
         "actions": "Actions",

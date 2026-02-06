@@ -37,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('martyrs', MartyrController::class);
+    Route::get('martyrs/{martyr}/print', [MartyrController::class, 'print'])->name('martyrs.print');
     Route::post('martyrs/export', [MartyrController::class, 'export'])->middleware('throttle:5,1')->name('martyrs.export');
     Route::get('martyrs/export', [MartyrController::class, 'export'])->middleware('throttle:5,1')->name('martyrs.export.get');
     Route::get('martyrs/export/latest', [MartyrController::class, 'latestExport'])->name('martyrs.export.latest');
