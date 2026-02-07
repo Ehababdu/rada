@@ -52,7 +52,7 @@ class MartyrController extends Controller
             'banks' => \App\Models\Bank::select('id', 'name_ar', \DB::raw('NULL as name_en'))->get(),
             'parentsStatuses' => \App\Models\ParentsStatus::select('id', 'name_ar', 'name_en')->get(),
             'maritalStatuses' => \App\Models\MaritalStatus::select('id', 'name_ar', 'name_en')->get(),
-            'jobGrades' => \App\Models\JobGrade::select('id', 'name_ar', 'name_en')->where('is_active', true)->orderBy('order')->get(),
+            'jobGrades' => \App\Models\JobGrade::select('id', 'name_ar')->where('is_active', true)->orderBy('order')->get(),
             'employers' => \App\Models\Employer::select('id', 'name_ar', 'name_en')->where('is_active', true)->get(),
             'employerLocations' => \App\Models\EmployerLocation::select('id', 'name_ar', 'name_en')->where('is_active', true)->get(),
         ]);
@@ -112,7 +112,7 @@ class MartyrController extends Controller
             'banks' => \App\Models\Bank::select('id', 'name_ar', \DB::raw('NULL as name_en'))->get(),
             'parentsStatuses' => \App\Models\ParentsStatus::select('id', 'name_ar', 'name_en')->get(),
             'maritalStatuses' => \App\Models\MaritalStatus::select('id', 'name_ar', 'name_en')->get(),
-            'jobGrades' => \App\Models\JobGrade::where('is_active', true)->select('id', 'name_ar', 'name_en')->orderBy('order')->get(),
+            'jobGrades' => \App\Models\JobGrade::where('is_active', true)->select('id', 'name_ar')->orderBy('order')->get(),
             'employers' => \App\Models\Employer::select('id', 'name_ar', 'name_en')->where('is_active', true)->get(),
             'employerLocations' => \App\Models\EmployerLocation::select('id', 'name_ar', 'name_en')->where('is_active', true)->get(),
         ]);

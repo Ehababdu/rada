@@ -67,7 +67,7 @@ class PromotionController extends Controller
         });
 
         $martyrs = Martyr::select('id', 'full_name', 'national_id', 'military_rank_id', 'employment_status_id', 'job_grade_id')
-            ->with(['militaryRank:id,name_ar,name_en', 'jobGrade:id,name_ar,name_en'])
+            ->with(['militaryRank:id,name_ar,name_en', 'jobGrade:id,name_ar'])
             ->orderBy('full_name')
             ->get()
             /** @phpstan-ignore-next-line */
@@ -152,7 +152,7 @@ class PromotionController extends Controller
             ];
         });
 
-        $jobGrades = JobGrade::select('id', 'name_ar', 'name_en', 'order')
+        $jobGrades = JobGrade::select('id', 'name_ar', 'order')
             ->where('is_active', true)
             ->orderBy('order')
             ->get();
@@ -287,7 +287,7 @@ class PromotionController extends Controller
             ];
         });
 
-        $jobGrades = JobGrade::select('id', 'name_ar', 'name_en', 'order')
+        $jobGrades = JobGrade::select('id', 'name_ar', 'order')
             ->where('is_active', true)
             ->orderBy('order')
             ->get();
@@ -297,12 +297,10 @@ class PromotionController extends Controller
         $promotionData['currentJobGrade'] = $promotion->currentJobGrade ? [
             'id' => $promotion->currentJobGrade->id,
             'name_ar' => $promotion->currentJobGrade->name_ar,
-            'name_en' => $promotion->currentJobGrade->name_en,
         ] : null;
         $promotionData['promotionJobGrade'] = $promotion->promotionJobGrade ? [
             'id' => $promotion->promotionJobGrade->id,
             'name_ar' => $promotion->promotionJobGrade->name_ar,
-            'name_en' => $promotion->promotionJobGrade->name_en,
         ] : null;
 
         return Inertia::render('Promotions/Edit', [

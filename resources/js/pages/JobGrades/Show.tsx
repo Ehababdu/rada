@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
+<<<<<<< HEAD
 // Shadcn UI Components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +16,16 @@ import AppLayout from '@/layouts/app-layout';
 
 // Types
 import type { JobGrade } from './types/job-grade';
+=======
+interface JobGrade {
+    id: number;
+    name_ar: string;
+    order: number;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+>>>>>>> 73d1c20 (refactor: remove name_en field from JobGrades system)
 
 interface Props {
     jobGrade: JobGrade;
@@ -28,7 +39,14 @@ export default function Show({ jobGrade }: Props) {
     const breadcrumbs = [
         { title: t('dashboard.title'), href: '/dashboard' },
         { title: t('job_grades.title'), href: '/job-grades' },
+<<<<<<< HEAD
         { title: jobGrade.name_ar, href: `/job-grades/${jobGrade.id}` },
+=======
+        {
+            title: jobGrade.name_ar,
+            href: `/job-grades/${jobGrade.id}`,
+        },
+>>>>>>> 73d1c20 (refactor: remove name_en field from JobGrades system)
     ];
 
     return (
@@ -85,6 +103,7 @@ export default function Show({ jobGrade }: Props) {
                                 <p className="text-lg font-semibold">{jobGrade.name_ar}</p>
                             </div>
 
+<<<<<<< HEAD
                             {/* Order */}
                             <div className="space-y-2">
                                 <Label className="text-sm font-medium text-muted-foreground">
@@ -92,6 +111,9 @@ export default function Show({ jobGrade }: Props) {
                                 </Label>
                                 <p className="text-lg font-semibold">{jobGrade.order}</p>
                             </div>
+=======
+            
+>>>>>>> 73d1c20 (refactor: remove name_en field from JobGrades system)
 
                             {/* Status */}
                             <div className="space-y-2">

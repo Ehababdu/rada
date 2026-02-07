@@ -157,7 +157,7 @@ class MartyrService
             'employmentStatus:id,name',
             'maritalStatus:id,name_ar,name_en',
             'parentsStatus:id,name_ar,name_en',
-            'jobGrade:id,name_ar,name_en',
+            'jobGrade:id,name_ar',
             'employer:id,name_ar,name_en',
             'employerLocation:id,name_ar,name_en',
             'previousEmployer:id,name_ar,name_en',

@@ -33,9 +33,7 @@ class JobGradeController extends Controller implements HasMiddleware
         // Search functionality
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name_ar', 'like', "%{$search}%");
-            });
+            $query->where('name_ar', 'like', "%{$search}%");
         }
 
         // Filter by active status
@@ -196,9 +194,7 @@ class JobGradeController extends Controller implements HasMiddleware
 
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name_ar', 'like', "%{$search}%");
-            });
+            $query->where('name_ar', 'like', "%{$search}%");
         }
 
         $query->orderBy('order');
