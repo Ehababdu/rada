@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 interface JobGrade {
     id: number;
     name_ar: string;
-    name_en: string;
     order: number;
     is_active: boolean;
     created_at: string;
@@ -49,7 +48,6 @@ export default function Edit({ jobGrade, flash }: Props) {
 
     const { data, setData, put, processing, errors, reset } = useForm({
         name_ar: jobGrade.name_ar,
-        name_en: jobGrade.name_en,
         order: jobGrade.order.toString(),
         is_active: jobGrade.is_active,
     });
@@ -125,27 +123,7 @@ export default function Edit({ jobGrade, flash }: Props) {
                                 )}
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="name_en">
-                                    {t('job_grades.name_en')} *
-                                </Label>
-                                <Input
-                                    id="name_en"
-                                    value={data.name_en}
-                                    onChange={(e) =>
-                                        setData('name_en', e.target.value)
-                                    }
-                                    placeholder={t('job_grades.enter_name_en')}
-                                />
-                                {errors.name_en && (
-                                    <Alert variant="destructive">
-                                        <AlertTriangle className="h-4 w-4" />
-                                        <AlertDescription>
-                                            {errors.name_en}
-                                        </AlertDescription>
-                                    </Alert>
-                                )}
-                            </div>
+
 
                             <div className="space-y-2">
                                 <Label htmlFor="order">

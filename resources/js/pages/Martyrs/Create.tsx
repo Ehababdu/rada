@@ -39,7 +39,7 @@ import { useToast } from '@/hooks/use-toast';
 interface SearchableSelectProps {
     value: string | number | null;
     onChange: (value: string | number | null) => void;
-    options: { id: number; name_ar: string; name_en: string | null }[];
+    options: { id: number; name_ar: string }[];
     placeholder: string;
     error?: string;
     loading?: boolean;
@@ -67,14 +67,7 @@ function SearchableSelect({
     }>({ top: 0, left: 0, width: 0 });
 
     const [localOptions, setLocalOptions] = useState(options);
-    const filteredOptions = localOptions.filter(
-        (option) =>
-            option.name_ar.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (option.name_en &&
-                option.name_en
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase())),
-    );
+    const filteredOptions = localOptions.filter((option) => option.name_ar.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const selectedOption = options.find((option) => option.id === value);
 
@@ -884,7 +877,6 @@ export default function Create({
                                         options={jobGradesState.map((grade) => ({
                                             id: grade.id,
                                             name_ar: grade.name_ar,
-                                            name_en: grade.name_en,
                                         }))}
                                         placeholder={t('martyrs.select_job_grade')}
                                         loading={loadingJobGrades}

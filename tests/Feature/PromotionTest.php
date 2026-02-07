@@ -183,8 +183,8 @@ it('updates promotion with job grades correctly', function () {
     $martyr = Martyr::factory()->create();
     $militaryRank = MilitaryRank::factory()->create();
     $promotionRank = MilitaryRank::factory()->create();
-    $currentJobGrade = JobGrade::factory()->create(['name_ar' => 'درجة أولى', 'name_en' => 'First Grade']);
-    $promotionJobGrade = JobGrade::factory()->create(['name_ar' => 'درجة ثانية', 'name_en' => 'Second Grade']);
+    $currentJobGrade = JobGrade::factory()->create(['name_ar' => 'درجة أولى']);
+    $promotionJobGrade = JobGrade::factory()->create(['name_ar' => 'درجة ثانية']);
 
     $promotion = Promotion::factory()->create([
         'martyr_id' => $martyr->id,

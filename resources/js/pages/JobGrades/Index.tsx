@@ -39,7 +39,6 @@ import { useTranslation } from 'react-i18next';
 interface JobGrade {
     id: number;
     name_ar: string;
-    name_en: string;
     order: number;
     is_active: boolean;
     created_at: string;
@@ -166,15 +165,7 @@ export default function Index({ jobGrades, filters, flash }: Props) {
                 <div className="font-semibold">{row.original.name_ar}</div>
             ),
         },
-        {
-            accessorKey: 'name_en',
-            header: t('job_grades.name_en'),
-            cell: ({ row }) => (
-                <div className="text-sm text-muted-foreground italic">
-                    {row.original.name_en}
-                </div>
-            ),
-        },
+
         {
             accessorKey: 'order',
             header: () => (

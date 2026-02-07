@@ -23,7 +23,6 @@ import { useTranslation } from 'react-i18next';
 interface JobGrade {
     id: number;
     name_ar: string;
-    name_en: string;
     order: number;
     is_active: boolean;
     created_at: string;
@@ -59,7 +58,7 @@ export default function Show({ jobGrade, flash }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: t('job_grades.title'), href: '/job-grades' },
         {
-            title: isRTL ? jobGrade.name_ar : jobGrade.name_en,
+            title: jobGrade.name_ar,
             href: `/job-grades/${jobGrade.id}`,
         },
     ];
@@ -138,14 +137,7 @@ export default function Show({ jobGrade, flash }: Props) {
                                         </p>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold tracking-wider text-muted-foreground uppercase italic">
-                                            {t('job_grades.name_en')}
-                                        </Label>
-                                        <p className="text-lg font-medium text-foreground">
-                                            {jobGrade.name_en}
-                                        </p>
-                                    </div>
+            
 
                                     <div className="space-y-2">
                                         <Label className="text-xs font-bold tracking-wider text-muted-foreground uppercase italic">

@@ -32,10 +32,7 @@ class JobGradeController extends Controller implements HasMiddleware
         // Search functionality
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name_ar', 'like', "%{$search}%")
-                    ->orWhere('name_en', 'like', "%{$search}%");
-            });
+            $query->where('name_ar', 'like', "%{$search}%");
         }
 
         // Filter by active status
@@ -77,7 +74,6 @@ class JobGradeController extends Controller implements HasMiddleware
     {
         $validated = $request->validate([
             'name_ar' => ['required', 'string', 'max:255'],
-            'name_en' => ['required', 'string', 'max:255'],
             'order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],
         ]);
@@ -121,7 +117,6 @@ class JobGradeController extends Controller implements HasMiddleware
     {
         $validated = $request->validate([
             'name_ar' => ['required', 'string', 'max:255'],
-            'name_en' => ['required', 'string', 'max:255'],
             'order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],
         ]);
@@ -158,14 +153,11 @@ class JobGradeController extends Controller implements HasMiddleware
 
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name_ar', 'like', "%{$search}%")
-                    ->orWhere('name_en', 'like', "%{$search}%");
-            });
+            $query->where('name_ar', 'like', "%{$search}%");
         }
 
         $query->orderBy('order');
 
-        return $query->get(['id', 'name_ar', 'name_en', 'order']);
+        return $query->get(['id', 'name_ar', 'order']);
     }
 }

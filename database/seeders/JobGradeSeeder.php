@@ -13,16 +13,16 @@ class JobGradeSeeder extends Seeder
     public function run(): void
     {
         $grades = [
-            ['name_ar' => 'أولى', 'name_en' => 'First', 'order' => 1],
-            ['name_ar' => 'ثانية', 'name_en' => 'Second', 'order' => 2],
-            ['name_ar' => 'ثالثة', 'name_en' => 'Third', 'order' => 3],
-            ['name_ar' => 'رابعة', 'name_en' => 'Fourth', 'order' => 4],
-            ['name_ar' => 'خامسة', 'name_en' => 'Fifth', 'order' => 5],
-            ['name_ar' => 'سادسة', 'name_en' => 'Sixth', 'order' => 6],
-            ['name_ar' => 'سابعة', 'name_en' => 'Seventh', 'order' => 7],
-            ['name_ar' => 'ثامنة', 'name_en' => 'Eighth', 'order' => 8],
-            ['name_ar' => 'تاسعة', 'name_en' => 'Ninth', 'order' => 9],
-            ['name_ar' => 'عاشرة', 'name_en' => 'Tenth', 'order' => 10],
+            ['name_ar' => 'أولى', 'order' => 1],
+            ['name_ar' => 'ثانية', 'order' => 2],
+            ['name_ar' => 'ثالثة', 'order' => 3],
+            ['name_ar' => 'رابعة', 'order' => 4],
+            ['name_ar' => 'خامسة', 'order' => 5],
+            ['name_ar' => 'سادسة', 'order' => 6],
+            ['name_ar' => 'سابعة', 'order' => 7],
+            ['name_ar' => 'ثامنة', 'order' => 8],
+            ['name_ar' => 'تاسعة', 'order' => 9],
+            ['name_ar' => 'عاشرة', 'order' => 10],
         ];
 
         foreach ($grades as $grade) {
