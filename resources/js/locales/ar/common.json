@@ -333,6 +333,7 @@
     "common": {
         "all": "الكل",
         "done": "تم",
+        "common.unknown": "غير محدد",
         "edit": "تعديل",
         "error_occurred": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
         "error": "خطأ",
@@ -374,6 +375,7 @@
         "delete_failed": "فشل في حذف المكافأة",
         "deleted_successfully": "تم حذف المكافأة بنجاح",
         "description": "الوصف",
+        "download_pdf": "تحميل PDF",
         "edit": "تعديل المكافأة",
         "enter_amount": "أدخل المبلغ",
         "enter_receipt_date": "أدخل تاريخ الإيصال",
@@ -1096,6 +1098,27 @@
         "users_count": "عدد المستخدمين",
         "actions": "الإجراءات",
         "users": "المستخدمين",
-        "view": "عرض الدور"
-}
+        "view": "عرض الدور",
+        "unknown": "غير محدد"
+    },
+    "reports": {
+        "title": "التقارير",
+        "description": "نظرة شاملة على بيانات الشهداء والترقيات والمكافآت",
+        "total_martyrs": "إجمالي الشهداء",
+        "martyrs_registered": "شهيد مسجل",
+        "total_promotions": "إجمالي الترقيات",
+        "promotions_total": "ترقية مسجلة",
+        "total_compensations": "إجمالي المكافآت",
+        "compensations_total": "مكافأة مسجلة",
+        "pending_promotions": "الترقيات المعلقة",
+        "promotions_pending": "ترقية معلقة",
+        "martyrs_by_rank": "الشهداء حسب الرتبة",
+        "martyrs_by_rank_description": "توزيع الشهداء حسب رتبهم العسكرية",
+        "promotions_by_year": "الترقيات حسب السنة",
+        "promotions_by_year_description": "عدد الترقيات المستحقة كل سنة",
+        "recent_promotions": "أحدث الترقيات",
+        "recent_promotions_description": "آخر 5 ترقيات تم تسجيلها",
+        "recent_compensations": "أحدث المكافآت",
+        "recent_compensations_description": "آخر 5 مكافآت تم صرفها"
+    }
 }

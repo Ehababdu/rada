@@ -28,4 +28,5 @@ return [
     'married_martyrs_only' => 'Married Martyrs Only',
     'total_compensations' => 'Total Compensations',
     'total_amount' => 'Total Amount',
+    'view_pdf' => 'View PDF',
 ];

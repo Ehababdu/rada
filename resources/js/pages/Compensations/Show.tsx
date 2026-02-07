@@ -7,6 +7,7 @@ import {
     Award,
     Calendar,
     DollarSign,
+    Eye,
     Edit,
     Trash2,
     User,
@@ -92,6 +93,15 @@ export default function Show({ compensation }: Props) {
                         </div>
                     </div>
                     <div className="flex gap-2">
+                        <a href={`/compensations/${compensation.id}/pdf`} target="_blank" rel="noopener noreferrer">
+                            <Button
+                                variant="outline"
+                                className="flex items-center gap-2"
+                            >
+                                <Eye size={16} />
+                                {t('compensations.view_pdf')}
+                            </Button>
+                        </a>
                         <Link href={`/compensations/${compensation.id}/edit`}>
                             <Button
                                 variant="outline"

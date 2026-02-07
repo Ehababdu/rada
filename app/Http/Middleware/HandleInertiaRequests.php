@@ -56,6 +56,7 @@ class HandleInertiaRequests extends Middleware
             'users',
             'permissions',
             'roles',
+            'reports',
         ];
 
         $navAccess = [];
