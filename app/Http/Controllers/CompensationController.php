@@ -5,17 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Compensation;
 use App\Models\Martyr;
 use App\Models\Alert;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Inertia\Response;
+use Illuminate\Http\Response;
+use Dompdf\Dompdf;
 
 class CompensationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): Response
+    public function index(\Illuminate\Http\Request $request): \Inertia\Response
     {
         if (! auth()->user()->can('compensations.view')) {
             abort(403, 'Unauthorized');
@@ -88,7 +86,7 @@ class CompensationController extends Controller
         // Get employment statuses for filter
         $employmentStatuses = \App\Models\EmploymentStatus::select('id', 'name')->get();
 
-        return Inertia::render('Compensations/Index', [
+        return \Inertia\Inertia::render('Compensations/Index', [
             'compensations' => $compensations,
             'martyrs' => $martyrs,
             'parentsStatuses' => $parentsStatuses,
@@ -100,10 +98,11 @@ class CompensationController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request): Response
+    public function create(\Illuminate\Http\Request $request): \Inertia\Response
     {
         $martyrs = Martyr::select('id', 'full_name', 'national_id', 'military_rank_id', 'parents_status_id', 'marital_status_id', 'children_count', 'wife_status')
             ->with('militaryRank:id,name_ar,name_en')
+            ->where('marital_status_id', 1) // Only married martyrs
             ->orderBy('full_name')
             ->get()
             /** @phpstan-ignore-next-line */
@@ -125,7 +124,7 @@ class CompensationController extends Controller
             $selectedMartyr = Martyr::find($request->martyr_id);
         }
 
-        return Inertia::render('Compensations/Create', [
+        return \Inertia\Inertia::render('Compensations/Create', [
             'martyrs' => $martyrs,
             'selectedMartyr' => $selectedMartyr,
         ]);
@@ -134,7 +133,7 @@ class CompensationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(\Illuminate\Http\Request $request): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
             'martyr_id' => 'required|exists:martyrs,id',
@@ -181,11 +180,11 @@ class CompensationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Compensation $compensation): Response
+    public function show(Compensation $compensation): \Inertia\Response
     {
         $compensation->load('martyr');
 
-        return Inertia::render('Compensations/Show', [
+        return \Inertia\Inertia::render('Compensations/Show', [
             'compensation' => [
                 'id' => $compensation->id,
                 'martyr_id' => $compensation->martyr_id,
@@ -205,7 +204,7 @@ class CompensationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Compensation $compensation): Response
+    public function edit(Compensation $compensation): \Inertia\Response
     {
         $compensation->load('martyr');
 
@@ -227,7 +226,7 @@ class CompensationController extends Controller
                 ];
             });
 
-        return Inertia::render('Compensations/Edit', [
+        return \Inertia\Inertia::render('Compensations/Edit', [
             'compensation' => [
                 'id' => $compensation->id,
                 'martyr_id' => $compensation->martyr_id,
@@ -247,7 +246,7 @@ class CompensationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Compensation $compensation): RedirectResponse
+    public function update(\Illuminate\Http\Request $request, Compensation $compensation): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validate([
             'martyr_id' => 'required|exists:martyrs,id',
@@ -281,7 +280,7 @@ class CompensationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Compensation $compensation): RedirectResponse
+    public function destroy(Compensation $compensation): \Illuminate\Http\RedirectResponse
     {
         $martyrId = $compensation->martyr_id;
         $compensation->delete();
@@ -302,5 +301,46 @@ class CompensationController extends Controller
 
         return redirect()->route('compensations.index')
             ->with('success', 'تم حذف المكافاة بنجاح');
+    }
+
+    /**
+     * Generate PDF for the specified compensation.
+     */
+    public function pdf(Compensation $compensation): \Illuminate\Http\Response
+    {
+        if (! auth()->user()->can('compensations.view')) {
+            abort(403, 'Unauthorized');
+        }
+
+        $compensation->load('martyr.parentsStatus', 'martyr.employmentStatus', 'martyr.maritalStatus', 'martyr.militaryRank');
+
+        $html = view('pdf.compensation', compact('compensation'))->render();
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('a4', 'portrait');
+        
+        // Configure Dompdf for Arabic support
+        $options = $dompdf->getOptions();
+        // Use the Amiri font we added to public/fonts (referenced in the view CSS via @font-face)
+        $options->set('defaultFont', 'Amiri');
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', false);
+        $options->set('isRtl', true); // Enable RTL support
+        $options->set('direction', 'rtl'); // Set document direction
+        $options->set('enable_font_subsetting', false); // Disable font subsetting to preserve ligatures/shaping
+        $options->set('fontHeightRatio', 1.0); // Adjust font height ratio
+        $options->set('defaultMediaType', 'print');
+        $options->set('encoding', 'UTF-8'); // Ensure UTF-8 encoding
+        $dompdf->setOptions($options);
+        
+        $dompdf->render();
+
+        $pdfContent = $dompdf->output();
+
+        return response($pdfContent)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="compensation-' . $compensation->id . '.pdf"')
+            ->header('X-Inertia', 'false');
     }
 }

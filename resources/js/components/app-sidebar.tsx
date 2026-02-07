@@ -26,12 +26,14 @@ import { index as martyrsIndex } from '@/routes/martyrs';
 import { index as militaryRanksIndex } from '@/routes/military-ranks';
 import { index as permissionsIndex } from '@/routes/permissions';
 import { index as promotionsIndex } from '@/routes/promotions';
+import { index as reportsIndex } from '@/actions/App/Http/Controllers/ReportsController';
 import { index as rolesIndex } from '@/routes/roles';
 import { index as usersIndex } from '@/routes/users';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
     Award,
+    BarChart3,
     Bell,
     Briefcase,
     Building,
@@ -184,6 +186,12 @@ export const AppSidebar = memo(function AppSidebar() {
                     href: rolesIndex.url(),
                     icon: Shield,
                     resource: 'roles',
+                },
+                {
+                    title: t('reports.title'),
+                    href: reportsIndex.definition?.url ?? reportsIndex(),
+                    icon: BarChart3,
+                    resource: 'reports',
                 },
             ],
         },

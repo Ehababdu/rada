@@ -83,7 +83,7 @@ export default function Index({
                             {t('reports.title')}
                         </h1>
                         <p className="text-muted-foreground">
-                            {t('reports.description', 'نظرة شاملة على بيانات الشهداء والترقيات والمكافآت')}
+                            {t('reports.description')}
                         </p>
                     </div>
                 </div>
@@ -211,7 +211,7 @@ export default function Index({
                                         <div>
                                             <p className="text-sm font-medium">{promotion.martyr.full_name}</p>
                                             <p className="text-xs text-muted-foreground">
-                                                {promotion.promotionRank.name_ar}
+                                                {promotion.promotionRank?.name_ar || t('common.unknown')}
                                             </p>
                                         </div>
                                         <span className="text-xs text-muted-foreground">
@@ -236,9 +236,9 @@ export default function Index({
                                 {recentCompensations.slice(0, 5).map((compensation) => (
                                     <div key={compensation.id} className="flex items-center justify-between">
                                         <div>
-                                            <p className="text-sm font-medium">{compensation.martyr.full_name}</p>
+                                            <p className="text-sm font-medium">{compensation.martyr?.full_name || t('common.unknown')}</p>
                                             <p className="text-xs text-muted-foreground">
-                                                {compensation.amount.toLocaleString()} ريال
+                                                {compensation.amount.toLocaleString()} د.ل
                                             </p>
                                         </div>
                                         <span className="text-xs text-muted-foreground">

@@ -29,4 +29,5 @@ return [
     'married_martyrs_only' => 'الشهداء المتزوجون فقط',
     'total_compensations' => 'إجمالي التعويضات',
     'total_amount' => 'إجمالي المبلغ',
+    'view_pdf' => 'عرض PDF',
 ];
