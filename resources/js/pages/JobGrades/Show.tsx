@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 interface JobGrade {
     id: number;
     name_ar: string;
+    name_en: string;
     order: number;
     is_active: boolean;
     created_at: string;
@@ -17,10 +18,13 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 
 // Icons
-import { ArrowLeft, Award, Edit } from 'lucide-react';
+import { ArrowLeft, Award, CheckCircle, Edit, XCircle } from 'lucide-react';
 
 // Layout
 import AppLayout from '@/layouts/app-layout';
+
+// Utils
+import { cn } from '@/lib/utils';
 
 interface Props {
     jobGrade: JobGrade;
@@ -94,81 +98,65 @@ export default function Show({ jobGrade }: Props) {
                                 <p className="text-lg font-semibold">{jobGrade.name_ar}</p>
                             </div>
 
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-muted-foreground">
+                                    {t('job_grades.name_en')}
+                                </Label>
+                                <p className="text-lg font-semibold">{jobGrade.name_en}</p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-muted-foreground">
+                                    {t('job_grades.order')}
+                                </Label>
+                                <Badge variant="outline" className="font-mono">
+                                    {jobGrade.order}
+                                </Badge>
+                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-sm font-medium text-muted-foreground">
+                                                    {t('job_grades.status')}
+                                                </Label>
+                                                <Badge
+                                                    className={cn(
+                                                        'gap-1 border-none px-2 py-0.5 font-medium shadow-none',
+                                                        jobGrade.is_active
+                                                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100'
+                                                            : 'bg-red-100 text-red-700 hover:bg-red-100',
+                                                    )}
+                                                >
+                                                    {jobGrade.is_active ? (
+                                                        <CheckCircle className="h-3 w-3" />
+                                                    ) : (
+                                                        <XCircle className="h-3 w-3" />
+                                                    )}
+                                                    {jobGrade.is_active
+                                                        ? t('active')
+                                                        : t('inactive')}
+                                                </Badge>
+                                            </div>
+
                                     <div className="space-y-2">
-                                        <Label className="text-xs font-bold tracking-wider text-muted-foreground uppercase italic">
-                                            {t('job_grades.name_en')}
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('created_at')}
                                         </Label>
-                                        <p className="text-lg font-medium text-foreground">
-                                            {jobGrade.name_en}
+                                        <p className="text-lg font-semibold">
+                                            {new Date(jobGrade.created_at).toLocaleDateString()}
                                         </p>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label className="text-xs font-bold tracking-wider text-muted-foreground uppercase italic">
-                                            {t('job_grades.order')}
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('updated_at')}
                                         </Label>
-                                        <div className="flex items-center gap-2">
-                                            <Badge
-                                                variant="secondary"
-                                                className="px-3 py-0 font-mono text-base"
-                                            >
-                                                {jobGrade.order}
-                                            </Badge>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold tracking-wider text-muted-foreground uppercase italic">
-                                            {t('job_grades.status')}
-                                        </Label>
-                                        <div>
-                                            <Badge
-                                                className={cn(
-                                                    'gap-1.5 border-none px-3 py-1 font-semibold shadow-none',
-                                                    jobGrade.is_active
-                                                        ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100'
-                                                        : 'bg-red-100 text-red-700 hover:bg-red-100',
-                                                )}
-                                            >
-                                                {jobGrade.is_active ? (
-                                                    <CheckCircle className="h-4 w-4" />
-                                                ) : (
-                                                    <XCircle className="h-4 w-4" />
-                                                )}
-                                                {jobGrade.is_active
-                                                    ? t('active')
-                                                    : t('inactive')}
-                                            </Badge>
-                                        </div>
+                                        <p className="text-lg font-semibold">
+                                            {new Date(jobGrade.updated_at).toLocaleDateString()}
+                                        </p>
                                     </div>
                                 </div>
                             </CardContent>
                         </Card>
                     </div>
-
-                            {/* Created At */}
-                            <div className="space-y-2">
-                                <Label className="text-sm font-medium text-muted-foreground">
-                                    {t('created_at')}
-                                </Label>
-                                <p className="text-lg font-semibold">
-                                    {new Date(jobGrade.created_at).toLocaleDateString()}
-                                </p>
-                            </div>
-
-                            {/* Updated At */}
-                            <div className="space-y-2">
-                                <Label className="text-sm font-medium text-muted-foreground">
-                                    {t('updated_at')}
-                                </Label>
-                                <p className="text-lg font-semibold">
-                                    {new Date(jobGrade.updated_at).toLocaleDateString()}
-                                </p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </AppLayout>
-    );
-}
+                </AppLayout>
+            );
+        }

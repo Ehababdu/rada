@@ -1,10 +1,15 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from '@inertiajs/react';
 
 // Shadcn UI Components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Alert,
+    AlertDescription,
+} from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -16,19 +21,16 @@ import {
 } from '@/components/ui/select';
 
 // Icons
-import { ArrowLeft, Award, Save } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Award, Save } from 'lucide-react';
 
 // Layout
 import AppLayout from '@/layouts/app-layout';
 
 // Hooks
 import { useToast } from '@/hooks/use-toast';
-import AppLayout from '@/layouts/app-layout';
+
+// Types
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { AlertTriangle, ArrowLeft, Award, Save } from 'lucide-react';
-import React, { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 
 interface JobGrade {
     id: number;
@@ -66,6 +68,7 @@ export default function Edit({ jobGrade }: Props) {
 
     const { data, setData, put, processing, errors } = useForm({
         name_ar: jobGrade.name_ar,
+        name_en: jobGrade.name_en,
         order: jobGrade.order.toString(),
         is_active: jobGrade.is_active,
     });
