@@ -120,32 +120,18 @@ export default function Create() {
                                 )}
                             </div>
 
+<<<<<<< HEAD
+                            {/* Order */}
                             <div className="space-y-2">
-                                <Label htmlFor="name_en">
-                                    {t('job_grades.name_en')} *
-                                </Label>
-                                <Input
-                                    id="name_en"
-                                    value={data.name_en}
-                                    onChange={(e) =>
-                                        setData('name_en', e.target.value)
-                                    }
-                                    placeholder={t('job_grades.enter_name_en')}
-                                />
-                                {errors.name_en && (
-                                    <Alert variant="destructive">
-                                        <AlertTriangle className="h-4 w-4" />
-                                        <AlertDescription>
-                                            {errors.name_en}
-                                        </AlertDescription>
-                                    </Alert>
-                                )}
-                            </div>
+                                <Label htmlFor="order">{t('job_grades.order')}</Label>
+=======
+
 
                             <div className="space-y-2">
                                 <Label htmlFor="order">
                                     {t('job_grades.order')}
                                 </Label>
+>>>>>>> 73d1c2034d534489636b20a75afe597348697926
                                 <Input
                                     id="order"
                                     type="number"

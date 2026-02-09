@@ -101,9 +101,6 @@ export default function Index({
         { title: t('dashboard.title'), href: '/dashboard' },
         { title: t('job_grades.title'), href: '/job-grades' },
     ];
-
-<<<<<<< HEAD
-=======
     // دالة البحث مع Debounce
     const triggerSearch = useCallback(
         (searchValue: string, activeValue: string) => {
