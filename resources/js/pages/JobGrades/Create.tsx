@@ -120,18 +120,9 @@ export default function Create() {
                                 )}
                             </div>
 
-<<<<<<< HEAD
                             {/* Order */}
                             <div className="space-y-2">
                                 <Label htmlFor="order">{t('job_grades.order')}</Label>
-=======
-
-
-                            <div className="space-y-2">
-                                <Label htmlFor="order">
-                                    {t('job_grades.order')}
-                                </Label>
->>>>>>> 73d1c2034d534489636b20a75afe597348697926
                                 <Input
                                     id="order"
                                     type="number"

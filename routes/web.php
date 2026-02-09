@@ -40,10 +40,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('martyrs', MartyrController::class);
     Route::get('martyrs/{martyr}/print', [MartyrController::class, 'print'])->name('martyrs.print');
-    Route::post('martyrs/export', [MartyrController::class, 'export'])->middleware('throttle:5,1')->name('martyrs.export');
-    Route::get('martyrs/export/download', [MartyrController::class, 'export'])->middleware('throttle:5,1')->name('martyrs.export.get');
-    Route::get('martyrs/export/latest', [MartyrController::class, 'latestExport'])->name('martyrs.export.latest');
-    Route::get('martyrs/export/status', [MartyrController::class, 'exportStatus'])->name('martyrs.export.status');
+    Route::match(['GET', 'POST'], 'martyrs/export', [MartyrController::class, 'export'])->middleware('throttle:5,1')->name('martyrs.export');
     Route::patch('martyrs/{martyr}/status', [MartyrController::class, 'updateStatus'])->name('martyrs.update-status');
     Route::resource('martyrs.attachments', AttachmentController::class);
     Route::resource('attachment-types', AttachmentTypeController::class);

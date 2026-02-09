@@ -16,12 +16,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -86,6 +80,8 @@ export default function Index({
         {},
     );
     const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
+    const [isExportColumnsDialogOpen, setIsExportColumnsDialogOpen] = useState(false);
+    const [exportColumns, setExportColumns] = useState<string[]>([]);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
     // Show toast when rows are selected/deselected
@@ -146,6 +142,16 @@ export default function Index({
         onDelete: handleDeleteClick,
     });
 
+    // Initialize exportColumns with all available columns except actions and attachments if not allowed
+    useEffect(() => {
+        if (availableColumns.length > 0 && exportColumns.length === 0) {
+            const defaultExportColumns = availableColumns
+                .filter(col => col.key !== 'actions' && (canViewAttachments || col.key !== 'attachments'))
+                .map(col => col.key);
+            setExportColumns(defaultExportColumns);
+        }
+    }, [availableColumns, canViewAttachments, exportColumns.length]);
+
     // Convert visibleColumns array to columnVisibility object for TanStack Table
     const columnVisibility = useMemo(() => {
         const visibility: Record<string, boolean> = {};
@@ -155,11 +161,11 @@ export default function Index({
         return visibility;
     }, [availableColumns, visibleColumns]);
 
-    const { latestExportAvailable, latestExportUrl, handleExport } =
+    const { handleExport } =
         useMartyrExport({
             cleanFilters,
             localFilters,
-            visibleColumns,
+            exportColumns,
             selectedRows,
         });
 
@@ -458,35 +464,80 @@ export default function Index({
                                 </DialogContent>
                             </Dialog>
 
+                            {/* Export Columns Dialog */}
+                            <Dialog
+                                open={isExportColumnsDialogOpen}
+                                onOpenChange={setIsExportColumnsDialogOpen}
+                            >
+                                <DialogTrigger asChild>
+                                    <Button variant="outline" size="icon">
+                                        <FileText className="h-4 w-4" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-md">
+                                    <DialogHeader>
+                                        <DialogTitle>{t('martyrs.export_columns')}</DialogTitle>
+                                        <DialogDescription>
+                                            {t(
+                                                'martyrs.export_columns_description',
+                                                'اختر الأعمدة التي تريد تصديرها إلى Excel',
+                                            )}
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <ScrollArea className="max-h-96">
+                                        <div className="space-y-4">
+                                            {availableColumns
+                                                .filter((col) => col.key !== 'actions' && (canViewAttachments || col.key !== 'attachments'))
+                                                .map((col) => (
+                                                    <div
+                                                        key={col.key}
+                                                        className="flex items-center space-x-2"
+                                                    >
+                                                        <Checkbox
+                                                            id={`export-col-${col.key}`}
+                                                            checked={exportColumns.includes(col.key)}
+                                                            onCheckedChange={(checked) => {
+                                                                if (checked) {
+                                                                    setExportColumns([...exportColumns, col.key]);
+                                                                } else {
+                                                                    setExportColumns(exportColumns.filter(c => c !== col.key));
+                                                                }
+                                                            }}
+                                                        />
+                                                        <Label htmlFor={`export-col-${col.key}`}>
+                                                            {col.label}
+                                                        </Label>
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    </ScrollArea>
+                                    <DialogFooter>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => {
+                                                const defaultExportColumns = availableColumns
+                                                    .filter(col => col.key !== 'actions' && (canViewAttachments || col.key !== 'attachments'))
+                                                    .map(col => col.key);
+                                                setExportColumns(defaultExportColumns);
+                                            }}
+                                        >
+                                            {t('martyrs.reset_columns')}
+                                        </Button>
+                                        <Button
+                                            onClick={() => setIsExportColumnsDialogOpen(false)}
+                                        >
+                                            {t('martyrs.done')}
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+
                             {/* Export */}
                             {canExport && (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="outline">
-                                            <Download className="mr-2 h-4 w-4" />
-                                            {t('martyrs.export')}
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={handleExport}>
-                                            <FileText className="mr-2 h-4 w-4" />{' '}
-                                            {t('martyrs.export_excel')}
-                                        </DropdownMenuItem>
-                                        {latestExportAvailable && (
-                                            <DropdownMenuItem
-                                                onClick={() =>
-                                                    window.open(
-                                                        latestExportUrl || '',
-                                                        '_blank',
-                                                    )
-                                                }
-                                            >
-                                                <Download className="mr-2 h-4 w-4" />{' '}
-                                                {t('martyrs.download_latest')}
-                                            </DropdownMenuItem>
-                                        )}
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                                <Button variant="outline" onClick={handleExport}>
+                                    <Download className="mr-2 h-4 w-4" />
+                                    {t('martyrs.export_excel')}
+                                </Button>
                             )}
                         </div>
                     </div>

@@ -27,7 +27,19 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
      */
     public function query()
     {
-        $query = Martyr::with(['parentsStatus', 'maritalStatus', 'employmentStatus', 'militaryRank', 'bank', 'branch']);
+        $query = Martyr::with([
+            'parentsStatus:id,name_ar,name_en',
+            'maritalStatus:id,name_ar,name_en',
+            'employmentStatus:id,name',
+            'militaryRank:id,name_ar,name_en',
+            'bank:id,name_ar',
+            'branch:id,name_ar',
+            'jobGrade:id,name_ar',
+            'employer:id,name_ar,name_en',
+            'employerLocation:id,name_ar,name_en',
+            'previousEmployer:id,name_ar,name_en',
+            'previousEmployerLocation:id,name_ar,name_en',
+        ]);
 
         // If specific IDs are provided, only export those
         if (! empty($this->ids)) {
@@ -35,8 +47,38 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
         } else {
             // Apply filters only if no specific IDs are provided
             if (! empty($this->filters['search'])) {
-                $query->where('full_name', 'like', '%' . $this->filters['search'] . '%')
-                    ->orWhere('national_id', 'like', '%' . $this->filters['search'] . '%');
+                $searchTerm = trim($this->filters['search']);
+
+                // If it's a phone number (starts with 09), search phone field only
+                if (is_numeric($searchTerm) && str_starts_with($searchTerm, '09')) {
+                    $query->where('agent_phone', 'LIKE', '%' . $searchTerm . '%');
+                }
+                // If it's a number, search in all numeric fields
+                elseif (is_numeric($searchTerm)) {
+                    $query->where(function ($q) use ($searchTerm) {
+                        $q->orWhere('military_number', 'LIKE', '%' . $searchTerm . '%');
+                        $q->orWhere('national_id', 'LIKE', '%' . $searchTerm . '%');
+                        $q->orWhere('agent_phone', 'LIKE', '%' . $searchTerm . '%');
+                        $q->orWhere('file_number', 'LIKE', '%' . $searchTerm . '%');
+                    });
+                } else {
+                    // Split search term into words for partial name matching
+                    $searchWords = array_filter(explode(' ', $searchTerm));
+
+                    if (! empty($searchWords)) {
+                        $validWords = array_filter($searchWords, function ($word) {
+                            return mb_strlen($word) >= 2;
+                        });
+
+                        if (! empty($validWords)) {
+                            $query->where(function ($q) use ($validWords) {
+                                foreach ($validWords as $word) {
+                                    $q->where('full_name', 'LIKE', '%' . $word . '%');
+                                }
+                            });
+                        }
+                    }
+                }
             }
 
             // Apply advanced filters if provided
@@ -79,6 +121,46 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
             if (! empty($this->filters['death_date_to'])) {
                 $query->whereDate('death_date', '<=', $this->filters['death_date_to']);
             }
+
+            // Apply additional filters
+            $allowedFilters = [
+                'marital_status_id',
+                'employment_status_id',
+                'bank_id',
+                'branch_id',
+                'parents_status_id',
+                'employer_id',
+                'previous_employer_id',
+                'status',
+                'wife_status',
+                'file_number',
+            ];
+
+            foreach ($allowedFilters as $filter) {
+                if (! empty($this->filters[$filter])) {
+                    $query->where($filter, $this->filters[$filter]);
+                }
+            }
+
+            // Apply date filters
+            if (! empty($this->filters['date_from'])) {
+                $query->where('created_at', '>=', $this->filters['date_from']);
+            }
+
+            if (! empty($this->filters['date_to'])) {
+                $query->where('created_at', '<=', $this->filters['date_to']);
+            }
+
+            // Apply decision date filters
+            if (! empty($this->filters['decision_date_from'])) {
+                $years = array_map('trim', explode(',', $this->filters['decision_date_from']));
+                $query->whereIn(\DB::raw('YEAR(decision_date)'), $years);
+            }
+
+            // Apply martyr decision filter
+            if (isset($this->filters['has_martyr_decision']) && $this->filters['has_martyr_decision'] !== '') {
+                $query->where('has_martyr_decision', $this->filters['has_martyr_decision'] === '1');
+            }
         }
         // Add other filters as needed
 
@@ -88,34 +170,35 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
     public function map($martyr): array
     {
         $all = [
-            'id' => $martyr->id,
+            '#' => $martyr->id,
             'full_name' => $martyr->full_name,
+            'file_number' => $martyr->file_number,
             'national_id' => $martyr->national_id,
             'address' => $martyr->address,
-            'parents_status' => $martyr->parentsStatus?->name_ar,
-            'marital_status' => $martyr->maritalStatus?->name_ar,
             'children_count' => $martyr->children_count,
-            'employment_status' => $martyr->employmentStatus?->name_ar,
-            'workplace' => $martyr->workplace,
-            'previous_workplace' => $martyr->previous_workplace,
-            'military_number' => $martyr->military_number,
             'military_rank' => $martyr->militaryRank?->name_ar,
+            'job_grade' => $martyr->jobGrade?->name_ar,
+            'employment_status' => $martyr->employmentStatus?->name,
+            'marital_status' => $martyr->maritalStatus?->name_ar,
+            'wife_status' => $martyr->wife_status,
+            'military_number' => $martyr->military_number,
+            'parents_status' => $martyr->parentsStatus?->name_ar,
             'bank' => $martyr->bank?->name_ar,
-            'bank_account_number' => $martyr->bank_account_number,
             'branch' => $martyr->branch?->name_ar,
-            'agent_name' => $martyr->agent_name,
-            'agent_phone' => $martyr->agent_phone,
-            'agent_relationship' => $martyr->agent_relationship,
-            'agent_passport_number' => $martyr->agent_passport_number,
-            'profile_image' => $martyr->profile_image,
-            'national_id_file' => $martyr->national_id_file,
-            'art_image' => $martyr->art_image,
+            'employer' => $martyr->employer?->name_ar,
+            'employer_location' => $martyr->employerLocation?->name_ar,
+            'previous_employer' => $martyr->previousEmployer?->name_ar,
+            'previous_employer_location' => $martyr->previousEmployerLocation?->name_ar,
+            'bank_account_number' => $martyr->bank_account_number,
             'death_date' => $martyr->death_date?->format('Y-m-d'),
-            'has_martyr_decision' => $martyr->has_martyr_decision ? 'Yes' : 'No',
+            'has_martyr_decision' => $martyr->has_martyr_decision ? 'نعم' : 'لا',
             'decision_number' => $martyr->decision_number,
             'decision_date' => $martyr->decision_date?->format('Y-m-d'),
-            'created_at' => $martyr->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $martyr->updated_at?->format('Y-m-d H:i:s'),
+            'agent_name' => $martyr->agent_name,
+            'agent_phone' => $martyr->agent_phone,
+            'agent_passport_number' => $martyr->agent_passport_number,
+            'agent_relationship' => $martyr->agent_relationship,
+            'status' => $martyr->status,
         ];
 
         // If columns requested, include those in order, otherwise return full set in default order
@@ -152,16 +235,35 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
     public function headings(): array
     {
         $map = [
-            'id' => 'الرقم',
+            '#' => '#',
             'full_name' => 'الاسم الكامل',
+            'file_number' => 'رقم الملف',
             'national_id' => 'الرقم الوطني',
             'address' => 'العنوان',
-            'parents_status' => 'حالة الوالدين',
-            'marital_status' => 'الحالة الزوجية',
             'children_count' => 'عدد الأطفال',
+            'military_rank' => 'الرتبة العسكرية',
+            'job_grade' => 'الدرجة الوظيفية',
             'employment_status' => 'حالة التوظيف',
-            'workplace' => 'مكان العمل',
-            'previous_workplace' => 'مكان العمل السابق',
+            'marital_status' => 'الحالة الزوجية',
+            'wife_status' => 'حالة الزوجة',
+            'military_number' => 'الرقم العسكري',
+            'parents_status' => 'حالة الوالدين',
+            'bank' => 'البنك',
+            'branch' => 'الفرع',
+            'employer' => 'الجهة',
+            'employer_location' => 'مكان الجهة',
+            'previous_employer' => 'الجهة السابقة',
+            'previous_employer_location' => 'مكان الجهة السابقة',
+            'bank_account_number' => 'رقم الحساب البنكي',
+            'death_date' => 'تاريخ الوفاة',
+            'has_martyr_decision' => 'لديه قرار شهيد',
+            'decision_number' => 'رقم القرار',
+            'decision_date' => 'تاريخ القرار',
+            'agent_name' => 'اسم الوكيل',
+            'agent_phone' => 'هاتف الوكيل',
+            'agent_passport_number' => 'رقم جواز سفر الوكيل',
+            'agent_relationship' => 'علاقة الوكيل',
+            'status' => 'الحالة',
             'military_number' => 'الرقم العسكري',
             'military_rank' => 'الرتبة العسكرية',
             'bank' => 'البنك',
@@ -170,16 +272,7 @@ class MartyrsExport implements FromQuery, WithHeadings, WithMapping
             'agent_name' => 'اسم الوكيل',
             'agent_phone' => 'هاتف الوكيل',
             'agent_relationship' => 'علاقة الوكيل',
-            'agent_passport_number' => 'رقم جواز سفر الوكيل',
-            'profile_image' => 'الصورة الشخصية',
-            'national_id_file' => 'ملف الهوية الوطنية',
-            'art_image' => 'صورة فنية',
-            'death_date' => 'تاريخ الوفاة',
-            'has_martyr_decision' => 'لديه قرار شهيد',
-            'decision_number' => 'رقم القرار',
-            'decision_date' => 'تاريخ القرار',
-            'created_at' => 'تاريخ الإنشاء',
-            'updated_at' => 'تاريخ التحديث',
+            'status' => 'الحالة',
         ];
 
         if (! empty($this->columns)) {

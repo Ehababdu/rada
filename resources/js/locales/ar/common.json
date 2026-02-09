@@ -1127,5 +1127,13 @@
         "recent_promotions_description": "آخر 5 ترقيات تم تسجيلها",
         "recent_compensations": "أحدث المكافآت",
         "recent_compensations_description": "آخر 5 مكافآت تم صرفها"
+    },
+    "activity": {
+        "events": {
+            "created": "تم الإنشاء",
+            "updated": "تم التحديث",
+            "deleted": "تم الحذف",
+            "unknown": "غير معروف"
+        }
     }
 }

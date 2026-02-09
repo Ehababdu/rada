@@ -63,7 +63,7 @@ export default function Index({ activities, filters }: Props) {
 
     // Local state for filters
     const [search, setSearch] = useState(filters.search || '');
-    const [model, setModel] = useState(filters.model || '');
+    const [model, setModel] = useState(filters.model || 'all');
     const [user, setUser] = useState(filters.user || '');
     const [dateFrom, setDateFrom] = useState(filters.date_from || '');
     const [dateTo, setDateTo] = useState(filters.date_to || '');
@@ -73,14 +73,14 @@ export default function Index({ activities, filters }: Props) {
         const timeoutId = setTimeout(() => {
             if (
                 search !== (filters.search || '') ||
-                model !== (filters.model || '') ||
+                model !== (filters.model || 'all') ||
                 user !== (filters.user || '') ||
                 dateFrom !== (filters.date_from || '') ||
                 dateTo !== (filters.date_to || '')
             ) {
                 router.get('/activity-log', {
                     search: search || undefined,
-                    model: model || undefined,
+                    model: model !== 'all' ? model : undefined,
                     user: user || undefined,
                     date_from: dateFrom || undefined,
                     date_to: dateTo || undefined,
@@ -93,14 +93,14 @@ export default function Index({ activities, filters }: Props) {
 
     const clearFilters = () => {
         setSearch('');
-        setModel('');
+        setModel('all');
         setUser('');
         setDateFrom('');
         setDateTo('');
         router.get('/activity-log', {}, { preserveState: true });
     };
 
-    const hasActiveFilters = search || model || user || dateFrom || dateTo;
+    const hasActiveFilters = search || (model && model !== 'all') || user || dateFrom || dateTo;
 
     const getEventColor = (event: string) => {
         switch (event) {
@@ -177,7 +177,7 @@ export default function Index({ activities, filters }: Props) {
                                 <SelectValue placeholder={t('activity_log.model', 'النموذج')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">{t('common.all', 'الكل')}</SelectItem>
+                                <SelectItem value="all">{t('common.all', 'الكل')}</SelectItem>
                                 <SelectItem value="User">{t('users.title', 'المستخدمين')}</SelectItem>
                                 <SelectItem value="Martyr">{t('martyrs.title', 'الشهداء')}</SelectItem>
                                 <SelectItem value="Bank">{t('banks.title', 'البنوك')}</SelectItem>

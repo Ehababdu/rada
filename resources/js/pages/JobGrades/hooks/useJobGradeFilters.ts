@@ -20,7 +20,7 @@ export function useJobGradeFilters(initialFilters: {
     status?: string;
 }): UseJobGradeFiltersReturn {
     const [search, setSearch] = useState(initialFilters.search || '');
-    const [status, setStatus] = useState(initialFilters.status || '');
+    const [status, setStatus] = useState(initialFilters.status || 'all');
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
     const handleSearchChange = (value: string) => {
@@ -35,10 +35,10 @@ export function useJobGradeFilters(initialFilters: {
 
     const clearFilters = () => {
         setSearch('');
-        setStatus('');
+        setStatus('all');
     };
 
-    const hasActiveFilters = search.length > 0 || status.length > 0;
+    const hasActiveFilters = search.length > 0 || (status && status !== 'all');
 
     return {
         search,

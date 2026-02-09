@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\JobGradeController::index
-* @see app/Http/Controllers/JobGradeController.php:28
+* @see app/Http/Controllers/JobGradeController.php:29
 * @route '/job-grades'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\JobGradeController::index
-* @see app/Http/Controllers/JobGradeController.php:28
+* @see app/Http/Controllers/JobGradeController.php:29
 * @route '/job-grades'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\JobGradeController::index
-* @see app/Http/Controllers/JobGradeController.php:28
+* @see app/Http/Controllers/JobGradeController.php:29
 * @route '/job-grades'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\JobGradeController::index
-* @see app/Http/Controllers/JobGradeController.php:28
+* @see app/Http/Controllers/JobGradeController.php:29
 * @route '/job-grades'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\JobGradeController::create
-* @see app/Http/Controllers/JobGradeController.php:65
+* @see app/Http/Controllers/JobGradeController.php:66
 * @route '/job-grades/create'
 */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -60,7 +60,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\JobGradeController::create
-* @see app/Http/Controllers/JobGradeController.php:65
+* @see app/Http/Controllers/JobGradeController.php:66
 * @route '/job-grades/create'
 */
 create.url = (options?: RouteQueryOptions) => {
@@ -69,7 +69,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\JobGradeController::create
-* @see app/Http/Controllers/JobGradeController.php:65
+* @see app/Http/Controllers/JobGradeController.php:66
 * @route '/job-grades/create'
 */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -79,7 +79,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\JobGradeController::create
-* @see app/Http/Controllers/JobGradeController.php:65
+* @see app/Http/Controllers/JobGradeController.php:66
 * @route '/job-grades/create'
 */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -89,7 +89,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\JobGradeController::store
-* @see app/Http/Controllers/JobGradeController.php:73
+* @see app/Http/Controllers/JobGradeController.php:74
 * @route '/job-grades'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -104,7 +104,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\JobGradeController::store
-* @see app/Http/Controllers/JobGradeController.php:73
+* @see app/Http/Controllers/JobGradeController.php:74
 * @route '/job-grades'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -113,7 +113,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\JobGradeController::store
-* @see app/Http/Controllers/JobGradeController.php:73
+* @see app/Http/Controllers/JobGradeController.php:74
 * @route '/job-grades'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -123,7 +123,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\JobGradeController::show
-* @see app/Http/Controllers/JobGradeController.php:96
+* @see app/Http/Controllers/JobGradeController.php:110
 * @route '/job-grades/{job_grade}'
 */
 export const show = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -138,7 +138,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\JobGradeController::show
-* @see app/Http/Controllers/JobGradeController.php:96
+* @see app/Http/Controllers/JobGradeController.php:110
 * @route '/job-grades/{job_grade}'
 */
 show.url = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -165,7 +165,7 @@ show.url = (args: { job_grade: string | number } | [job_grade: string | number ]
 
 /**
 * @see \App\Http\Controllers\JobGradeController::show
-* @see app/Http/Controllers/JobGradeController.php:96
+* @see app/Http/Controllers/JobGradeController.php:110
 * @route '/job-grades/{job_grade}'
 */
 show.get = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -175,7 +175,7 @@ show.get = (args: { job_grade: string | number } | [job_grade: string | number ]
 
 /**
 * @see \App\Http\Controllers\JobGradeController::show
-* @see app/Http/Controllers/JobGradeController.php:96
+* @see app/Http/Controllers/JobGradeController.php:110
 * @route '/job-grades/{job_grade}'
 */
 show.head = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -185,7 +185,7 @@ show.head = (args: { job_grade: string | number } | [job_grade: string | number 
 
 /**
 * @see \App\Http\Controllers\JobGradeController::edit
-* @see app/Http/Controllers/JobGradeController.php:106
+* @see app/Http/Controllers/JobGradeController.php:120
 * @route '/job-grades/{job_grade}/edit'
 */
 export const edit = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -200,7 +200,7 @@ edit.definition = {
 
 /**
 * @see \App\Http\Controllers\JobGradeController::edit
-* @see app/Http/Controllers/JobGradeController.php:106
+* @see app/Http/Controllers/JobGradeController.php:120
 * @route '/job-grades/{job_grade}/edit'
 */
 edit.url = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -227,7 +227,7 @@ edit.url = (args: { job_grade: string | number } | [job_grade: string | number ]
 
 /**
 * @see \App\Http\Controllers\JobGradeController::edit
-* @see app/Http/Controllers/JobGradeController.php:106
+* @see app/Http/Controllers/JobGradeController.php:120
 * @route '/job-grades/{job_grade}/edit'
 */
 edit.get = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -237,7 +237,7 @@ edit.get = (args: { job_grade: string | number } | [job_grade: string | number ]
 
 /**
 * @see \App\Http\Controllers\JobGradeController::edit
-* @see app/Http/Controllers/JobGradeController.php:106
+* @see app/Http/Controllers/JobGradeController.php:120
 * @route '/job-grades/{job_grade}/edit'
 */
 edit.head = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -247,7 +247,7 @@ edit.head = (args: { job_grade: string | number } | [job_grade: string | number 
 
 /**
 * @see \App\Http\Controllers\JobGradeController::update
-* @see app/Http/Controllers/JobGradeController.php:116
+* @see app/Http/Controllers/JobGradeController.php:130
 * @route '/job-grades/{job_grade}'
 */
 export const update = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -262,7 +262,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\JobGradeController::update
-* @see app/Http/Controllers/JobGradeController.php:116
+* @see app/Http/Controllers/JobGradeController.php:130
 * @route '/job-grades/{job_grade}'
 */
 update.url = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -289,7 +289,7 @@ update.url = (args: { job_grade: string | number } | [job_grade: string | number
 
 /**
 * @see \App\Http\Controllers\JobGradeController::update
-* @see app/Http/Controllers/JobGradeController.php:116
+* @see app/Http/Controllers/JobGradeController.php:130
 * @route '/job-grades/{job_grade}'
 */
 update.put = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -299,7 +299,7 @@ update.put = (args: { job_grade: string | number } | [job_grade: string | number
 
 /**
 * @see \App\Http\Controllers\JobGradeController::update
-* @see app/Http/Controllers/JobGradeController.php:116
+* @see app/Http/Controllers/JobGradeController.php:130
 * @route '/job-grades/{job_grade}'
 */
 update.patch = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -309,7 +309,7 @@ update.patch = (args: { job_grade: string | number } | [job_grade: string | numb
 
 /**
 * @see \App\Http\Controllers\JobGradeController::destroy
-* @see app/Http/Controllers/JobGradeController.php:139
+* @see app/Http/Controllers/JobGradeController.php:167
 * @route '/job-grades/{job_grade}'
 */
 export const destroy = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -324,7 +324,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\JobGradeController::destroy
-* @see app/Http/Controllers/JobGradeController.php:139
+* @see app/Http/Controllers/JobGradeController.php:167
 * @route '/job-grades/{job_grade}'
 */
 destroy.url = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -351,7 +351,7 @@ destroy.url = (args: { job_grade: string | number } | [job_grade: string | numbe
 
 /**
 * @see \App\Http\Controllers\JobGradeController::destroy
-* @see app/Http/Controllers/JobGradeController.php:139
+* @see app/Http/Controllers/JobGradeController.php:167
 * @route '/job-grades/{job_grade}'
 */
 destroy.delete = (args: { job_grade: string | number } | [job_grade: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({

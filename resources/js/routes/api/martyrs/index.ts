@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MartyrController::search
-* @see app/Http/Controllers/MartyrController.php:248
+* @see app/Http/Controllers/MartyrController.php:182
 * @route '/api/martyrs/search'
 */
 export const search = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ search.definition = {
 
 /**
 * @see \App\Http\Controllers\MartyrController::search
-* @see app/Http/Controllers/MartyrController.php:248
+* @see app/Http/Controllers/MartyrController.php:182
 * @route '/api/martyrs/search'
 */
 search.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ search.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\MartyrController::search
-* @see app/Http/Controllers/MartyrController.php:248
+* @see app/Http/Controllers/MartyrController.php:182
 * @route '/api/martyrs/search'
 */
 search.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ search.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\MartyrController::search
-* @see app/Http/Controllers/MartyrController.php:248
+* @see app/Http/Controllers/MartyrController.php:182
 * @route '/api/martyrs/search'
 */
 search.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ search.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\MartyrController::index
-* @see app/Http/Controllers/MartyrController.php:270
+* @see app/Http/Controllers/MartyrController.php:204
 * @route '/api/martyrs'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -60,7 +60,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\MartyrController::index
-* @see app/Http/Controllers/MartyrController.php:270
+* @see app/Http/Controllers/MartyrController.php:204
 * @route '/api/martyrs'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -69,7 +69,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\MartyrController::index
-* @see app/Http/Controllers/MartyrController.php:270
+* @see app/Http/Controllers/MartyrController.php:204
 * @route '/api/martyrs'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\MartyrController::index
-* @see app/Http/Controllers/MartyrController.php:270
+* @see app/Http/Controllers/MartyrController.php:204
 * @route '/api/martyrs'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({

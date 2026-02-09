@@ -95,7 +95,7 @@ export function JobGradesFilters({
                                 <SelectValue placeholder={t('job_grades.select_status')} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">{t('all')}</SelectItem>
+                                <SelectItem value="all">{t('all')}</SelectItem>
                                 <SelectItem value="1">{t('active')}</SelectItem>
                                 <SelectItem value="0">{t('inactive')}</SelectItem>
                             </SelectContent>

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MartyrController::search
-* @see app/Http/Controllers/MartyrController.php:248
+* @see app/Http/Controllers/MartyrController.php:182
 * @route '/api/martyrs/search'
 */
 export const search = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ search.definition = {
 
 /**
 * @see \App\Http\Controllers\MartyrController::search
-* @see app/Http/Controllers/MartyrController.php:248
+* @see app/Http/Controllers/MartyrController.php:182
 * @route '/api/martyrs/search'
 */
 search.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ search.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\MartyrController::search
-* @see app/Http/Controllers/MartyrController.php:248
+* @see app/Http/Controllers/MartyrController.php:182
 * @route '/api/martyrs/search'
 */
 search.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ search.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\MartyrController::search
-* @see app/Http/Controllers/MartyrController.php:248
+* @see app/Http/Controllers/MartyrController.php:182
 * @route '/api/martyrs/search'
 */
 search.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ search.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\MartyrController::apiIndex
-* @see app/Http/Controllers/MartyrController.php:270
+* @see app/Http/Controllers/MartyrController.php:204
 * @route '/api/martyrs'
 */
 export const apiIndex = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -60,7 +60,7 @@ apiIndex.definition = {
 
 /**
 * @see \App\Http\Controllers\MartyrController::apiIndex
-* @see app/Http/Controllers/MartyrController.php:270
+* @see app/Http/Controllers/MartyrController.php:204
 * @route '/api/martyrs'
 */
 apiIndex.url = (options?: RouteQueryOptions) => {
@@ -69,7 +69,7 @@ apiIndex.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\MartyrController::apiIndex
-* @see app/Http/Controllers/MartyrController.php:270
+* @see app/Http/Controllers/MartyrController.php:204
 * @route '/api/martyrs'
 */
 apiIndex.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -79,7 +79,7 @@ apiIndex.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\MartyrController::apiIndex
-* @see app/Http/Controllers/MartyrController.php:270
+* @see app/Http/Controllers/MartyrController.php:204
 * @route '/api/martyrs'
 */
 apiIndex.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -544,23 +544,23 @@ print.head = (args: { martyr: number | { id: number } } | [martyr: number | { id
 * @see app/Http/Controllers/MartyrController.php:161
 * @route '/martyrs/export'
 */
-const exportMethod909160ae6e7044570c8054419c0cd0b1 = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: exportMethod909160ae6e7044570c8054419c0cd0b1.url(options),
-    method: 'post',
+export const exportMethod = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: exportMethod.url(options),
+    method: 'get',
 })
 
-exportMethod909160ae6e7044570c8054419c0cd0b1.definition = {
-    methods: ["post"],
+exportMethod.definition = {
+    methods: ["get","post","head"],
     url: '/martyrs/export',
-} satisfies RouteDefinition<["post"]>
+} satisfies RouteDefinition<["get","post","head"]>
 
 /**
 * @see \App\Http\Controllers\MartyrController::exportMethod
 * @see app/Http/Controllers/MartyrController.php:161
 * @route '/martyrs/export'
 */
-exportMethod909160ae6e7044570c8054419c0cd0b1.url = (options?: RouteQueryOptions) => {
-    return exportMethod909160ae6e7044570c8054419c0cd0b1.definition.url + queryParams(options)
+exportMethod.url = (options?: RouteQueryOptions) => {
+    return exportMethod.definition.url + queryParams(options)
 }
 
 /**
@@ -568,145 +568,28 @@ exportMethod909160ae6e7044570c8054419c0cd0b1.url = (options?: RouteQueryOptions)
 * @see app/Http/Controllers/MartyrController.php:161
 * @route '/martyrs/export'
 */
-exportMethod909160ae6e7044570c8054419c0cd0b1.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
-    url: exportMethod909160ae6e7044570c8054419c0cd0b1.url(options),
+exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: exportMethod.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\MartyrController::exportMethod
+* @see app/Http/Controllers/MartyrController.php:161
+* @route '/martyrs/export'
+*/
+exportMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: exportMethod.url(options),
     method: 'post',
 })
 
 /**
 * @see \App\Http\Controllers\MartyrController::exportMethod
 * @see app/Http/Controllers/MartyrController.php:161
-* @route '/martyrs/export/download'
+* @route '/martyrs/export'
 */
-const exportMethode46d1ccfa7481966150c2e7e9eb8140c = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportMethode46d1ccfa7481966150c2e7e9eb8140c.url(options),
-    method: 'get',
-})
-
-exportMethode46d1ccfa7481966150c2e7e9eb8140c.definition = {
-    methods: ["get","head"],
-    url: '/martyrs/export/download',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\MartyrController::exportMethod
-* @see app/Http/Controllers/MartyrController.php:161
-* @route '/martyrs/export/download'
-*/
-exportMethode46d1ccfa7481966150c2e7e9eb8140c.url = (options?: RouteQueryOptions) => {
-    return exportMethode46d1ccfa7481966150c2e7e9eb8140c.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\MartyrController::exportMethod
-* @see app/Http/Controllers/MartyrController.php:161
-* @route '/martyrs/export/download'
-*/
-exportMethode46d1ccfa7481966150c2e7e9eb8140c.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportMethode46d1ccfa7481966150c2e7e9eb8140c.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\MartyrController::exportMethod
-* @see app/Http/Controllers/MartyrController.php:161
-* @route '/martyrs/export/download'
-*/
-exportMethode46d1ccfa7481966150c2e7e9eb8140c.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: exportMethode46d1ccfa7481966150c2e7e9eb8140c.url(options),
-    method: 'head',
-})
-
-export const exportMethod = {
-    '/martyrs/export': exportMethod909160ae6e7044570c8054419c0cd0b1,
-    '/martyrs/export/download': exportMethode46d1ccfa7481966150c2e7e9eb8140c,
-}
-
-/**
-* @see \App\Http\Controllers\MartyrController::latestExport
-* @see app/Http/Controllers/MartyrController.php:192
-* @route '/martyrs/export/latest'
-*/
-export const latestExport = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: latestExport.url(options),
-    method: 'get',
-})
-
-latestExport.definition = {
-    methods: ["get","head"],
-    url: '/martyrs/export/latest',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\MartyrController::latestExport
-* @see app/Http/Controllers/MartyrController.php:192
-* @route '/martyrs/export/latest'
-*/
-latestExport.url = (options?: RouteQueryOptions) => {
-    return latestExport.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\MartyrController::latestExport
-* @see app/Http/Controllers/MartyrController.php:192
-* @route '/martyrs/export/latest'
-*/
-latestExport.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: latestExport.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\MartyrController::latestExport
-* @see app/Http/Controllers/MartyrController.php:192
-* @route '/martyrs/export/latest'
-*/
-latestExport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: latestExport.url(options),
-    method: 'head',
-})
-
-/**
-* @see \App\Http\Controllers\MartyrController::exportStatus
-* @see app/Http/Controllers/MartyrController.php:222
-* @route '/martyrs/export/status'
-*/
-export const exportStatus = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportStatus.url(options),
-    method: 'get',
-})
-
-exportStatus.definition = {
-    methods: ["get","head"],
-    url: '/martyrs/export/status',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\MartyrController::exportStatus
-* @see app/Http/Controllers/MartyrController.php:222
-* @route '/martyrs/export/status'
-*/
-exportStatus.url = (options?: RouteQueryOptions) => {
-    return exportStatus.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\MartyrController::exportStatus
-* @see app/Http/Controllers/MartyrController.php:222
-* @route '/martyrs/export/status'
-*/
-exportStatus.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: exportStatus.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\MartyrController::exportStatus
-* @see app/Http/Controllers/MartyrController.php:222
-* @route '/martyrs/export/status'
-*/
-exportStatus.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: exportStatus.url(options),
+exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: exportMethod.url(options),
     method: 'head',
 })
 
@@ -768,6 +651,6 @@ updateStatus.patch = (args: { martyr: number | { id: number } } | [martyr: numbe
     method: 'patch',
 })
 
-const MartyrController = { search, apiIndex, index, create, store, show, edit, update, destroy, print, exportMethod, latestExport, exportStatus, updateStatus, export: exportMethod }
+const MartyrController = { search, apiIndex, index, create, store, show, edit, update, destroy, print, exportMethod, updateStatus, export: exportMethod }
 
 export default MartyrController

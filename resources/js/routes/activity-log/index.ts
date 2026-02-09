@@ -107,7 +107,7 @@ show.head = (args: { activity_log: string | number } | [activity_log: string | n
 
 /**
 * @see \App\Http\Controllers\ActivityLogController::destroy
-* @see app/Http/Controllers/ActivityLogController.php:101
+* @see app/Http/Controllers/ActivityLogController.php:108
 * @route '/activity-log/{activity_log}'
 */
 export const destroy = (args: { activity_log: string | number } | [activity_log: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -122,7 +122,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\ActivityLogController::destroy
-* @see app/Http/Controllers/ActivityLogController.php:101
+* @see app/Http/Controllers/ActivityLogController.php:108
 * @route '/activity-log/{activity_log}'
 */
 destroy.url = (args: { activity_log: string | number } | [activity_log: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -149,7 +149,7 @@ destroy.url = (args: { activity_log: string | number } | [activity_log: string |
 
 /**
 * @see \App\Http\Controllers\ActivityLogController::destroy
-* @see app/Http/Controllers/ActivityLogController.php:101
+* @see app/Http/Controllers/ActivityLogController.php:108
 * @route '/activity-log/{activity_log}'
 */
 destroy.delete = (args: { activity_log: string | number } | [activity_log: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({

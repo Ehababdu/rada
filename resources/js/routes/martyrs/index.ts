@@ -1,5 +1,4 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
-import exportMethod9280c6 from './export'
 import attachments from './attachments'
 /**
 * @see \App\Http\Controllers\MartyrController::index
@@ -458,15 +457,15 @@ print.head = (args: { martyr: number | { id: number } } | [martyr: number | { id
 * @see app/Http/Controllers/MartyrController.php:161
 * @route '/martyrs/export'
 */
-export const exportMethod = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const exportMethod = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: exportMethod.url(options),
-    method: 'post',
+    method: 'get',
 })
 
 exportMethod.definition = {
-    methods: ["post"],
+    methods: ["get","post","head"],
     url: '/martyrs/export',
-} satisfies RouteDefinition<["post"]>
+} satisfies RouteDefinition<["get","post","head"]>
 
 /**
 * @see \App\Http\Controllers\MartyrController::exportMethod
@@ -482,9 +481,29 @@ exportMethod.url = (options?: RouteQueryOptions) => {
 * @see app/Http/Controllers/MartyrController.php:161
 * @route '/martyrs/export'
 */
+exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: exportMethod.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\MartyrController::exportMethod
+* @see app/Http/Controllers/MartyrController.php:161
+* @route '/martyrs/export'
+*/
 exportMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: exportMethod.url(options),
     method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MartyrController::exportMethod
+* @see app/Http/Controllers/MartyrController.php:161
+* @route '/martyrs/export'
+*/
+exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: exportMethod.url(options),
+    method: 'head',
 })
 
 /**
@@ -554,7 +573,7 @@ const martyrs = {
     update: Object.assign(update, update),
     destroy: Object.assign(destroy, destroy),
     print: Object.assign(print, print),
-    export: Object.assign(exportMethod, exportMethod9280c6),
+    export: Object.assign(exportMethod, exportMethod),
     updateStatus: Object.assign(updateStatus, updateStatus),
     attachments: Object.assign(attachments, attachments),
 }

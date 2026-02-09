@@ -110,10 +110,13 @@ export default function Index({
     // Debounced search effect
     useEffect(() => {
         const timeoutId = setTimeout(() => {
-            if (search !== filters.search) {
+            if (search !== filters.search || status !== (filters.status || 'all')) {
                 router.get(
                     '/job-grades',
-                    { search, status },
+                    { 
+                        search: search || undefined, 
+                        status: status !== 'all' ? status : undefined 
+                    },
                     { preserveState: true, replace: true },
                 );
             }

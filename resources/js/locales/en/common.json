@@ -499,5 +499,13 @@
         "recent_promotions_description": "Last 5 promotions registered",
         "recent_compensations": "Recent Compensations",
         "recent_compensations_description": "Last 5 compensations paid"
+    },
+    "activity": {
+        "events": {
+            "created": "Created",
+            "updated": "Updated",
+            "deleted": "Deleted",
+            "unknown": "Unknown"
+        }
     }
 }
