@@ -1,11 +1,22 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Shadcn UI Components
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -16,7 +27,7 @@ import {
 } from '@/components/ui/select';
 
 // Icons
-import { Award, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { Award, ArrowUpDown, CheckCircle, ChevronLeft, ChevronRight, Edit, Eye, Search, Trash2, X, XCircle } from 'lucide-react';
 
 // Layout
 import AppLayout from '@/layouts/app-layout';
@@ -35,11 +46,19 @@ import { usePermissions } from '@/hooks/use-permissions';
 // Types
 import type { JobGrade, JobGradesResponse } from './types/job-grade';
 
+// Utils
+import { cn } from '@/lib/utils';
+
+// Table
+import type { ColumnDef } from '@tanstack/react-table';
+
 interface Props {
     jobGrades: JobGradesResponse;
     filters: {
         search: string;
         status: string;
+        sort?: string;
+        direction?: string;
         per_page?: string;
     };
 }
@@ -57,7 +76,11 @@ export default function Index({
     // Filters Hook
     const {
         search,
+        setSearch,
         status,
+        setStatus,
+        isActiveFilter,
+        setIsActiveFilter,
         isFiltersOpen,
         setIsFiltersOpen,
         handleSearchChange,
@@ -80,6 +103,9 @@ export default function Index({
 
     // Local state for per page
     const [perPage, setPerPage] = useState(filters.per_page || '10');
+
+    // Search timeout ref
+    const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Debounced search effect
     useEffect(() => {
@@ -143,151 +169,7 @@ export default function Index({
         );
     };
 
-    const handleDelete = (id: number) => {
-        router.delete(`/job-grades/${id}`, {
-            onSuccess: () => {
-                // Flash message will be handled by useEffect
-            },
-            onError: () => {
-                // Flash message will be handled by useEffect
-            },
-        });
-    };
 
-    const columns: ColumnDef<JobGrade>[] = [
-        {
-            accessorKey: 'name_ar',
-            header: () => (
-                <Button
-                    variant="ghost"
-                    onClick={() => handleSort('name_ar')}
-                    className="h-8 gap-1 p-0 font-bold text-inherit hover:bg-transparent"
-                >
-                    {t('job_grades.name_ar')}
-                    <ArrowUpDown className="h-4 w-4 opacity-50" />
-                </Button>
-            ),
-            cell: ({ row }) => (
-                <div className="font-semibold">{row.original.name_ar}</div>
-            ),
-        },
-
-        {
-            accessorKey: 'order',
-            header: () => (
-                <Button
-                    variant="ghost"
-                    onClick={() => handleSort('order')}
-                    className="h-8 gap-1 p-0 font-bold text-inherit hover:bg-transparent"
-                >
-                    {t('job_grades.order')}
-                    <ArrowUpDown className="h-4 w-4 opacity-50" />
-                </Button>
-            ),
-            cell: ({ row }) => (
-                <Badge variant="outline" className="font-mono">
-                    {row.original.order}
-                </Badge>
-            ),
-        },
-        {
-            accessorKey: 'is_active',
-            header: t('job_grades.status'),
-            cell: ({ row }) => (
-                <Badge
-                    className={cn(
-                        'gap-1 border-none px-2 py-0.5 font-medium shadow-none',
-                        row.original.is_active
-                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100'
-                            : 'bg-red-100 text-red-700 hover:bg-red-100',
-                    )}
-                >
-                    {row.original.is_active ? (
-                        <CheckCircle className="h-3 w-3" />
-                    ) : (
-                        <XCircle className="h-3 w-3" />
-                    )}
-                    {row.original.is_active ? t('active') : t('inactive')}
-                </Badge>
-            ),
-        },
-        {
-            id: 'actions',
-            header: t('actions'),
-            cell: ({ row }) => (
-                <div
-                    className={cn(
-                        'flex items-center gap-1',
-                        isRTL ? 'justify-start' : 'justify-end',
-                    )}
-                >
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-blue-600 hover:bg-blue-50"
-                        asChild
-                    >
-                        <Link href={`/job-grades/${row.original.id}`}>
-                            <Eye className="h-4 w-4" />
-                        </Link>
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-amber-600 hover:bg-amber-50"
-                        asChild
-                    >
-                        <Link href={`/job-grades/${row.original.id}/edit`}>
-                            <Edit className="h-4 w-4" />
-                        </Link>
-                    </Button>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-destructive hover:bg-red-50"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                    {t('confirm_delete')}
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    {t('job_grades.confirm_delete', {
-                                        name: row.original.name_ar,
-                                    })}
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter
-                                className={cn(
-                                    'gap-2',
-                                    isRTL && 'sm:flex-row-reverse',
-                                )}
-                            >
-                                <AlertDialogCancel>
-                                    {t('cancel')}
-                                </AlertDialogCancel>
-                                <AlertDialogAction
-                                    onClick={() =>
-                                        handleDelete(row.original.id)
-                                    }
-                                    className="bg-destructive text-white hover:bg-destructive/90"
-                                >
-                                    {t('delete')}
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </div>
-            ),
-        },
-    ];
-
->>>>>>> 73d1c2034d534489636b20a75afe597348697926
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={t('job_grades.title')} />

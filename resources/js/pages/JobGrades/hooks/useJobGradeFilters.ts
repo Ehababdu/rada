@@ -2,7 +2,11 @@ import { useState } from 'react';
 
 export interface UseJobGradeFiltersReturn {
     search: string;
+    setSearch: (value: string) => void;
     status: string;
+    setStatus: (value: string) => void;
+    isActiveFilter: string;
+    setIsActiveFilter: (value: string) => void;
     isFiltersOpen: boolean;
     setIsFiltersOpen: (open: boolean) => void;
     handleSearchChange: (value: string) => void;
@@ -38,7 +42,11 @@ export function useJobGradeFilters(initialFilters: {
 
     return {
         search,
+        setSearch,
         status,
+        setStatus,
+        isActiveFilter: status,
+        setIsActiveFilter: setStatus,
         isFiltersOpen,
         setIsFiltersOpen,
         handleSearchChange,
