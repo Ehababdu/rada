@@ -66,11 +66,8 @@ export default function Index({
         hasActiveFilters,
     } = useJobGradeFilters(filters);
 
-    // Local state for per page
-    const [perPage, setPerPage] = useState(filters.per_page || '10');
-
     // Delete Hook
-    const { handleDelete, isDeleting } = useJobGradeDelete();
+    const { handleDelete } = useJobGradeDelete();
 
     // Columns Hook
     const columns = useJobGradeColumns({
@@ -80,6 +77,9 @@ export default function Index({
         isRTL,
         onDelete: handleDelete,
     });
+
+    // Local state for per page
+    const [perPage, setPerPage] = useState(filters.per_page || '10');
 
     // Debounced search effect
     useEffect(() => {
@@ -102,195 +102,6 @@ export default function Index({
         { title: t('job_grades.title'), href: '/job-grades' },
     ];
 
-<<<<<<< HEAD
-=======
-    // دالة البحث مع Debounce
-    const triggerSearch = useCallback(
-        (searchValue: string, activeValue: string) => {
-            router.get(
-                '/job-grades',
-                {
-                    search: searchValue || undefined,
-                    is_active: activeValue || undefined,
-                    page: 1,
-                },
-                { preserveState: true, replace: true },
-            );
-        },
-        [],
-    );
-
-    const onSearchChange = (val: string) => {
-        setSearch(val);
-        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-        searchTimeoutRef.current = setTimeout(
-            () => triggerSearch(val, isActiveFilter),
-            400,
-        );
-    };
-
-    const onStatusFilterChange = (val: string) => {
-        setIsActiveFilter(val);
-        triggerSearch(search, val);
-    };
-
-    const handleSort = (field: string) => {
-        const direction =
-            filters.sort === field && filters.direction === 'asc'
-                ? 'desc'
-                : 'asc';
-        router.get(
-            '/job-grades',
-            { ...filters, sort: field, direction, page: 1 },
-            { preserveState: true, replace: true },
-        );
-    };
-
-    const handleDelete = (id: number) => {
-        router.delete(`/job-grades/${id}`, {
-            onSuccess: () => {
-                // Flash message will be handled by useEffect
-            },
-            onError: () => {
-                // Flash message will be handled by useEffect
-            },
-        });
-    };
-
-    const columns: ColumnDef<JobGrade>[] = [
-        {
-            accessorKey: 'name_ar',
-            header: () => (
-                <Button
-                    variant="ghost"
-                    onClick={() => handleSort('name_ar')}
-                    className="h-8 gap-1 p-0 font-bold text-inherit hover:bg-transparent"
-                >
-                    {t('job_grades.name_ar')}
-                    <ArrowUpDown className="h-4 w-4 opacity-50" />
-                </Button>
-            ),
-            cell: ({ row }) => (
-                <div className="font-semibold">{row.original.name_ar}</div>
-            ),
-        },
-
-        {
-            accessorKey: 'order',
-            header: () => (
-                <Button
-                    variant="ghost"
-                    onClick={() => handleSort('order')}
-                    className="h-8 gap-1 p-0 font-bold text-inherit hover:bg-transparent"
-                >
-                    {t('job_grades.order')}
-                    <ArrowUpDown className="h-4 w-4 opacity-50" />
-                </Button>
-            ),
-            cell: ({ row }) => (
-                <Badge variant="outline" className="font-mono">
-                    {row.original.order}
-                </Badge>
-            ),
-        },
-        {
-            accessorKey: 'is_active',
-            header: t('job_grades.status'),
-            cell: ({ row }) => (
-                <Badge
-                    className={cn(
-                        'gap-1 border-none px-2 py-0.5 font-medium shadow-none',
-                        row.original.is_active
-                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100'
-                            : 'bg-red-100 text-red-700 hover:bg-red-100',
-                    )}
-                >
-                    {row.original.is_active ? (
-                        <CheckCircle className="h-3 w-3" />
-                    ) : (
-                        <XCircle className="h-3 w-3" />
-                    )}
-                    {row.original.is_active ? t('active') : t('inactive')}
-                </Badge>
-            ),
-        },
-        {
-            id: 'actions',
-            header: t('actions'),
-            cell: ({ row }) => (
-                <div
-                    className={cn(
-                        'flex items-center gap-1',
-                        isRTL ? 'justify-start' : 'justify-end',
-                    )}
-                >
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-blue-600 hover:bg-blue-50"
-                        asChild
-                    >
-                        <Link href={`/job-grades/${row.original.id}`}>
-                            <Eye className="h-4 w-4" />
-                        </Link>
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-amber-600 hover:bg-amber-50"
-                        asChild
-                    >
-                        <Link href={`/job-grades/${row.original.id}/edit`}>
-                            <Edit className="h-4 w-4" />
-                        </Link>
-                    </Button>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-destructive hover:bg-red-50"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                    {t('confirm_delete')}
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    {t('job_grades.confirm_delete', {
-                                        name: row.original.name_ar,
-                                    })}
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter
-                                className={cn(
-                                    'gap-2',
-                                    isRTL && 'sm:flex-row-reverse',
-                                )}
-                            >
-                                <AlertDialogCancel>
-                                    {t('cancel')}
-                                </AlertDialogCancel>
-                                <AlertDialogAction
-                                    onClick={() =>
-                                        handleDelete(row.original.id)
-                                    }
-                                    className="bg-destructive text-white hover:bg-destructive/90"
-                                >
-                                    {t('delete')}
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </div>
-            ),
-        },
-    ];
-
->>>>>>> 73d1c20 (refactor: remove name_en field from JobGrades system)
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={t('job_grades.title')} />
