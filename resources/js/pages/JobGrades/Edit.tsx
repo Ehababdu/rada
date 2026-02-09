@@ -23,12 +23,22 @@ import AppLayout from '@/layouts/app-layout';
 
 // Hooks
 import { useToast } from '@/hooks/use-toast';
+import AppLayout from '@/layouts/app-layout';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { AlertTriangle, ArrowLeft, Award, Save } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-// Types
-import type { JobGrade } from './types/job-grade';
-
-// React
-import { useEffect } from 'react';
+interface JobGrade {
+    id: number;
+    name_ar: string;
+    name_en: string;
+    order: number;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
 
 interface Props {
     jobGrade: JobGrade;
@@ -126,9 +136,32 @@ export default function Edit({ jobGrade }: Props) {
                                 )}
                             </div>
 
-                            {/* Order */}
                             <div className="space-y-2">
-                                <Label htmlFor="order">{t('job_grades.order')}</Label>
+                                <Label htmlFor="name_en">
+                                    {t('job_grades.name_en')} *
+                                </Label>
+                                <Input
+                                    id="name_en"
+                                    value={data.name_en}
+                                    onChange={(e) =>
+                                        setData('name_en', e.target.value)
+                                    }
+                                    placeholder={t('job_grades.enter_name_en')}
+                                />
+                                {errors.name_en && (
+                                    <Alert variant="destructive">
+                                        <AlertTriangle className="h-4 w-4" />
+                                        <AlertDescription>
+                                            {errors.name_en}
+                                        </AlertDescription>
+                                    </Alert>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="order">
+                                    {t('job_grades.order')}
+                                </Label>
                                 <Input
                                     id="order"
                                     type="number"

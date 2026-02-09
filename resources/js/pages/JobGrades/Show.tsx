@@ -94,15 +94,57 @@ export default function Show({ jobGrade }: Props) {
                                 <p className="text-lg font-semibold">{jobGrade.name_ar}</p>
                             </div>
 
-                            {/* Status */}
-                            <div className="space-y-2">
-                                <Label className="text-sm font-medium text-muted-foreground">
-                                    {t('job_grades.status')}
-                                </Label>
-                                <Badge variant={jobGrade.is_active ? 'default' : 'secondary'}>
-                                    {jobGrade.is_active ? t('active') : t('inactive')}
-                                </Badge>
-                            </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold tracking-wider text-muted-foreground uppercase italic">
+                                            {t('job_grades.name_en')}
+                                        </Label>
+                                        <p className="text-lg font-medium text-foreground">
+                                            {jobGrade.name_en}
+                                        </p>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold tracking-wider text-muted-foreground uppercase italic">
+                                            {t('job_grades.order')}
+                                        </Label>
+                                        <div className="flex items-center gap-2">
+                                            <Badge
+                                                variant="secondary"
+                                                className="px-3 py-0 font-mono text-base"
+                                            >
+                                                {jobGrade.order}
+                                            </Badge>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold tracking-wider text-muted-foreground uppercase italic">
+                                            {t('job_grades.status')}
+                                        </Label>
+                                        <div>
+                                            <Badge
+                                                className={cn(
+                                                    'gap-1.5 border-none px-3 py-1 font-semibold shadow-none',
+                                                    jobGrade.is_active
+                                                        ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100'
+                                                        : 'bg-red-100 text-red-700 hover:bg-red-100',
+                                                )}
+                                            >
+                                                {jobGrade.is_active ? (
+                                                    <CheckCircle className="h-4 w-4" />
+                                                ) : (
+                                                    <XCircle className="h-4 w-4" />
+                                                )}
+                                                {jobGrade.is_active
+                                                    ? t('active')
+                                                    : t('inactive')}
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
 
                             {/* Created At */}
                             <div className="space-y-2">
