@@ -40,13 +40,15 @@ export function useMartyrExport({
                 variant: 'default',
             });
 
-            // Convert URLSearchParams to object for route params
-            const queryObj: Record<string, string> = {};
-            for (const [key, value] of params.entries()) {
-                queryObj[key] = value;
-            }
+            // Build export URL from the named route then append query string.
+            // Passing the whole query object into `route()` sometimes produces
+            // an unexpected relative path; construct base route and append
+            // serialized params to ensure the correct URL.
+            const baseUrl = route('martyrs.export', {}, true);
+            const queryString = params.toString();
+            const url = queryString ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${queryString}` : baseUrl;
 
-            window.open(route('martyrs.export', queryObj, true), '_blank');
+            window.open(url, '_blank');
         } catch {
             toast({
                 title: t('common.error'),
