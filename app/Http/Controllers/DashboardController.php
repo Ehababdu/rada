@@ -22,8 +22,8 @@ class DashboardController extends Controller
         $currentYear = now()->year;
         $promotionsDueThisYear = Promotion::whereYear('next_due_date', $currentYear)->count();
 
-        // 3. Total Receipts (Compensations) paid in the current year
-        $totalReceiptsThisYear = Compensation::whereYear('receipt_date', $currentYear)->sum('amount');
+        // 3. Total Receipts (Compensations) - sum of all compensations
+        $totalReceipts = Compensation::sum('amount');
 
         // 4. Recent Alerts (last 5 unread alerts)
         $recentAlerts = Alert::unread()
@@ -35,7 +35,7 @@ class DashboardController extends Controller
             'stats' => [
                 'totalMartyrs' => $totalMartyrs,
                 'promotionsDueThisYear' => $promotionsDueThisYear,
-                'totalReceiptsThisYear' => $totalReceiptsThisYear,
+                'totalReceiptsThisYear' => $totalReceipts,
             ],
             'alerts' => $recentAlerts,
         ]);
