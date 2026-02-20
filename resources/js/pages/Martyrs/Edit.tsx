@@ -35,6 +35,7 @@ import { useTranslation } from 'react-i18next';
 
 // Add useToast import
 import { useToast } from '@/hooks/use-toast';
+import AlertError from '@/components/alert-error';
 
 interface SearchableSelectProps {
     value: string | number | null;
@@ -226,7 +227,7 @@ const SearchableSelect = ({
                 <Search size={16} className="text-gray-400" />
             </div>
 
-            {createPortal(dropdown, document.body)}
+            {typeof document !== 'undefined' && document.body && createPortal(dropdown, document.body)}
 
             {error && (
                 <p className="mt-1 text-sm text-red-500 dark:text-red-400">
@@ -549,30 +550,30 @@ export default function Edit({
         setData(
             'employer_id',
             martyr.employer_id ??
-                martyr.employer?.id ??
-                data.employer_id ??
-                null,
+            martyr.employer?.id ??
+            data.employer_id ??
+            null,
         );
         setData(
             'employer_location_id',
             martyr.employer_location_id ??
-                martyr.employer_location?.id ??
-                data.employer_location_id ??
-                null,
+            martyr.employer_location?.id ??
+            data.employer_location_id ??
+            null,
         );
         setData(
             'previous_employer_id',
             martyr.previous_employer_id ??
-                martyr.previous_employer?.id ??
-                data.previous_employer_id ??
-                null,
+            martyr.previous_employer?.id ??
+            data.previous_employer_id ??
+            null,
         );
         setData(
             'previous_employer_location_id',
             martyr.previous_employer_location_id ??
-                martyr.previous_employer_location?.id ??
-                data.previous_employer_location_id ??
-                null,
+            martyr.previous_employer_location?.id ??
+            data.previous_employer_location_id ??
+            null,
         );
         setData('bank_id', martyr.bank_id ?? data.bank_id ?? null);
         setData('branch_id', martyr.branch_id ?? data.branch_id ?? null);
@@ -676,10 +677,19 @@ export default function Edit({
         e.preventDefault();
 
         const formData = new FormData();
+        // Append _method for PUT request spoofing (required for multipart/form-data with PUT)
+        formData.append('_method', 'PUT');
+
         Object.entries(data as Record<string, unknown>).forEach(
             ([key, value]) => {
-                // skip undefined or null to avoid clearing server values
-                if (value === undefined || value === null) return;
+                // skip undefined
+                if (value === undefined) return;
+
+                // Handle null: Append as empty string to allow nullifying values on the server
+                if (value === null) {
+                    formData.append(key, '');
+                    return;
+                }
 
                 // if it's a File (profile_image), append directly
                 if (value instanceof File) {
@@ -687,8 +697,14 @@ export default function Edit({
                     return;
                 }
 
-                // arrays/objects -> JSON
-                if (typeof value === 'object') {
+                // Boolean handling
+                if (typeof value === 'boolean') {
+                    formData.append(key, value ? '1' : '0');
+                    return;
+                }
+
+                // objects -> JSON
+                if (typeof value === 'object' && !(value instanceof File)) {
                     formData.append(key, JSON.stringify(value));
                     return;
                 }
@@ -697,25 +713,15 @@ export default function Edit({
             },
         );
 
-        // include _method override so Laravel accepts PUT with multipart/form-data
-        formData.append('_method', 'PUT');
-
-        router.visit(`/martyrs/${martyr.id}`, {
-            method: 'post',
-            data: formData,
+        router.post(`/martyrs/${martyr.id}`, formData, {
             onSuccess: () => {
-                toast({
-                    title: t('martyrs.updated_successfully'),
-                    variant: 'default',
-                });
-                // Redirect to martyrs list after successful update with a small delay to show the toast
-                setTimeout(() => {
-                    router.visit('/martyrs');
-                }, 1000);
+                // Flash message from server will be handled by global notification provider
             },
-            onError: () => {
+            onError: (errors) => {
+                const firstError = Object.values(errors)[0];
                 toast({
                     title: t('error'),
+                    description: typeof firstError === 'string' ? firstError : t('validation.errors_occurred'),
                     variant: 'destructive',
                 });
             },
@@ -740,6 +746,12 @@ export default function Edit({
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-8">
+                    {Object.keys(errors).length > 0 && (
+                        <AlertError
+                            title={t('validation.errors_occurred')}
+                            errors={[t('validation.please_check_fields')]}
+                        />
+                    )}
                     {/* Basic Information */}
                     <FormSection title={t('martyrs.basic_info')}>
                         <FormField
@@ -1006,63 +1018,63 @@ export default function Edit({
                         {currentMaritalStatuses.find(
                             (status) => status.id === data.marital_status_id,
                         )?.name_ar === 'متزوج' && (
-                            <FormField
-                                icon={Users}
-                                label={t('martyrs.children_count')}
-                                placeholder={t('martyrs.enter_children_count')}
-                                error={errors.children_count}
-                            >
-                                <Input
-                                    id="children_count"
-                                    type="number"
-                                    min="0"
-                                    value={
-                                        data.children_count?.toString() || ''
-                                    }
-                                    onChange={(e) =>
-                                        setData(
-                                            'children_count',
-                                            e.target.value
-                                                ? parseInt(e.target.value)
-                                                : null,
-                                        )
-                                    }
-                                    placeholder={t(
-                                        'martyrs.enter_children_count',
-                                    )}
-                                    className="w-full"
-                                />
-                            </FormField>
-                        )}
+                                <FormField
+                                    icon={Users}
+                                    label={t('martyrs.children_count')}
+                                    placeholder={t('martyrs.enter_children_count')}
+                                    error={errors.children_count}
+                                >
+                                    <Input
+                                        id="children_count"
+                                        type="number"
+                                        min="0"
+                                        value={
+                                            data.children_count?.toString() || ''
+                                        }
+                                        onChange={(e) =>
+                                            setData(
+                                                'children_count',
+                                                e.target.value
+                                                    ? parseInt(e.target.value)
+                                                    : null,
+                                            )
+                                        }
+                                        placeholder={t(
+                                            'martyrs.enter_children_count',
+                                        )}
+                                        className="w-full"
+                                    />
+                                </FormField>
+                            )}
 
                         {currentMaritalStatuses.find(
                             (status) => status.id === data.marital_status_id,
                         )?.name_ar === 'متزوج' && (
-                            <FormField
-                                icon={Heart}
-                                label="حالة الزوجة"
-                                error={errors.wife_status}
-                            >
-                                <Select
-                                    value={data.wife_status || ''}
-                                    onValueChange={(value) =>
-                                        setData('wife_status', value)
-                                    }
+                                <FormField
+                                    icon={Heart}
+                                    label="حالة الزوجة"
+                                    error={errors.wife_status}
                                 >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="اختر حالة الزوجة" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="ارملة">
-                                            ارملة
-                                        </SelectItem>
-                                        <SelectItem value="متزوجة">
-                                            متزوجة
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormField>
-                        )}
+                                    <Select
+                                        value={data.wife_status || ''}
+                                        onValueChange={(value) =>
+                                            setData('wife_status', value)
+                                        }
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="اختر حالة الزوجة" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="ارملة">
+                                                ارملة
+                                            </SelectItem>
+                                            <SelectItem value="متزوجة">
+                                                متزوجة
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormField>
+                            )}
 
                         <FormField
                             icon={Briefcase}
@@ -1149,24 +1161,24 @@ export default function Edit({
                                     selectedStatus.name_ar === 'موظف')
                             );
                         })() && (
-                            <FormField
-                                icon={Briefcase}
-                                label={t('martyrs.job_grade')}
-                                error={errors.job_grade_id}
-                            >
-                                <SearchableSelect
-                                    value={data.job_grade_id}
-                                    onChange={(value) =>
-                                        setData(
-                                            'job_grade_id',
-                                            value ? Number(value) : null,
-                                        )
-                                    }
-                                    options={jobGrades}
-                                    placeholder={t('martyrs.select_job_grade')}
-                                />
-                            </FormField>
-                        )}
+                                <FormField
+                                    icon={Briefcase}
+                                    label={t('martyrs.job_grade')}
+                                    error={errors.job_grade_id}
+                                >
+                                    <SearchableSelect
+                                        value={data.job_grade_id}
+                                        onChange={(value) =>
+                                            setData(
+                                                'job_grade_id',
+                                                value ? Number(value) : null,
+                                            )
+                                        }
+                                        options={jobGrades}
+                                        placeholder={t('martyrs.select_job_grade')}
+                                    />
+                                </FormField>
+                            )}
 
                         <FormField
                             icon={Briefcase}
@@ -1266,52 +1278,52 @@ export default function Edit({
                                 .includes('عسكري')
                         );
                     })() && (
-                        <FormSection title={t('martyrs.military_info')}>
-                            <FormField
-                                icon={Shield}
-                                label={t('martyrs.military_number')}
-                                placeholder={t('martyrs.enter_military_number')}
-                                error={errors.military_number}
-                            >
-                                <Input
-                                    id="military_number"
-                                    value={data.military_number || ''}
-                                    onChange={(e) =>
-                                        setData(
-                                            'military_number',
-                                            e.target.value,
-                                        )
-                                    }
-                                    placeholder={t(
-                                        'martyrs.enter_military_number',
-                                    )}
-                                    className="w-full"
-                                />
-                            </FormField>
+                            <FormSection title={t('martyrs.military_info')}>
+                                <FormField
+                                    icon={Shield}
+                                    label={t('martyrs.military_number')}
+                                    placeholder={t('martyrs.enter_military_number')}
+                                    error={errors.military_number}
+                                >
+                                    <Input
+                                        id="military_number"
+                                        value={data.military_number || ''}
+                                        onChange={(e) =>
+                                            setData(
+                                                'military_number',
+                                                e.target.value,
+                                            )
+                                        }
+                                        placeholder={t(
+                                            'martyrs.enter_military_number',
+                                        )}
+                                        className="w-full"
+                                    />
+                                </FormField>
 
-                            <FormField
-                                icon={Shield}
-                                label={t('martyrs.military_rank')}
-                                error={errors.military_rank_id}
-                            >
-                                <SearchableSelect
-                                    value={data.military_rank_id}
-                                    onChange={(value) =>
-                                        setData(
-                                            'military_rank_id',
-                                            value ? Number(value) : null,
-                                        )
-                                    }
-                                    options={currentMilitaryRanks}
-                                    placeholder={t(
-                                        'martyrs.select_military_rank',
-                                    )}
-                                    loading={loadingRanks}
-                                    apiEndpoint="/api/military-ranks"
-                                />
-                            </FormField>
-                        </FormSection>
-                    )}
+                                <FormField
+                                    icon={Shield}
+                                    label={t('martyrs.military_rank')}
+                                    error={errors.military_rank_id}
+                                >
+                                    <SearchableSelect
+                                        value={data.military_rank_id}
+                                        onChange={(value) =>
+                                            setData(
+                                                'military_rank_id',
+                                                value ? Number(value) : null,
+                                            )
+                                        }
+                                        options={currentMilitaryRanks}
+                                        placeholder={t(
+                                            'martyrs.select_military_rank',
+                                        )}
+                                        loading={loadingRanks}
+                                        apiEndpoint="/api/military-ranks"
+                                    />
+                                </FormField>
+                            </FormSection>
+                        )}
 
                     {/* Banking Information */}
                     <FormSection title={t('martyrs.banking_info')}>

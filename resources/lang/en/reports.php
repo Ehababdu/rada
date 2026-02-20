@@ -1,0 +1,20 @@
+{
+    "title": "Reports",
+    "description": "Comprehensive overview of martyrs, promotions, and compensations data",
+    "total_martyrs": "Total Martyrs",
+    "martyrs_registered": "Martyr registered",
+    "total_promotions": "Total Promotions",
+    "promotions_total": "Promotion registered",
+    "total_compensations": "Total Compensations",
+    "compensations_total": "Compensation registered",
+    "pending_promotions": "Pending Promotions",
+    "promotions_pending": "Promotion pending",
+    "martyrs_by_rank": "Martyrs by Rank",
+    "martyrs_by_rank_description": "Distribution of martyrs by military rank",
+    "promotions_by_year": "Promotions by Year",
+    "promotions_by_year_description": "Number of promotions due each year",
+    "recent_promotions": "Recent Promotions",
+    "recent_promotions_description": "Last 5 promotions registered",
+    "recent_compensations": "Recent Compensations",
+    "recent_compensations_description": "Last 5 compensations paid"
+}

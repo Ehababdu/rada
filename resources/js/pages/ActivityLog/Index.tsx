@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -19,8 +19,9 @@ import {
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
-import { CalendarIcon, EyeIcon, FileTextIcon, UserIcon } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { Activity, CalendarIcon, EyeIcon, FileTextIcon, Search, UserIcon, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Activity {
@@ -57,7 +58,49 @@ interface Props {
 }
 
 export default function Index({ activities, filters }: Props) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const isRTL = i18n.language === 'ar';
+
+    // Local state for filters
+    const [search, setSearch] = useState(filters.search || '');
+    const [model, setModel] = useState(filters.model || 'all');
+    const [user, setUser] = useState(filters.user || '');
+    const [dateFrom, setDateFrom] = useState(filters.date_from || '');
+    const [dateTo, setDateTo] = useState(filters.date_to || '');
+
+    // Debounced search effect
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (
+                search !== (filters.search || '') ||
+                model !== (filters.model || 'all') ||
+                user !== (filters.user || '') ||
+                dateFrom !== (filters.date_from || '') ||
+                dateTo !== (filters.date_to || '')
+            ) {
+                router.get('/activity-log', {
+                    search: search || undefined,
+                    model: model !== 'all' ? model : undefined,
+                    user: user || undefined,
+                    date_from: dateFrom || undefined,
+                    date_to: dateTo || undefined,
+                }, { preserveState: true, replace: true });
+            }
+        }, 300);
+
+        return () => clearTimeout(timeoutId);
+    }, [search, model, user, dateFrom, dateTo, filters]);
+
+    const clearFilters = () => {
+        setSearch('');
+        setModel('all');
+        setUser('');
+        setDateFrom('');
+        setDateTo('');
+        router.get('/activity-log', {}, { preserveState: true });
+    };
+
+    const hasActiveFilters = search || (model && model !== 'all') || user || dateFrom || dateTo;
 
     const getEventColor = (event: string) => {
         switch (event) {
@@ -92,281 +135,237 @@ export default function Index({ activities, filters }: Props) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="سجل الأنشطة" />
+            <Head title={t('activity_log.title', 'سجل الأنشطة')} />
 
-            <div className="mx-auto flex flex-col gap-6 py-6">
-                <div className="mb-6 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold">سجل الأنشطة</h1>
-                        <p className="text-muted-foreground">
-                            مراقبة جميع الأنشطة والتغييرات في النظام
-                        </p>
+            <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 p-6" dir={isRTL ? 'rtl' : 'ltr'}>
+                {/* Header Section */}
+                <div className="flex flex-col gap-4 rounded-xl border bg-card p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="rounded-lg bg-primary/10 p-3 text-primary">
+                            <Activity className="h-8 w-8" />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                {t('activity_log.title', 'سجل الأنشطة')}
+                            </h1>
+                            <p className="text-sm text-muted-foreground">
+                                {t('activity_log.description', 'مراقبة جميع الأنشطة والتغييرات في النظام')}
+                            </p>
+                        </div>
                     </div>
                 </div>
 
-                {/* Filters */}
-                <Card className="mb-6">
-                    <CardHeader>
-                        <CardTitle>البحث والفلترة</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
-                            <div>
-                                <Input
-                                    placeholder="البحث في الوصف..."
-                                    value={filters.search || ''}
-                                    onChange={(e) => {
-                                        const url = new URL(
-                                            window.location.href,
-                                        );
-                                        url.searchParams.set(
-                                            'search',
-                                            e.target.value,
-                                        );
-                                        window.location.href = url.toString();
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <Select
-                                    value={filters.model || 'all'}
-                                    onValueChange={(value) => {
-                                        const url = new URL(
-                                            window.location.href,
-                                        );
-                                        if (value && value !== 'all') {
-                                            url.searchParams.set(
-                                                'model',
-                                                value,
-                                            );
-                                        } else {
-                                            url.searchParams.delete('model');
-                                        }
-                                        window.location.href = url.toString();
-                                    }}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="النموذج" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">
-                                            الكل
-                                        </SelectItem>
-                                        <SelectItem value="User">
-                                            المستخدمين
-                                        </SelectItem>
-                                        <SelectItem value="Martyr">
-                                            الشهداء
-                                        </SelectItem>
-                                        <SelectItem value="Bank">
-                                            البنوك
-                                        </SelectItem>
-                                        <SelectItem value="Attachment">
-                                            المرفقات
-                                        </SelectItem>
-                                        <SelectItem value="Alert">
-                                            التنبيهات
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div>
-                                <Input
-                                    placeholder="المستخدم..."
-                                    value={filters.user || ''}
-                                    onChange={(e) => {
-                                        const url = new URL(
-                                            window.location.href,
-                                        );
-                                        url.searchParams.set(
-                                            'user',
-                                            e.target.value,
-                                        );
-                                        window.location.href = url.toString();
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <Input
-                                    type="date"
-                                    value={filters.date_from || ''}
-                                    onChange={(e) => {
-                                        const url = new URL(
-                                            window.location.href,
-                                        );
-                                        url.searchParams.set(
-                                            'date_from',
-                                            e.target.value,
-                                        );
-                                        window.location.href = url.toString();
-                                    }}
-                                />
-                            </div>
-                            <div>
-                                <Input
-                                    type="date"
-                                    value={filters.date_to || ''}
-                                    onChange={(e) => {
-                                        const url = new URL(
-                                            window.location.href,
-                                        );
-                                        url.searchParams.set(
-                                            'date_to',
-                                            e.target.value,
-                                        );
-                                        window.location.href = url.toString();
-                                    }}
-                                />
-                            </div>
+                {/* Toolbar */}
+                <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+                    {/* Search */}
+                    <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center md:w-auto">
+                        <div className="relative w-full sm:w-72">
+                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                placeholder={t('activity_log.search_placeholder', 'البحث في الأنشطة...')}
+                                className="bg-background pl-9 transition-all focus:ring-2 focus:ring-primary/20"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
 
-                {/* Activities Table */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>الأنشطة ({activities.total})</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>النوع</TableHead>
-                                    <TableHead>الوصف</TableHead>
-                                    <TableHead>النموذج</TableHead>
-                                    <TableHead>المستخدم</TableHead>
-                                    <TableHead>التاريخ</TableHead>
-                                    <TableHead>الإجراءات</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {activities.data.map((activity: Activity) => (
-                                    <TableRow key={activity.id}>
-                                        <TableCell>
-                                            <Badge
-                                                className={getEventColor(
-                                                    activity.event,
-                                                )}
-                                            >
-                                                {activity.event === 'created' &&
-                                                    'تم الإنشاء'}
-                                                {activity.event === 'updated' &&
-                                                    'تم التحديث'}
-                                                {activity.event === 'deleted' &&
-                                                    'تم الحذف'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="max-w-xs truncate">
-                                            {activity.description}
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                {getModelIcon(
-                                                    activity.subject_type,
-                                                )}
-                                                <span>
-                                                    {activity.subject_type}
-                                                </span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            {activity.causer_name ? (
-                                                <span>
-                                                    {activity.causer_name}
-                                                </span>
-                                            ) : (
-                                                <span className="text-muted-foreground">
-                                                    غير محدد
-                                                </span>
-                                            )}
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                                <CalendarIcon className="h-3 w-3" />
-                                                {activity.created_at}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    asChild
-                                                >
-                                                    <Link
-                                                        href={`/activity-log/${activity.id}`}
-                                                    >
-                                                        <EyeIcon className="h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            </div>
-                                        </TableCell>
+                    <div className="flex w-full flex-wrap items-center gap-2 md:w-auto">
+                        {/* Model Filter */}
+                        <Select value={model} onValueChange={setModel}>
+                            <SelectTrigger className="w-32">
+                                <SelectValue placeholder={t('activity_log.model', 'النموذج')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{t('common.all', 'الكل')}</SelectItem>
+                                <SelectItem value="User">{t('users.title', 'المستخدمين')}</SelectItem>
+                                <SelectItem value="Martyr">{t('martyrs.title', 'الشهداء')}</SelectItem>
+                                <SelectItem value="Bank">{t('banks.title', 'البنوك')}</SelectItem>
+                                <SelectItem value="Attachment">{t('attachments.title', 'المرفقات')}</SelectItem>
+                                <SelectItem value="Alert">{t('alerts.title', 'التنبيهات')}</SelectItem>
+                            </SelectContent>
+                        </Select>
+
+                        {/* User Filter */}
+                        <div className="relative">
+                            <UserIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                placeholder={t('activity_log.user_placeholder', 'المستخدم')}
+                                className="w-32 pl-9"
+                                value={user}
+                                onChange={(e) => setUser(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Date From */}
+                        <div className="relative">
+                            <CalendarIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                type="date"
+                                className="w-36 pl-9"
+                                value={dateFrom}
+                                onChange={(e) => setDateFrom(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Date To */}
+                        <div className="relative">
+                            <CalendarIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                type="date"
+                                className="w-36 pl-9"
+                                value={dateTo}
+                                onChange={(e) => setDateTo(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Clear Filters Button */}
+                        {hasActiveFilters && (
+                            <Button
+                                variant="outline"
+                                onClick={clearFilters}
+                                className="shrink-0"
+                            >
+                                <X className="mr-2 h-4 w-4" />
+                                {t('activity_log.clear_filters', 'مسح المرشحات')}
+                            </Button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Data Table Section */}
+                <div className="space-y-4">
+                    <Card>
+                        <CardContent className="p-0">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>{t('activity_log.event', 'النوع')}</TableHead>
+                                        <TableHead>{t('activity_log.description', 'الوصف')}</TableHead>
+                                        <TableHead>{t('activity_log.model', 'النموذج')}</TableHead>
+                                        <TableHead>{t('activity_log.user', 'المستخدم')}</TableHead>
+                                        <TableHead>{t('activity_log.date', 'التاريخ')}</TableHead>
+                                        <TableHead>{t('actions', 'الإجراءات')}</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-
-                        {/* Pagination */}
-                        {activities.last_page > 1 && (
-                            <div className="mt-4 flex items-center justify-between">
-                                <div className="text-sm text-muted-foreground">
-                                    عرض {activities.from} إلى {activities.to} من
-                                    أصل {activities.total} نتيجة
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    {activities.links.map(
-                                        (
-                                            link: {
-                                                url?: string;
-                                                label: string;
-                                                active: boolean;
-                                            },
-                                            index: number,
-                                        ) => (
-                                            <Button
-                                                key={index}
-                                                variant={
-                                                    link.active
-                                                        ? 'default'
-                                                        : 'outline'
-                                                }
-                                                size="sm"
-                                                disabled={!link.url}
-                                                asChild={!!link.url}
-                                            >
-                                                {link.url ? (
-                                                    <Link href={link.url}>
-                                                        {link.label
-                                                            .replace(
-                                                                '&laquo;',
-                                                                '«',
-                                                            )
-                                                            .replace(
-                                                                '&raquo;',
-                                                                '»',
-                                                            )}
-                                                    </Link>
+                                </TableHeader>
+                                <TableBody>
+                                    {activities.data.map((activity: Activity) => (
+                                        <TableRow key={activity.id}>
+                                            <TableCell>
+                                                <Badge className={getEventColor(activity.event)}>
+                                                    {activity.event === 'created' && t('activity_log.created', 'تم الإنشاء')}
+                                                    {activity.event === 'updated' && t('activity_log.updated', 'تم التحديث')}
+                                                    {activity.event === 'deleted' && t('activity_log.deleted', 'تم الحذف')}
+                                                    {!['created', 'updated', 'deleted'].includes(activity.event) && activity.event}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="max-w-xs truncate">
+                                                {activity.description}
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    {getModelIcon(activity.subject_type)}
+                                                    <span>{activity.subject_type}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                {activity.causer_name ? (
+                                                    <span>{activity.causer_name}</span>
                                                 ) : (
-                                                    <span>
-                                                        {link.label
-                                                            .replace(
-                                                                '&laquo;',
-                                                                '«',
-                                                            )
-                                                            .replace(
-                                                                '&raquo;',
-                                                                '»',
-                                                            )}
+                                                    <span className="text-muted-foreground">
+                                                        {t('common.unknown', 'غير محدد')}
                                                     </span>
                                                 )}
-                                            </Button>
-                                        ),
-                                    )}
-                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                                    <CalendarIcon className="h-3 w-3" />
+                                                    {activity.created_at}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        asChild
+                                                    >
+                                                        <Link href={`/activity-log/${activity.id}`}>
+                                                            <EyeIcon className="h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+
+                    {/* Pagination */}
+                    {activities.last_page > 1 && (
+                        <div className="flex flex-col items-center justify-between gap-4 border-t pt-4 sm:flex-row">
+                            <div className="order-2 text-sm text-muted-foreground sm:order-1">
+                                {t('showing')} {activities.from} {t('to')} {activities.to} {t('of')} {activities.total} {t('records')}
                             </div>
-                        )}
-                    </CardContent>
-                </Card>
+                            <div className="order-1 flex items-center gap-2 sm:order-2">
+                                {activities.links.map((link, index) => {
+                                    if (link.label.includes('Previous')) {
+                                        return (
+                                            <Button
+                                                key={index}
+                                                variant="outline"
+                                                size="sm"
+                                                disabled={!link.url}
+                                                onClick={() => link.url && router.visit(link.url)}
+                                            >
+                                                {isRTL ? (
+                                                    <CalendarIcon className="ml-2 h-4 w-4 rotate-180" />
+                                                ) : (
+                                                    <CalendarIcon className="mr-2 h-4 w-4 -rotate-180" />
+                                                )}
+                                                {t('previous')}
+                                            </Button>
+                                        );
+                                    }
+                                    if (link.label.includes('Next')) {
+                                        return (
+                                            <Button
+                                                key={index}
+                                                variant="outline"
+                                                size="sm"
+                                                disabled={!link.url}
+                                                onClick={() => link.url && router.visit(link.url)}
+                                            >
+                                                {t('next')}
+                                                {isRTL ? (
+                                                    <CalendarIcon className="mr-2 h-4 w-4 -rotate-180" />
+                                                ) : (
+                                                    <CalendarIcon className="ml-2 h-4 w-4 rotate-180" />
+                                                )}
+                                            </Button>
+                                        );
+                                    }
+                                    if (!link.label.includes('&laquo;') && !link.label.includes('&raquo;')) {
+                                        return (
+                                            <Button
+                                                key={index}
+                                                variant={link.active ? 'default' : 'outline'}
+                                                size="sm"
+                                                disabled={!link.url}
+                                                onClick={() => link.url && router.visit(link.url)}
+                                            >
+                                                {link.label}
+                                            </Button>
+                                        );
+                                    }
+                                    return null;
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         </AppLayout>
     );

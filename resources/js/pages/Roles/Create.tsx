@@ -49,24 +49,7 @@ export default function Create({ permissions, flash }: Props) {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(rolesStore.url(), {
-            onSuccess: () => {
-                toast({
-                    title: t('common.success'),
-                    description: t(
-                        'roles.created_successfully',
-                        'تم إنشاء الدور بنجاح',
-                    ),
-                });
-            },
-            onError: () => {
-                toast({
-                    title: t('common.error'),
-                    description: t('roles.create_failed', 'فشل في إنشاء الدور'),
-                    variant: 'destructive',
-                });
-            },
-        });
+        post(rolesStore.url());
     };
 
     const handlePermissionChange = (
@@ -101,19 +84,15 @@ export default function Create({ permissions, flash }: Props) {
     // Show flash messages
     useEffect(() => {
         if (flash?.success) {
-            toast({
-                title: t('common.success'),
-                description: flash.success,
-            });
+            toast({ title: flash.success, variant: 'success' });
         }
         if (flash?.error) {
-            toast({
-                title: t('common.error'),
-                description: flash.error,
-                variant: 'destructive',
-            });
+            toast({ title: flash.error, variant: 'destructive' });
         }
-    }, [flash, toast, t]);
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
 
     // Group permissions by resource
     const groupedPermissions = permissions.reduce(

@@ -136,15 +136,7 @@ export default function Index({ alerts, filters }: Props) {
             ?.private?.(`alerts.${auth.user.id}`)
             ?.listen('.alert.created', (e: Alert) => {
                 setRealTimeAlerts((prev) => [e, ...prev]);
-                toast(
-                    {
-                        title: e.title,
-                        description: e.message,
-                    },
-                    {
-                        duration: 5000,
-                    },
-                );
+                // Toast is handled globally by useAppNotifications
             });
 
         return () => {
@@ -190,12 +182,7 @@ export default function Index({ alerts, filters }: Props) {
         if (deleteId) {
             router.delete(`/alerts/${deleteId}`, {
                 onSuccess: () => {
-                    toast({
-                        title: t(
-                            'alert_deleted_successfully',
-                            'تم حذف التنبيه بنجاح',
-                        ),
-                    });
+                    // Flash message handled globally
                     setDeleteId(null);
                 },
                 onFinish: () => setDeleteId(null),
@@ -210,12 +197,7 @@ export default function Index({ alerts, filters }: Props) {
                 {},
                 {
                     onSuccess: () => {
-                        toast({
-                            title: t(
-                                'alert_marked_as_read',
-                                'تم تحديد التنبيه كمقروء',
-                            ),
-                        });
+                        // Flash message handled globally
                         router.reload({ only: ['alerts'] });
                     },
                 },
@@ -231,12 +213,7 @@ export default function Index({ alerts, filters }: Props) {
                 {},
                 {
                     onSuccess: () => {
-                        toast({
-                            title: t(
-                                'alert_marked_as_unread',
-                                'تم تحديد التنبيه كغير مقروء',
-                            ),
-                        });
+                        // Flash message handled globally
                         router.reload({ only: ['alerts'] });
                     },
                 },
@@ -251,12 +228,7 @@ export default function Index({ alerts, filters }: Props) {
             {},
             {
                 onSuccess: () => {
-                    toast({
-                        title: t(
-                            'all_alerts_marked_as_read',
-                            'تم تحديد جميع التنبيهات كمقروءة',
-                        ),
-                    });
+                    // Flash message handled globally
                     router.reload({ only: ['alerts'] });
                 },
             },
@@ -291,177 +263,176 @@ export default function Index({ alerts, filters }: Props) {
 
     const columnHelper = createColumnHelper<Alert>();
 
-    const columns = useMemo<ColumnDef<Alert, unknown>[]>(
-        () => [
-            columnHelper.accessor('id', {
-                header: '#',
-                cell: (info) => (
-                    <span className="font-mono text-xs text-muted-foreground">
-                        {info.getValue()}
-                    </span>
-                ),
-            }),
-            columnHelper.accessor('title', {
-                header: t('alerts.title', 'العنوان'),
-                cell: (info) => (
-                    <div className="flex items-center gap-2">
-                        {getTypeIcon(info.row.original.type)}
-                        <div>
-                            <span className="font-semibold">
-                                {info.getValue()}
-                            </span>
-                            <p className="line-clamp-2 text-xs text-muted-foreground">
-                                {info.row.original.message}
-                            </p>
-                        </div>
+    const columns = useMemo(() => [
+        columnHelper.accessor('id', {
+            header: '#',
+            cell: (info) => (
+                <span className="font-mono text-xs text-muted-foreground">
+                    {info.getValue()}
+                </span>
+            ),
+        }),
+        columnHelper.accessor('title', {
+            header: t('alerts.title', 'العنوان'),
+            cell: (info) => (
+                <div className="flex items-center gap-2">
+                    {getTypeIcon(info.row.original.type)}
+                    <div>
+                        <span className="font-semibold">
+                            {info.getValue()}
+                        </span>
+                        <p className="line-clamp-2 text-xs text-muted-foreground">
+                            {info.row.original.message}
+                        </p>
                     </div>
-                ),
-            }),
-            columnHelper.accessor('type', {
-                header: t('alerts.type', 'النوع'),
-                cell: (info) => (
-                    <Badge
-                        variant="outline"
-                        className={cn('gap-1', getTypeColor(info.getValue()))}
-                    >
-                        {getTypeIcon(info.getValue())}
-                        {String(
-                            t(
-                                `alerts.types.${info.getValue()}`,
-                                info.getValue(),
-                            ),
-                        )}
-                    </Badge>
-                ),
-            }),
-            columnHelper.accessor('is_read', {
-                header: t('alerts.status', 'الحالة'),
-                cell: (info) => (
-                    <Badge
-                        variant={info.getValue() ? 'default' : 'secondary'}
-                        className={cn(
-                            'gap-1',
-                            info.getValue()
-                                ? 'border-green-500/20 bg-green-500/10 text-green-600'
-                                : 'border-orange-500/20 bg-orange-500/10 text-orange-600',
-                        )}
-                    >
-                        {info.getValue() ? (
-                            <CheckCircle2 className="h-3 w-3" />
-                        ) : (
-                            <Bell className="h-3 w-3" />
-                        )}
-                        {info.getValue()
-                            ? t('alerts.read', 'مقروء')
-                            : t('alerts.unread', 'غير مقروء')}
-                    </Badge>
-                ),
-            }),
-            columnHelper.accessor('created_at', {
-                header: t('alerts.created_at', 'تاريخ الإنشاء'),
-                cell: (info) => (
-                    <span className="text-sm text-muted-foreground">
-                        {info.getValue()}
-                    </span>
-                ),
-            }),
-            columnHelper.display({
-                id: 'actions',
-                header: '',
-                cell: (info) => (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                            >
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            align={isRTL ? 'start' : 'end'}
-                            className="w-44"
+                </div>
+            ),
+        }),
+        columnHelper.accessor('type', {
+            header: t('alerts.type', 'النوع'),
+            cell: (info) => (
+                <Badge
+                    variant="outline"
+                    className={cn('gap-1', getTypeColor(info.getValue()))}
+                >
+                    {getTypeIcon(info.getValue())}
+                    {String(
+                        t(
+                            `alerts.types.${info.getValue()}`,
+                            info.getValue(),
+                        ),
+                    )}
+                </Badge>
+            ),
+        }),
+        columnHelper.accessor('is_read', {
+            header: t('alerts.status', 'الحالة'),
+            cell: (info) => (
+                <Badge
+                    variant={info.getValue() ? 'default' : 'secondary'}
+                    className={cn(
+                        'gap-1',
+                        info.getValue()
+                            ? 'border-green-500/20 bg-green-500/10 text-green-600'
+                            : 'border-orange-500/20 bg-orange-500/10 text-orange-600',
+                    )}
+                >
+                    {info.getValue() ? (
+                        <CheckCircle2 className="h-3 w-3" />
+                    ) : (
+                        <Bell className="h-3 w-3" />
+                    )}
+                    {info.getValue()
+                        ? t('alerts.read', 'مقروء')
+                        : t('alerts.unread', 'غير مقروء')}
+                </Badge>
+            ),
+        }),
+        columnHelper.accessor('created_at', {
+            header: t('alerts.created_at', 'تاريخ الإنشاء'),
+            cell: (info) => (
+                <span className="text-sm text-muted-foreground">
+                    {info.getValue()}
+                </span>
+            ),
+        }),
+        columnHelper.display({
+            id: 'actions',
+            header: '',
+            cell: (info) => (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
                         >
-                            <DropdownMenuLabel>
-                                {t('actions', 'الإجراءات')}
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild>
-                                <Link
-                                    href={`/alerts/${info.row.original.id}`}
-                                    className="flex cursor-pointer items-center"
-                                >
-                                    <Eye
-                                        className={cn(
-                                            'h-4 w-4 text-muted-foreground',
-                                            isRTL ? 'ml-2' : 'mr-2',
-                                        )}
-                                    />
-                                    {t('view', 'عرض')}
-                                </Link>
-                            </DropdownMenuItem>
-                            {!info.row.original.is_read && (
-                                <DropdownMenuItem
-                                    className="cursor-pointer"
-                                    onClick={() =>
-                                        markAsRead(info.row.original.id)
-                                    }
-                                >
-                                    <CheckCircle2
-                                        className={cn(
-                                            'h-4 w-4 text-muted-foreground',
-                                            isRTL ? 'ml-2' : 'mr-2',
-                                        )}
-                                    />
-                                    {t('alerts.mark_as_read', 'تحديد كمقروء')}
-                                </DropdownMenuItem>
-                            )}
-                            {info.row.original.is_read && (
-                                <DropdownMenuItem
-                                    className="cursor-pointer"
-                                    onClick={() =>
-                                        markAsUnread(info.row.original.id)
-                                    }
-                                >
-                                    <Bell
-                                        className={cn(
-                                            'h-4 w-4 text-muted-foreground',
-                                            isRTL ? 'ml-2' : 'mr-2',
-                                        )}
-                                    />
-                                    {t(
-                                        'alerts.mark_as_unread',
-                                        'تحديد كغير مقروء',
-                                    )}
-                                </DropdownMenuItem>
-                            )}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                className="cursor-pointer text-destructive focus:text-destructive"
-                                onClick={() =>
-                                    setDeleteId(info.row.original.id)
-                                }
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                        align={isRTL ? 'start' : 'end'}
+                        className="w-44"
+                    >
+                        <DropdownMenuLabel>
+                            {t('actions', 'الإجراءات')}
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link
+                                href={`/alerts/${info.row.original.id}`}
+                                className="flex cursor-pointer items-center"
                             >
-                                <Trash2
+                                <Eye
                                     className={cn(
-                                        'h-4 w-4',
+                                        'h-4 w-4 text-muted-foreground',
                                         isRTL ? 'ml-2' : 'mr-2',
                                     )}
                                 />
-                                {t('delete', 'حذف')}
+                                {t('view', 'عرض')}
+                            </Link>
+                        </DropdownMenuItem>
+                        {!info.row.original.is_read && (
+                            <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() =>
+                                    markAsRead(info.row.original.id)
+                                }
+                            >
+                                <CheckCircle2
+                                    className={cn(
+                                        'h-4 w-4 text-muted-foreground',
+                                        isRTL ? 'ml-2' : 'mr-2',
+                                    )}
+                                />
+                                {t('alerts.mark_as_read', 'تحديد كمقروء')}
                             </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                ),
-            }),
-        ],
+                        )}
+                        {info.row.original.is_read && (
+                            <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() =>
+                                    markAsUnread(info.row.original.id)
+                                }
+                            >
+                                <Bell
+                                    className={cn(
+                                        'h-4 w-4 text-muted-foreground',
+                                        isRTL ? 'ml-2' : 'mr-2',
+                                    )}
+                                />
+                                {t(
+                                    'alerts.mark_as_unread',
+                                    'تحديد كغير مقروء',
+                                )}
+                            </DropdownMenuItem>
+                        )}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                            className="cursor-pointer text-destructive focus:text-destructive"
+                            onClick={() =>
+                                setDeleteId(info.row.original.id)
+                            }
+                        >
+                            <Trash2
+                                className={cn(
+                                    'h-4 w-4',
+                                    isRTL ? 'ml-2' : 'mr-2',
+                                )}
+                            />
+                            {t('delete', 'حذف')}
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            ),
+        }),
+    ],
         [t, isRTL, columnHelper, markAsRead, markAsUnread],
     );
 
     const table = useReactTable({
         data: allAlerts,
-        columns,
+        columns: columns as ColumnDef<Alert, any>[],
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
         onColumnVisibilityChange: setColumnVisibility,
@@ -690,7 +661,7 @@ export default function Index({ alerts, filters }: Props) {
                                                         className={cn(
                                                             'flex items-center gap-2 select-none',
                                                             header.column.getCanSort() &&
-                                                                'cursor-pointer',
+                                                            'cursor-pointer',
                                                         )}
                                                         onClick={header.column.getToggleSortingHandler()}
                                                     >
@@ -718,7 +689,7 @@ export default function Index({ alerts, filters }: Props) {
                                             className={cn(
                                                 'group transition-colors hover:bg-muted/30',
                                                 !row.original.is_read &&
-                                                    'bg-blue-50/50 dark:bg-blue-950/20',
+                                                'bg-blue-50/50 dark:bg-blue-950/20',
                                             )}
                                         >
                                             {row

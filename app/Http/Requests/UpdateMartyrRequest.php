@@ -39,6 +39,20 @@ class UpdateMartyrRequest extends FormRequest
             'agent_passport_number' => $this->agent_passport_number ? trim($this->agent_passport_number) : null,
             'has_martyr_decision' => $this->boolean('has_martyr_decision'),
             'has_previous_workplace' => $this->boolean('has_previous_workplace'),
+
+            // Convert empty strings to null for nullable integer fields
+            'parents_status_id' => $this->parents_status_id === '' ? null : $this->parents_status_id,
+            'marital_status_id' => $this->marital_status_id === '' ? null : $this->marital_status_id,
+            'children_count' => $this->children_count === '' ? null : $this->children_count,
+            'employment_status_id' => $this->employment_status_id === '' ? null : $this->employment_status_id,
+            'employer_id' => $this->employer_id === '' ? null : $this->employer_id,
+            'employer_location_id' => $this->employer_location_id === '' ? null : $this->employer_location_id,
+            'job_grade_id' => $this->job_grade_id === '' ? null : $this->job_grade_id,
+            'previous_employer_id' => $this->previous_employer_id === '' ? null : $this->previous_employer_id,
+            'previous_employer_location_id' => $this->previous_employer_location_id === '' ? null : $this->previous_employer_location_id,
+            'military_rank_id' => $this->military_rank_id === '' ? null : $this->military_rank_id,
+            'bank_id' => $this->bank_id === '' ? null : $this->bank_id,
+            'branch_id' => $this->branch_id === '' ? null : $this->branch_id,
         ]);
     }
 

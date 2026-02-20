@@ -1,3 +1,4 @@
+import { NotificationProvider } from '@/components/notification-provider';
 import { type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +9,7 @@ export default function BaseLayout({ children }: PropsWithChildren) {
     return (
         <div dir={isRTL ? 'rtl' : 'ltr'} className="min-h-screen">
             {children}
+            <NotificationProvider />
         </div>
     );
 }

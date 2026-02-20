@@ -52,7 +52,7 @@ class MartyrController extends Controller
             'banks' => \App\Models\Bank::select('id', 'name_ar', \DB::raw('NULL as name_en'))->get(),
             'parentsStatuses' => \App\Models\ParentsStatus::select('id', 'name_ar', 'name_en')->get(),
             'maritalStatuses' => \App\Models\MaritalStatus::select('id', 'name_ar', 'name_en')->get(),
-            'jobGrades' => \App\Models\JobGrade::select('id', 'name_ar', 'name_en')->where('is_active', true)->orderBy('order')->get(),
+            'jobGrades' => \App\Models\JobGrade::select('id', 'name_ar')->where('is_active', true)->orderBy('order')->get(),
             'employers' => \App\Models\Employer::select('id', 'name_ar', 'name_en')->where('is_active', true)->get(),
             'employerLocations' => \App\Models\EmployerLocation::select('id', 'name_ar', 'name_en')->where('is_active', true)->get(),
         ]);
@@ -78,9 +78,22 @@ class MartyrController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $martyr->load(['militaryRank', 'bank', 'branch', 'employmentStatus', 'parentsStatus', 'maritalStatus', 'employer', 'employerLocation', 'previousEmployer', 'previousEmployerLocation']);
+        $martyr->load(['militaryRank', 'bank', 'branch', 'employmentStatus', 'parentsStatus', 'maritalStatus', 'employer', 'employerLocation', 'previousEmployer', 'previousEmployerLocation', 'jobGrade', 'attachments.attachmentType']);
 
         return Inertia::render('Martyrs/Show', [
+            'martyr' => $martyr,
+        ]);
+    }
+
+    public function print(Martyr $martyr)
+    {
+        if (! auth()->user()->can('martyrs.view')) {
+            abort(403, 'Unauthorized');
+        }
+
+        $martyr->load(['militaryRank', 'bank', 'branch', 'employmentStatus', 'parentsStatus', 'maritalStatus', 'employer', 'employerLocation', 'previousEmployer', 'previousEmployerLocation', 'jobGrade', 'attachments.attachmentType']);
+
+        return Inertia::render('Martyrs/Print', [
             'martyr' => $martyr,
         ]);
     }
@@ -99,7 +112,7 @@ class MartyrController extends Controller
             'banks' => \App\Models\Bank::select('id', 'name_ar', \DB::raw('NULL as name_en'))->get(),
             'parentsStatuses' => \App\Models\ParentsStatus::select('id', 'name_ar', 'name_en')->get(),
             'maritalStatuses' => \App\Models\MaritalStatus::select('id', 'name_ar', 'name_en')->get(),
-            'jobGrades' => \App\Models\JobGrade::where('is_active', true)->select('id', 'name_ar', 'name_en')->orderBy('order')->get(),
+            'jobGrades' => \App\Models\JobGrade::where('is_active', true)->select('id', 'name_ar')->orderBy('order')->get(),
             'employers' => \App\Models\Employer::select('id', 'name_ar', 'name_en')->where('is_active', true)->get(),
             'employerLocations' => \App\Models\EmployerLocation::select('id', 'name_ar', 'name_en')->where('is_active', true)->get(),
         ]);
@@ -150,7 +163,7 @@ class MartyrController extends Controller
         if (! auth()->user()->can('martyrs.export')) {
             abort(403, 'Unauthorized');
         }
-        $filters = $request->only(['search', 'marital_status_id', 'employment_status_id', 'bank_id', 'branch_id', 'death_date_from', 'death_date_to', 'has_martyr_decision', 'parents_status_id']);
+        $filters = $request->only(['search', 'marital_status_id', 'employment_status_id', 'bank_id', 'branch_id', 'death_date_from', 'death_date_to', 'has_martyr_decision', 'parents_status_id', 'employer_id', 'previous_employer_id', 'status', 'wife_status', 'file_number', 'date_from', 'date_to', 'decision_date_from']);
         $columns = $request->input('columns', []);
         $ids = $request->input('ids', []);
         // allow comma-separated string for sync downloads
@@ -161,75 +174,9 @@ class MartyrController extends Controller
             $ids = array_filter(array_map('trim', explode(',', $ids)));
         }
 
-        // If client requested a synchronous download (e.g. ?sync=1), return the file directly.
-        if ($request->boolean('sync')) {
-            $fileName = 'martyrs_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+        $fileName = 'martyrs_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
 
-            return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\MartyrsExport($filters, $columns, $ids), $fileName);
-        }
-
-        \App\Jobs\ExportMartyrs::dispatch(auth()->user(), $filters, $columns, $ids);
-
-        return back()->with('success', 'سيتم إرسال إشعار عند جاهزية التقرير.');
-    }
-
-    /**
-     * Redirect to the latest export file if exists.
-     */
-    public function latestExport()
-    {
-        $dir = storage_path('app/public/exports');
-
-        if (! is_dir($dir)) {
-            abort(404, 'No exports directory');
-        }
-
-        $files = array_values(array_filter(scandir($dir), function ($f) use ($dir) {
-            return is_file($dir . DIRECTORY_SEPARATOR . $f);
-        }));
-
-        if (empty($files)) {
-            abort(404, 'No export files');
-        }
-
-        usort($files, function ($a, $b) use ($dir) {
-            return filemtime($dir . DIRECTORY_SEPARATOR . $b) <=> filemtime($dir . DIRECTORY_SEPARATOR . $a);
-        });
-
-        $latest = $files[0];
-
-        $publicUrl = url('storage/exports/' . $latest);
-
-        return redirect($publicUrl);
-    }
-
-    /**
-     * Return JSON status whether a latest export file exists and its public URL.
-     */
-    public function exportStatus()
-    {
-        $dir = storage_path('app/public/exports');
-
-        if (! is_dir($dir)) {
-            return response()->json(['exists' => false]);
-        }
-
-        $files = array_values(array_filter(scandir($dir), function ($f) use ($dir) {
-            return is_file($dir . DIRECTORY_SEPARATOR . $f);
-        }));
-
-        if (empty($files)) {
-            return response()->json(['exists' => false]);
-        }
-
-        usort($files, function ($a, $b) use ($dir) {
-            return filemtime($dir . DIRECTORY_SEPARATOR . $b) <=> filemtime($dir . DIRECTORY_SEPARATOR . $a);
-        });
-
-        $latest = $files[0];
-        $publicUrl = url('storage/exports/' . $latest);
-
-        return response()->json(['exists' => true, 'file' => $latest, 'url' => $publicUrl]);
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\MartyrsExport($filters, $columns, $ids), $fileName);
     }
 
     public function search(Request $request)

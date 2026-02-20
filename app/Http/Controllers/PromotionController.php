@@ -6,6 +6,7 @@ use App\Models\JobGrade;
 use App\Models\Martyr;
 use App\Models\MilitaryRank;
 use App\Models\Promotion;
+use App\Models\Alert;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -66,7 +67,7 @@ class PromotionController extends Controller
         });
 
         $martyrs = Martyr::select('id', 'full_name', 'national_id', 'military_rank_id', 'employment_status_id', 'job_grade_id')
-            ->with(['militaryRank:id,name_ar,name_en', 'jobGrade:id,name_ar,name_en'])
+            ->with(['militaryRank:id,name_ar,name_en', 'jobGrade:id,name_ar'])
             ->orderBy('full_name')
             ->get()
             /** @phpstan-ignore-next-line */
@@ -151,7 +152,7 @@ class PromotionController extends Controller
             ];
         });
 
-        $jobGrades = JobGrade::select('id', 'name_ar', 'name_en', 'order')
+        $jobGrades = JobGrade::select('id', 'name_ar', 'order')
             ->where('is_active', true)
             ->orderBy('order')
             ->get();
@@ -182,7 +183,22 @@ class PromotionController extends Controller
             'description' => 'nullable|string|max:1000',
         ]);
 
-        Promotion::create($validated);
+        $promotion = Promotion::create($validated);
+
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تمت إضافة ترقية جديدة",
+                'message' => "تمت إضافة ترقية جديدة للشهيد #{$promotion->martyr_id}",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'promotion_id' => $promotion->id,
+                    'martyr_id' => $promotion->martyr_id,
+                    'action' => 'create'
+                ]
+            ]);
+        }
 
         return redirect()->route('promotions.index')
             ->with('success', 'تم إضافة الترقية بنجاح');
@@ -271,7 +287,7 @@ class PromotionController extends Controller
             ];
         });
 
-        $jobGrades = JobGrade::select('id', 'name_ar', 'name_en', 'order')
+        $jobGrades = JobGrade::select('id', 'name_ar', 'order')
             ->where('is_active', true)
             ->orderBy('order')
             ->get();
@@ -281,12 +297,10 @@ class PromotionController extends Controller
         $promotionData['currentJobGrade'] = $promotion->currentJobGrade ? [
             'id' => $promotion->currentJobGrade->id,
             'name_ar' => $promotion->currentJobGrade->name_ar,
-            'name_en' => $promotion->currentJobGrade->name_en,
         ] : null;
         $promotionData['promotionJobGrade'] = $promotion->promotionJobGrade ? [
             'id' => $promotion->promotionJobGrade->id,
             'name_ar' => $promotion->promotionJobGrade->name_ar,
-            'name_en' => $promotion->promotionJobGrade->name_en,
         ] : null;
 
         return Inertia::render('Promotions/Edit', [
@@ -340,6 +354,21 @@ class PromotionController extends Controller
         unset($validated['current_job_grade'], $validated['promotion_job_grade']);
         $promotion->update($validated);
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تحديث بيانات الترقية",
+                'message' => "تم تحديث بيانات الترقية للشهيد #{$promotion->martyr_id}",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'promotion_id' => $promotion->id,
+                    'martyr_id' => $promotion->martyr_id,
+                    'action' => 'update'
+                ]
+            ]);
+        }
+
         return redirect()->route('promotions.index')
             ->with('success', 'تم تحديث الترقية بنجاح');
     }
@@ -372,6 +401,21 @@ class PromotionController extends Controller
         $promotion->status = 'completed';
         $promotion->save();
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تم إكمال ترقية الشهيد #{$martyr->id}",
+                'message' => "تمت الموافقة على ترقية الشهيد {$martyr->full_name} بنجاح. تم تحديث البيانات في النظام.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'promotion_id' => $promotion->id,
+                    'martyr_id' => $martyr->id,
+                    'action' => 'complete'
+                ]
+            ]);
+        }
+
         return redirect()->route('promotions.index')
             ->with('success', 'تم تأكيد الترقية وتحديث بيانات الشهيد بنجاح');
     }
@@ -381,7 +425,22 @@ class PromotionController extends Controller
      */
     public function destroy(Promotion $promotion): RedirectResponse
     {
+        $martyrId = $promotion->martyr_id;
         $promotion->delete();
+
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "حذف ترقية",
+                'message' => "تم حذف ترقية للشهيد #{$martyrId}",
+                'type' => 'warning',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'martyr_id' => $martyrId,
+                    'action' => 'delete'
+                ]
+            ]);
+        }
 
         return redirect()->route('promotions.index')
             ->with('success', 'تم حذف الترقية بنجاح');

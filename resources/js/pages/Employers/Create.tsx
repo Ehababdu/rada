@@ -4,14 +4,6 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-
 // Shadcn UI Components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,7 +18,6 @@ import {
     ArrowRight,
     Building2,
     Loader2,
-    MapPin,
     Save,
 } from 'lucide-react';
 
@@ -37,10 +28,9 @@ interface Location {
 }
 
 interface Props {
-    locations: Location[];
 }
 
-export default function Create({ locations }: Props) {
+export default function Create({}: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
 
@@ -48,7 +38,6 @@ export default function Create({ locations }: Props) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name_ar: '',
         name_en: '',
-        employer_location_id: '',
         is_active: true,
     });
 
@@ -180,65 +169,6 @@ export default function Create({ locations }: Props) {
                                 {errors.name_en && (
                                     <p className="text-xs font-medium text-destructive">
                                         {errors.name_en}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* حقل الموقع */}
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="employer_location_id"
-                                    className="text-sm font-semibold"
-                                >
-                                    {t('employers.location_ar')}
-                                </Label>
-                                <div className="relative">
-                                    <MapPin
-                                        className={cn(
-                                            'absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground',
-                                            isRTL ? 'right-3' : 'left-3',
-                                        )}
-                                    />
-                                    <Select
-                                        value={data.employer_location_id}
-                                        onValueChange={(value) =>
-                                            setData(
-                                                'employer_location_id',
-                                                value,
-                                            )
-                                        }
-                                    >
-                                        <SelectTrigger
-                                            className={cn(
-                                                isRTL ? 'pr-10' : 'pl-10',
-                                                errors.employer_location_id &&
-                                                    'border-destructive',
-                                            )}
-                                        >
-                                            <SelectValue
-                                                placeholder={t(
-                                                    'employers.select_location',
-                                                )}
-                                            />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {locations.map((location) => (
-                                                <SelectItem
-                                                    key={location.id}
-                                                    value={location.id.toString()}
-                                                >
-                                                    {isRTL
-                                                        ? location.name_ar
-                                                        : location.name_en ||
-                                                          location.name_ar}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                {errors.employer_location_id && (
-                                    <p className="text-xs font-medium text-destructive">
-                                        {errors.employer_location_id}
                                     </p>
                                 )}
                             </div>

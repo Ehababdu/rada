@@ -86,19 +86,15 @@ export default function Show({ role, flash }: Props) {
     // Show flash messages
     useEffect(() => {
         if (flash?.success) {
-            toast({
-                title: t('common.success'),
-                description: flash.success,
-            });
+            toast({ title: flash.success, variant: 'success' });
         }
         if (flash?.error) {
-            toast({
-                title: t('common.error'),
-                description: flash.error,
-                variant: 'destructive',
-            });
+            toast({ title: flash.error, variant: 'destructive' });
         }
-    }, [flash, toast, t]);
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
 
     // Group permissions by resource
     const groupedPermissions = role.permissions.reduce(

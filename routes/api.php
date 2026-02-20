@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\MilitaryRankController;
 use App\Http\Controllers\Api\ParentsStatusController;
 use App\Http\Controllers\MartyrController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 
 Route::get('/user', function (Request $request) {
     return $request->user();

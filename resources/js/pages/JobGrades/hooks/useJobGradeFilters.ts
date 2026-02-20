@@ -1,0 +1,57 @@
+import { useState } from 'react';
+
+export interface UseJobGradeFiltersReturn {
+    search: string;
+    setSearch: (value: string) => void;
+    status: string;
+    setStatus: (value: string) => void;
+    isActiveFilter: string;
+    setIsActiveFilter: (value: string) => void;
+    isFiltersOpen: boolean;
+    setIsFiltersOpen: (open: boolean) => void;
+    handleSearchChange: (value: string) => void;
+    handleFilterChange: (key: string, value: string) => void;
+    clearFilters: () => void;
+    hasActiveFilters: boolean;
+}
+
+export function useJobGradeFilters(initialFilters: {
+    search?: string;
+    status?: string;
+}): UseJobGradeFiltersReturn {
+    const [search, setSearch] = useState(initialFilters.search || '');
+    const [status, setStatus] = useState(initialFilters.status || 'all');
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
+    const handleSearchChange = (value: string) => {
+        setSearch(value);
+    };
+
+    const handleFilterChange = (key: string, value: string) => {
+        if (key === 'status') {
+            setStatus(value);
+        }
+    };
+
+    const clearFilters = () => {
+        setSearch('');
+        setStatus('all');
+    };
+
+    const hasActiveFilters = search.length > 0 || (status && status !== 'all');
+
+    return {
+        search,
+        setSearch,
+        status,
+        setStatus,
+        isActiveFilter: status,
+        setIsActiveFilter: setStatus,
+        isFiltersOpen,
+        setIsFiltersOpen,
+        handleSearchChange,
+        handleFilterChange,
+        clearFilters,
+        hasActiveFilters,
+    };
+}

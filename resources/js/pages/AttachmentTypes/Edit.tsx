@@ -11,6 +11,7 @@ import {
 import { BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, LoaderCircle } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface AttachmentType {
     id: number;
@@ -22,11 +23,24 @@ interface Props {
     flash: {
         success?: string;
         error?: string;
+        message?: string;
     };
 }
 
-export default function Edit({ attachmentType }: Props) {
+export default function Edit({ attachmentType, flash }: Props) {
     const { toast } = useToast();
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
 
     const { data, setData, put, processing, errors } = useForm({
         label: attachmentType.label,
@@ -34,21 +48,7 @@ export default function Edit({ attachmentType }: Props) {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/attachment-types/${attachmentType.id}`, {
-            onSuccess: () => {
-                toast({
-                    title: 'تم التحديث',
-                    description: 'تم تحديث نوع المرفق بنجاح',
-                });
-            },
-            onError: () => {
-                toast({
-                    title: 'خطأ',
-                    description: 'حدث خطأ أثناء تحديث نوع المرفق',
-                    variant: 'destructive',
-                });
-            },
-        });
+        put(`/attachment-types/${attachmentType.id}`);
     };
 
     const breadcrumbs: BreadcrumbItem[] = [

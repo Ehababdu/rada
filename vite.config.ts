@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 // @ts-expect-error react vite plugin is not typed
 import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
+import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 import { defineConfig } from 'vite';
 
 export default defineConfig({

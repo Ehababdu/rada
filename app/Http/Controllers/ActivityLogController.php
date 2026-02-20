@@ -73,33 +73,41 @@ class ActivityLogController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Activity $activity)
+    public function show($activity_log)
     {
-        $activity->load(['causer', 'subject']);
+        $activity = \Spatie\Activitylog\Models\Activity::findOrFail($activity_log);
 
-        return Inertia::render('ActivityLog/Show', [
+        $changes = $activity->changes();
+        $oldValues = $changes['old'] ?? [];
+        $newValues = $changes['attributes'] ?? [];
+
+        $data = [
             'activity' => [
                 'id' => $activity->id,
-                'description' => $activity->description,
-                'event' => $activity->event,
-                'subject_type' => $activity->subject_type ? class_basename($activity->subject_type) : null,
-                'subject_id' => $activity->subject_id,
-                'causer_name' => $activity->causer?->name,
-                'causer_email' => $activity->causer?->email,
-                'old_values' => $activity->properties['old'] ?? [],
-                'new_values' => $activity->properties['attributes'] ?? [],
-                'changes' => $activity->changes(),
-                'properties' => $activity->properties,
-                'created_at' => $activity->created_at ? \Carbon\Carbon::parse($activity->created_at)->format('d/m/Y H:i:s') : null,
+                'description' => $activity->description ?: 'لا يوجد وصف',
+                'event' => $activity->event ?: 'unknown',
+                'subject_type' => $activity->subject_type ? class_basename($activity->subject_type) : 'غير محدد',
+                'subject_id' => $activity->subject_id ?: 'غير محدد',
+                'causer_name' => $activity->causer?->name ?: null,
+                'causer_email' => $activity->causer?->email ?: null,
+                'changes' => [
+                    'old' => $oldValues,
+                    'new' => $newValues,
+                ],
+                'properties' => $activity->properties ?: [],
+                'created_at' => $activity->created_at ? $activity->created_at->format('d/m/Y H:i:s') : now()->format('d/m/Y H:i:s'),
             ],
-        ]);
+        ];
+
+        return Inertia::render('ActivityLog/Show', $data);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Activity $activity)
+    public function destroy($activity_log)
     {
+        $activity = \Spatie\Activitylog\Models\Activity::findOrFail($activity_log);
         $activity->delete();
 
         return redirect()->route('activity-log.index')

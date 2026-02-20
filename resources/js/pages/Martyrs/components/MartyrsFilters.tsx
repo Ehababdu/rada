@@ -116,7 +116,9 @@ export function MartyrsFilters({
                                         <SelectItem value="all">
                                             {t('martyrs.all')}
                                         </SelectItem>
-                                        {militaryRanks.map((r) => (
+                                        {militaryRanks
+                                            .filter((r) => r.id && (isRTL ? r.name_ar : r.name_en))
+                                            .map((r) => (
                                             <SelectItem
                                                 key={r.id}
                                                 value={String(r.id)}
@@ -155,7 +157,9 @@ export function MartyrsFilters({
                                             <SelectItem value="all">
                                                 {t('martyrs.all')}
                                             </SelectItem>
-                                            {maritalStatuses.map((s) => (
+                                            {maritalStatuses
+                                                .filter((s) => s.id && (isRTL ? s.name_ar : s.name_en))
+                                                .map((s) => (
                                                 <SelectItem
                                                     key={s.id}
                                                     value={String(s.id)}
@@ -226,7 +230,9 @@ export function MartyrsFilters({
                                         <SelectItem value="all">
                                             {t('martyrs.all')}
                                         </SelectItem>
-                                        {employmentStatuses.map((s) => (
+                                        {employmentStatuses
+                                            .filter((s) => s.id && s.name)
+                                            .map((s) => (
                                             <SelectItem
                                                 key={s.id}
                                                 value={String(s.id)}
@@ -259,7 +265,9 @@ export function MartyrsFilters({
                                             <SelectItem value="all">
                                                 {t('martyrs.all')}
                                             </SelectItem>
-                                            {banks.map((b) => (
+                                            {banks
+                                                .filter((b) => b.id && b.name_ar)
+                                                .map((b) => (
                                                 <SelectItem
                                                     key={b.id}
                                                     value={String(b.id)}
@@ -291,7 +299,9 @@ export function MartyrsFilters({
                                             <SelectItem value="all">
                                                 {t('martyrs.all')}
                                             </SelectItem>
-                                            {filteredBranches.map((b) => (
+                                            {filteredBranches
+                                                .filter((b) => b.id && b.name_ar)
+                                                .map((b) => (
                                                 <SelectItem
                                                     key={b.id}
                                                     value={String(b.id)}
@@ -327,7 +337,9 @@ export function MartyrsFilters({
                                         <SelectItem value="all">
                                             {t('martyrs.all')}
                                         </SelectItem>
-                                        {parentsStatuses.map((s) => (
+                                        {parentsStatuses
+                                            .filter((s) => s.id && (isRTL ? s.name_ar : s.name_en))
+                                            .map((s) => (
                                             <SelectItem
                                                 key={s.id}
                                                 value={String(s.id)}
@@ -362,7 +374,9 @@ export function MartyrsFilters({
                                             <SelectItem value="all">
                                                 {t('martyrs.all')}
                                             </SelectItem>
-                                            {employers.map((e) => (
+                                            {employers
+                                                .filter((e) => e.id && (isRTL ? e.name_ar : (e.name_en || e.name_ar)))
+                                                .map((e) => (
                                                 <SelectItem
                                                     key={e.id}
                                                     value={String(e.id)}
@@ -405,7 +419,9 @@ export function MartyrsFilters({
                                             <SelectItem value="all">
                                                 {t('martyrs.all')}
                                             </SelectItem>
-                                            {previousEmployers.map((e) => (
+                                            {previousEmployers
+                                                .filter((e) => e.id && (isRTL ? e.name_ar : (e.name_en || e.name_ar)))
+                                                .map((e) => (
                                                 <SelectItem
                                                     key={e.id}
                                                     value={String(e.id)}

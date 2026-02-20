@@ -22,7 +22,7 @@ export default function Combobox({ value, onChange, options, placeholder = '', e
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const entries = Object.entries(options)
-  const filtered = onQueryChange ? entries : entries.filter(([, label]) => label.toLowerCase().includes(query.toLowerCase()))
+  const filtered = entries // Let Command handle filtering
   const selectedLabel = value ? options[value] : ''
 
   const handleValueChange = (newValue: string) => {
@@ -58,7 +58,15 @@ export default function Combobox({ value, onChange, options, placeholder = '', e
       <PopoverContent side="bottom" align="start" sideOffset={4} className="w-[--radix-popper-anchor-width] p-0">
         {/* Let Command manage highlighting internally; don't call handleValueChange on highlight
           to avoid selecting on mouse hover. Selection happens only via item onSelect (click/enter). */}
-        <Command shouldFilter={!onQueryChange}>
+        <Command shouldFilter={!onQueryChange} filter={(value, search) => {
+          if (!search) return 1
+          const label = options[value] || ''
+          const normalizedLabel = label.toLowerCase()
+          const normalizedSearch = search.toLowerCase()
+          // Direct substring match for better Arabic support
+          if (normalizedLabel.includes(normalizedSearch)) return 1
+          return 0
+        }}>
           <CommandInput
             ref={inputRef}
             placeholder={t('promotions.search_placeholder')}

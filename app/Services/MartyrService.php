@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Martyr;
+use App\Models\Alert;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
@@ -156,7 +157,7 @@ class MartyrService
             'employmentStatus:id,name',
             'maritalStatus:id,name_ar,name_en',
             'parentsStatus:id,name_ar,name_en',
-            'jobGrade:id,name_ar,name_en',
+            'jobGrade:id,name_ar',
             'employer:id,name_ar,name_en',
             'employerLocation:id,name_ar,name_en',
             'previousEmployer:id,name_ar,name_en',
@@ -180,7 +181,23 @@ class MartyrService
             $data['art_image'] = $request->file('art_image')->store('martyrs/art', 'public');
         }
 
-        return Martyr::create($data);
+        $martyr = Martyr::create($data);
+
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تمت إضافة شهيد جديد",
+                'message' => "تمت إضافة الشهيد {$martyr->full_name} بنجاح.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'martyr_id' => $martyr->id,
+                    'action' => 'create'
+                ]
+            ]);
+        }
+
+        return $martyr;
     }
 
     public function updateMartyr(Martyr $martyr, array $data, Request $request): Martyr
@@ -211,12 +228,43 @@ class MartyrService
 
         $martyr->update($data);
 
+        // Create alert for the update
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تحديث بيانات الشهيد #{$martyr->id}",
+                'message' => "تم تحديث بيانات الشهيد {$martyr->full_name} بنجاح.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'martyr_id' => $martyr->id,
+                    'action' => 'update'
+                ]
+            ]);
+        }
+
         return $martyr;
     }
 
     public function deleteMartyr(Martyr $martyr): void
     {
+        $martyrId = $martyr->id;
+        $martyrName = $martyr->full_name;
+        
         $martyr->delete();
+
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "حذف شهيد",
+                'message' => "تم حذف الشهيد {$martyrName}",
+                'type' => 'warning',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'martyr_id' => $martyrId,
+                    'action' => 'delete'
+                ]
+            ]);
+        }
     }
 
     /**

@@ -62,7 +62,7 @@ import {
     Shield,
     Trash2,
 } from 'lucide-react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Role {
@@ -87,9 +87,14 @@ interface Props {
     filters: {
         search: string;
     };
+    flash: {
+        success?: string;
+        error?: string;
+        message?: string;
+    };
 }
 
-export default function Index({ roles, filters }: Props) {
+export default function Index({ roles, filters, flash }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
     const { toast } = useToast();
@@ -100,6 +105,18 @@ export default function Index({ roles, filters }: Props) {
         {},
     );
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
 
     // Alert Dialog State
     const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -137,10 +154,11 @@ export default function Index({ roles, filters }: Props) {
         if (deleteId) {
             router.delete(`/roles/${deleteId}`, {
                 onSuccess: () => {
-                    toast({ title: t('role_deleted_successfully') });
                     setDeleteId(null);
                 },
-                onFinish: () => setDeleteId(null),
+                onError: () => {
+                    setDeleteId(null);
+                },
             });
         }
     };

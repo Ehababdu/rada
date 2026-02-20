@@ -14,14 +14,19 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Save, User as UserIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
     roles: { id: number; name: string; display_name?: string }[];
+    flash: {
+        success?: string;
+        error?: string;
+        message?: string;
+    };
 }
 
-export default function Create({ roles }: Props) {
+export default function Create({ roles, flash }: Props) {
     const { t } = useTranslation();
     const { toast } = useToast();
 
@@ -47,6 +52,18 @@ export default function Create({ roles }: Props) {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
+
     const handleInputChange = (field: string, value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
         if (errors[field]) {
@@ -70,13 +87,6 @@ export default function Create({ roles }: Props) {
 
         try {
             await router.post('/users', formData, {
-                onSuccess: () => {
-                    toast(t('users.create_success'), { variant: 'success' });
-                },
-                onError: (errors) => {
-                    setErrors(errors);
-                    toast(t('common.error'), { variant: 'destructive' });
-                },
                 onFinish: () => setIsSubmitting(false),
             });
         } catch {

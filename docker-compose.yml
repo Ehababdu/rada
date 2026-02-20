@@ -17,6 +17,10 @@ services:
       WWWUSER: '${WWWUSER:-1000}'
       # لإجبار Vite على مراقبة التغييرات في Docker
       CHOKIDAR_USEPOLLING: 'true'
+      VITE_REVERB_APP_KEY: 'local'
+      VITE_REVERB_HOST: 'localhost'
+      VITE_REVERB_PORT: '8082'
+      VITE_REVERB_SCHEME: 'http'
     volumes:
       - ./:/var/www/html:delegated
       # حماية المكتبات من التداخل مع ملفات النظام المضيف
@@ -62,6 +66,10 @@ services:
       - "3306:3306"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "erpuser", "-psecret"]
+      timeout: 20s
+      retries: 10
 
   # خدمة Redis للكاش والـ Queues
   redis:
@@ -84,6 +92,45 @@ services:
       MEILI_MASTER_KEY: 'masterKey'
     volumes:
       - meilidata:/meili_data
+    networks:
+      - app-network
+
+  # خدمة Reverb للبث الحي
+  reverb:
+    image: rada_system_app
+    container_name: laravel_reverb
+    restart: always
+    working_dir: /var/www/html
+    # Wait for DB to be reachable before starting the long-running artisan command.
+    # Uses a short PHP loop (available in the app image) to probe TCP port 3306 on host 'db'.
+    # This prevents the process from starting while MySQL is restarting and avoids immediate
+    # connection-refused failures.
+    # Wait for TCP port 3306 on host 'db' using bash /dev/tcp (avoids PHP quoting issues).
+    command: ["bash", "-lc", "until echo > /dev/tcp/db/3306 2>/dev/null; do echo 'Waiting for db:3306...'; sleep 1; done; php artisan reverb:start --host=0.0.0.0 --port=8082"]
+    environment:
+      REVERB_HOST: 0.0.0.0
+      REVERB_PORT: 8082
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: erp
+      DB_USERNAME: erpuser
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - ./:/var/www/html:delegated
+      # حماية المكتبات من التداخل مع ملفات النظام المضيف
+      - /var/www/html/node_modules
+    ports:
+      - "8082:8082"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      laravel.test:
+        condition: service_started
     networks:
       - app-network
 

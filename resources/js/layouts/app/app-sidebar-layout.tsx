@@ -5,16 +5,10 @@ import { AppSidebarHeader } from '@/components/app-sidebar-header';
 import { type BreadcrumbItem } from '@/types';
 import { type PropsWithChildren } from 'react';
 
-import { Toaster } from '@/components/ui/sonner';
-import { useToastListener } from '@/hooks/use-toast-listener';
-
 export default function AppSidebarLayout({
     children,
     breadcrumbs = [],
 }: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[] }>) {
-    useToastListener();
-    // useNotifications();
-
     return (
         <AppShell variant="sidebar">
             <AppSidebar />
@@ -22,7 +16,6 @@ export default function AppSidebarLayout({
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
                 {children}
             </AppContent>
-            <Toaster />
         </AppShell>
     );
 }

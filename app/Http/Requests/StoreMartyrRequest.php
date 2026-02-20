@@ -49,13 +49,13 @@ class StoreMartyrRequest extends FormRequest
     {
         return [
             // Basic Information (Required)
-            'file_number' => ['required', 'string', 'max:50', 'unique:martyrs,file_number'],
+            'file_number' => ['required', 'string', 'max:50', 'regex:/^[0-9]+$/', 'unique:martyrs,file_number'],
             'full_name' => ['required', 'string', 'min:3', 'max:255', 'regex:/^[\p{Arabic}\s]+$/u'],
-            'national_id' => ['required', 'string', 'digits:12', 'unique:martyrs,national_id'],
+            'national_id' => ['required', 'string', 'regex:/^[12]\d{11}$/', 'unique:martyrs,national_id'],
             'address' => ['required', 'string', 'min:5', 'max:500'],
             'death_date' => ['required', 'date', 'before_or_equal:today'],
             'has_martyr_decision' => ['boolean'],
-            'decision_number' => ['nullable', 'string', 'max:100', 'required_if:has_martyr_decision,1'],
+            'decision_number' => ['nullable', 'string', 'max:100', 'regex:/^[0-9]+$/', 'required_if:has_martyr_decision,1'],
             'decision_date' => ['nullable', 'date', 'before_or_equal:today', 'required_if:has_martyr_decision,1'],
 
             // Family Status (Required)
@@ -113,8 +113,14 @@ class StoreMartyrRequest extends FormRequest
 
             // National ID
             'national_id.required' => 'الرقم الوطني مطلوب. | National ID is required.',
-            'national_id.digits' => 'الرقم الوطني يجب أن يكون 12 رقماً بالضبط. | National ID must be exactly 12 digits.',
+            'national_id.regex' => 'الرقم الوطني يجب أن يبدأ بـ 1 أو 2 ويكون 12 رقماً بالضبط. | National ID must start with 1 or 2 and be exactly 12 digits.',
             'national_id.unique' => 'الرقم الوطني مسجل بالفعل. | This National ID is already registered.',
+
+            // File Number
+            'file_number.required' => 'رقم الملف مطلوب. | File number is required.',
+            'file_number.max' => 'رقم الملف يجب ألا يتجاوز 50 حرفاً. | File number must not exceed 50 characters.',
+            'file_number.regex' => 'رقم الملف يجب أن يحتوي على أرقام فقط. | File number must contain digits only.',
+            'file_number.unique' => 'رقم الملف مسجل بالفعل. | This file number is already registered.',
 
             // Address
             'address.required' => 'العنوان مطلوب. | Address is required.',
@@ -130,6 +136,7 @@ class StoreMartyrRequest extends FormRequest
             'has_martyr_decision.boolean' => 'قيمة قرار الشهيد يجب أن تكون صحيحة أو خاطئة. | Martyr decision value must be true or false.',
             'decision_number.required_if' => 'رقم القرار مطلوب عند وجود قرار شهيد. | Decision number is required when martyr decision exists.',
             'decision_number.max' => 'رقم القرار يجب ألا يتجاوز 100 حرف. | Decision number must not exceed 100 characters.',
+            'decision_number.regex' => 'رقم القرار يجب أن يحتوي على أرقام فقط. | Decision number must contain digits only.',
             'decision_date.required_if' => 'تاريخ القرار مطلوب عند وجود قرار شهيد. | Decision date is required when martyr decision exists.',
             'decision_date.date' => 'تاريخ القرار يجب أن يكون تاريخاً صحيحاً. | Decision date must be a valid date.',
             'decision_date.before_or_equal' => 'تاريخ القرار يجب ألا يكون في المستقبل. | Decision date cannot be in the future.',

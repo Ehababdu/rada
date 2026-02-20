@@ -18,6 +18,7 @@ use App\Http\Controllers\MartyrController;
 use App\Http\Controllers\MilitaryRankController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -35,12 +36,11 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('reports', [ReportsController::class, 'index'])->name('reports.index');
 
     Route::resource('martyrs', MartyrController::class);
-    Route::post('martyrs/export', [MartyrController::class, 'export'])->middleware('throttle:5,1')->name('martyrs.export');
-    Route::get('martyrs/export', [MartyrController::class, 'export'])->middleware('throttle:5,1')->name('martyrs.export.get');
-    Route::get('martyrs/export/latest', [MartyrController::class, 'latestExport'])->name('martyrs.export.latest');
-    Route::get('martyrs/export/status', [MartyrController::class, 'exportStatus'])->name('martyrs.export.status');
+    Route::get('martyrs/{martyr}/print', [MartyrController::class, 'print'])->name('martyrs.print');
+    Route::match(['GET', 'POST'], 'martyrs/export', [MartyrController::class, 'export'])->middleware('throttle:5,1')->name('martyrs.export');
     Route::patch('martyrs/{martyr}/status', [MartyrController::class, 'updateStatus'])->name('martyrs.update-status');
     Route::resource('martyrs.attachments', AttachmentController::class);
     Route::resource('attachment-types', AttachmentTypeController::class);
@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('promotions/export', [PromotionController::class, 'export'])->name('promotions.export');
     Route::get('promotions/export/latest', [PromotionController::class, 'latestExport'])->name('promotions.export.latest');
     Route::resource('compensations', CompensationController::class);
+    Route::get('compensations/{compensation}/pdf', [CompensationController::class, 'pdf'])->name('compensations.pdf');
     Route::resource('employment-statuses', EmploymentStatusController::class);
     Route::resource('banks', BankController::class);
     Route::resource('banks.branches', BranchController::class);

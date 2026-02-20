@@ -24,7 +24,6 @@ class StoreEmployerRequest extends FormRequest
         return [
             'name_ar' => 'required|string|max:255|unique:employers,name_ar',
             'name_en' => 'nullable|string|max:255|unique:employers,name_en',
-            'employer_location_id' => 'nullable|exists:employer_locations,id',
             'is_active' => 'boolean',
         ];
     }
@@ -35,7 +34,6 @@ class StoreEmployerRequest extends FormRequest
             'name_ar.required' => __('Employer Arabic name is required.'),
             'name_ar.unique' => __('Employer Arabic name must be unique.'),
             'name_en.unique' => __('Employer English name must be unique.'),
-            'employer_location_id.exists' => __('Selected location does not exist.'),
         ];
     }
 
@@ -44,7 +42,6 @@ class StoreEmployerRequest extends FormRequest
         return [
             'name_ar' => __('Arabic Name'),
             'name_en' => __('English Name'),
-            'employer_location_id' => __('Location'),
             'is_active' => __('Active'),
         ];
     }

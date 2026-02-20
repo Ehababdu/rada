@@ -15,12 +15,12 @@ import { useTranslation } from 'react-i18next';
 
 interface Activity {
     id: number;
-    event: string;
+    event: string | null;
     description: string;
     subject_type: string;
-    subject_id: number;
-    causer_name?: string;
-    causer_email?: string;
+    subject_id: number | string;
+    causer_name?: string | null;
+    causer_email?: string | null;
     created_at: string;
     changes?: {
         old?: Record<string, unknown>;
@@ -34,6 +34,9 @@ interface Props {
 }
 
 export default function Show({ activity }: Props) {
+    console.log('Received activity data in component:', activity);
+    console.log('Activity id:', activity?.id);
+    console.log('Activity event:', activity?.event);
     const { t } = useTranslation();
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -43,7 +46,11 @@ export default function Show({ activity }: Props) {
         },
         { title: `نشاط #${activity.id}`, href: `/activity-log/${activity.id}` },
     ];
-    const getEventColor = (event: string) => {
+    const getEventColor = (event: string | null) => {
+        if (!event) {
+            return 'bg-gray-100 text-gray-800';
+        }
+
         switch (event) {
             case 'created':
                 return 'bg-green-100 text-green-800';
@@ -56,17 +63,13 @@ export default function Show({ activity }: Props) {
         }
     };
 
-    const getEventLabel = (event: string) => {
-        switch (event) {
-            case 'created':
-                return 'تم الإنشاء';
-            case 'updated':
-                return 'تم التحديث';
-            case 'deleted':
-                return 'تم الحذف';
-            default:
-                return event;
+    const getEventLabel = (event: string | null) => {
+        if (!event || typeof event !== 'string') {
+            return t('activity.events.unknown');
         }
+
+        const label = t(`activity.events.${event}`);
+        return label === `activity.events.${event}` ? t('activity.events.unknown') : label;
     };
 
     const renderChanges = (
@@ -80,26 +83,39 @@ export default function Show({ activity }: Props) {
             );
         }
 
+        const hasOldChanges = changes.old && Object.keys(changes.old).length > 0;
+        const hasNewChanges = changes.new && Object.keys(changes.new).length > 0;
+
+        if (!hasOldChanges && !hasNewChanges) {
+            return (
+                <span className="text-muted-foreground">لا توجد تغييرات</span>
+            );
+        }
+
         return (
             <div className="space-y-2">
-                {changes.old && Object.keys(changes.old).length > 0 && (
+                {hasOldChanges && (
                     <div>
                         <h4 className="mb-1 font-medium text-red-600">
                             القيم القديمة:
                         </h4>
-                        <pre className="overflow-x-auto rounded bg-red-50 p-2 text-sm">
-                            {JSON.stringify(changes.old, null, 2)}
-                        </pre>
+                        <div className="rounded bg-red-50 p-2 border border-red-200">
+                            <pre className="overflow-x-auto text-sm whitespace-pre-wrap break-words">
+                                {JSON.stringify(changes.old, null, 2)}
+                            </pre>
+                        </div>
                     </div>
                 )}
-                {changes.new && Object.keys(changes.new).length > 0 && (
+                {hasNewChanges && (
                     <div>
                         <h4 className="mb-1 font-medium text-green-600">
                             القيم الجديدة:
                         </h4>
-                        <pre className="overflow-x-auto rounded bg-green-50 p-2 text-sm">
-                            {JSON.stringify(changes.new, null, 2)}
-                        </pre>
+                        <div className="rounded bg-green-50 p-2 border border-green-200">
+                            <pre className="overflow-x-auto text-sm whitespace-pre-wrap break-words">
+                                {JSON.stringify(changes.new, null, 2)}
+                            </pre>
+                        </div>
                     </div>
                 )}
             </div>
@@ -110,7 +126,7 @@ export default function Show({ activity }: Props) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`تفاصيل النشاط #${activity.id}`} />
 
-            <div className="container mx-auto py-6">
+            <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 p-6">
                 <div className="mb-6 flex items-center gap-4">
                     <Button variant="outline" size="sm" asChild>
                         <Link href="/activity-log">
@@ -126,9 +142,9 @@ export default function Show({ activity }: Props) {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div className="flex flex-col lg:flex-row gap-6">
                     {/* Main Info */}
-                    <div className="space-y-6 lg:col-span-2">
+                    <div className="flex-1 space-y-6">
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
@@ -158,7 +174,7 @@ export default function Show({ activity }: Props) {
                                         </label>
                                         <div className="mt-1">
                                             <Badge variant="outline">
-                                                {activity.subject_type}
+                                                {activity.subject_type || 'غير محدد'}
                                             </Badge>
                                         </div>
                                     </div>
@@ -169,7 +185,7 @@ export default function Show({ activity }: Props) {
                                         الوصف
                                     </label>
                                     <p className="mt-1 text-sm">
-                                        {activity.description}
+                                        {activity.description || 'لا يوجد وصف'}
                                     </p>
                                 </div>
 
@@ -179,7 +195,7 @@ export default function Show({ activity }: Props) {
                                             معرف السجل
                                         </label>
                                         <p className="mt-1 font-mono text-sm">
-                                            {activity.subject_id}
+                                            {activity.subject_id || 'غير محدد'}
                                         </p>
                                     </div>
                                     <div>
@@ -188,7 +204,7 @@ export default function Show({ activity }: Props) {
                                         </label>
                                         <div className="mt-1 flex items-center gap-1 text-sm">
                                             <CalendarIcon className="h-3 w-3" />
-                                            {activity.created_at}
+                                            {activity.created_at ? new Date(activity.created_at).toLocaleString('ar-LY') : 'غير محدد'}
                                         </div>
                                     </div>
                                 </div>
@@ -210,7 +226,7 @@ export default function Show({ activity }: Props) {
                     </div>
 
                     {/* Sidebar */}
-                    <div className="space-y-6">
+                    <div className="w-full lg:w-80 space-y-6">
                         {/* User Info */}
                         <Card>
                             <CardHeader>
@@ -242,9 +258,24 @@ export default function Show({ activity }: Props) {
                                         )}
                                     </div>
                                 ) : (
-                                    <p className="text-muted-foreground">
-                                        غير محدد
-                                    </p>
+                                    <div className="space-y-2">
+                                        <div>
+                                            <label className="text-sm font-medium text-muted-foreground">
+                                                الاسم
+                                            </label>
+                                            <p className="mt-1 text-muted-foreground">
+                                                غير محدد
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm font-medium text-muted-foreground">
+                                                البريد الإلكتروني
+                                            </label>
+                                            <p className="mt-1 text-muted-foreground">
+                                                غير محدد
+                                            </p>
+                                        </div>
+                                    </div>
                                 )}
                             </CardContent>
                         </Card>
@@ -257,13 +288,20 @@ export default function Show({ activity }: Props) {
                                         <CardTitle>خصائص إضافية</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <pre className="overflow-x-auto rounded bg-gray-50 p-3 text-xs">
-                                            {JSON.stringify(
-                                                activity.properties,
-                                                null,
-                                                2,
-                                            )}
-                                        </pre>
+                                        <div className="space-y-2">
+                                            <p className="text-sm text-muted-foreground">
+                                                البيانات الإضافية المرتبطة بهذا النشاط:
+                                            </p>
+                                            <div className="rounded bg-gray-50 p-3 border border-gray-200 max-h-60 overflow-y-auto">
+                                                <pre className="text-xs whitespace-pre-wrap break-words">
+                                                    {JSON.stringify(
+                                                        activity.properties,
+                                                        null,
+                                                        2,
+                                                    )}
+                                                </pre>
+                                            </div>
+                                        </div>
                                     </CardContent>
                                 </Card>
                             )}

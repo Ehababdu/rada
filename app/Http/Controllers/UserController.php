@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use App\Models\Alert;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -82,6 +83,20 @@ class UserController extends Controller
             $user->syncRoles($data['roles']);
         }
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تمت إضافة مستخدم جديد",
+                'message' => "تمت إضافة المستخدم {$user->name} بنجاح.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'user_id' => $user->id,
+                    'action' => 'create'
+                ]
+            ]);
+        }
+
         return redirect()->route('users.index')
             ->with('success', 'تم إنشاء المستخدم بنجاح');
     }
@@ -143,6 +158,20 @@ class UserController extends Controller
             $user->syncRoles($data['roles']);
         }
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تحديث بيانات المستخدم",
+                'message' => "تم تحديث بيانات المستخدم {$user->name} بنجاح.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'user_id' => $user->id,
+                    'action' => 'update'
+                ]
+            ]);
+        }
+
         return redirect()->route('users.index')
             ->with('success', 'تم تحديث المستخدم بنجاح');
     }
@@ -160,7 +189,24 @@ class UserController extends Controller
             return back()->withErrors(['error' => 'لا يمكنك حذف حسابك الخاص']);
         }
 
+        $userId = $user->id;
+        $userName = $user->name;
+
         $user->delete();
+
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "حذف مستخدم",
+                'message' => "تم حذف المستخدم {$userName}",
+                'type' => 'warning',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'user_id' => $userId,
+                    'action' => 'delete'
+                ]
+            ]);
+        }
 
         return redirect()->route('users.index')
             ->with('success', 'تم حذف المستخدم بنجاح');

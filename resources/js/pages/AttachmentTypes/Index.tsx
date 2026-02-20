@@ -59,7 +59,7 @@ import {
     Search,
     Trash2,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface AttachmentType {
@@ -78,12 +78,29 @@ interface Props {
         from: number;
         to: number;
     };
+    flash: {
+        success?: string;
+        error?: string;
+        message?: string;
+    };
 }
 
-export default function Index({ attachmentTypes }: Props) {
+export default function Index({ attachmentTypes, flash }: Props) {
     const { t, i18n } = useTranslation();
     const isRTL = i18n.language === 'ar';
     const { toast } = useToast();
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast({ title: flash.success, variant: 'success' });
+        }
+        if (flash?.error) {
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
     const [searchTerm, setSearchTerm] = useState('');
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const { can } = usePermissions('attachment-types');
@@ -107,18 +124,9 @@ export default function Index({ attachmentTypes }: Props) {
         if (deleteId) {
             router.delete(attachmentTypesDestroy(deleteId), {
                 onSuccess: () => {
-                    toast({
-                        title: t('success'),
-                        description: t('attachment_types.deleted'),
-                    });
                     setDeleteId(null);
                 },
                 onError: () => {
-                    toast({
-                        title: t('error'),
-                        description: t('attachment_types.delete_error'),
-                        variant: 'destructive',
-                    });
                     setDeleteId(null);
                 },
             });

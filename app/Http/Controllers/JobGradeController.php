@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alert;
 use App\Models\JobGrade;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,10 +33,7 @@ class JobGradeController extends Controller implements HasMiddleware
         // Search functionality
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name_ar', 'like', "%{$search}%")
-                    ->orWhere('name_en', 'like', "%{$search}%");
-            });
+            $query->where('name_ar', 'like', "%{$search}%");
         }
 
         // Filter by active status
@@ -77,7 +75,6 @@ class JobGradeController extends Controller implements HasMiddleware
     {
         $validated = $request->validate([
             'name_ar' => ['required', 'string', 'max:255'],
-            'name_en' => ['required', 'string', 'max:255'],
             'order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],
         ]);
@@ -90,8 +87,21 @@ class JobGradeController extends Controller implements HasMiddleware
 
         JobGrade::create($validated);
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تمت إضافة درجة وظيفية جديدة",
+                'message' => "تمت إضافة الدرجة الوظيفية {$validated['name_ar']} بنجاح.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'action' => 'create'
+                ]
+            ]);
+        }
+
         return redirect()->route('job-grades.index')
-            ->with('message', 'تم إنشاء الدرجة الوظيفية بنجاح');
+            ->with('success', 'تم إنشاء الدرجة الوظيفية بنجاح');
     }
 
     /**
@@ -121,7 +131,6 @@ class JobGradeController extends Controller implements HasMiddleware
     {
         $validated = $request->validate([
             'name_ar' => ['required', 'string', 'max:255'],
-            'name_en' => ['required', 'string', 'max:255'],
             'order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],
         ]);
@@ -134,8 +143,22 @@ class JobGradeController extends Controller implements HasMiddleware
 
         $jobGrade->update($validated);
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تم تحديث درجة وظيفية",
+                'message' => "تم تحديث الدرجة الوظيفية {$jobGrade->name_ar} بنجاح.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'job_grade_id' => $jobGrade->id,
+                    'action' => 'update'
+                ]
+            ]);
+        }
+
         return redirect()->route('job-grades.index')
-            ->with('message', 'تم تحديث الدرجة الوظيفية بنجاح');
+            ->with('success', 'تم تحديث الدرجة الوظيفية بنجاح');
     }
 
     /**
@@ -145,8 +168,21 @@ class JobGradeController extends Controller implements HasMiddleware
     {
         $jobGrade->delete();
 
+        // Create alert
+        if (auth()->check()) {
+            Alert::create([
+                'title' => "تم حذف درجة وظيفية",
+                'message' => "تم حذف الدرجة الوظيفية {$jobGrade->name_ar} بنجاح.",
+                'type' => 'success',
+                'user_id' => auth()->id(),
+                'data' => [
+                    'action' => 'delete'
+                ]
+            ]);
+        }
+
         return redirect()->route('job-grades.index')
-            ->with('message', 'تم حذف الدرجة الوظيفية بنجاح');
+            ->with('success', 'تم حذف الدرجة الوظيفية بنجاح');
     }
 
     /**
@@ -158,14 +194,11 @@ class JobGradeController extends Controller implements HasMiddleware
 
         if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name_ar', 'like', "%{$search}%")
-                    ->orWhere('name_en', 'like', "%{$search}%");
-            });
+            $query->where('name_ar', 'like', "%{$search}%");
         }
 
         $query->orderBy('order');
 
-        return $query->get(['id', 'name_ar', 'name_en', 'order']);
+        return $query->get(['id', 'name_ar', 'order']);
     }
 }

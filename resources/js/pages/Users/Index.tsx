@@ -264,12 +264,10 @@ export default function Index({
             preserveState: true,
             preserveScroll: true,
             onSuccess: () => {
-                toast(t('users.delete.success'), { variant: 'success' });
                 setDeleteDialogOpen(false);
                 setUserToDelete(null);
             },
             onError: () => {
-                toast(t('users.delete.error'), { variant: 'destructive' });
                 setDeleteDialogOpen(false);
                 setUserToDelete(null);
             },
@@ -448,10 +446,13 @@ export default function Index({
     // Show flash messages
     useEffect(() => {
         if (flash?.success) {
-            toast(flash.success, { variant: 'success' });
+            toast({ title: flash.success, variant: 'success' });
         }
         if (flash?.error) {
-            toast(flash.error, { variant: 'destructive' });
+            toast({ title: flash.error, variant: 'destructive' });
+        }
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
         }
     }, [flash, toast]);
 

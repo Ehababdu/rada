@@ -60,24 +60,7 @@ export default function Edit({ role, permissions, flash }: Props) {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(rolesUpdate.url(role.id), {
-            onSuccess: () => {
-                toast({
-                    title: t('common.success'),
-                    description: t(
-                        'roles.updated_successfully',
-                        'تم تحديث الدور بنجاح',
-                    ),
-                });
-            },
-            onError: () => {
-                toast({
-                    title: t('common.error'),
-                    description: t('roles.update_failed', 'فشل في تحديث الدور'),
-                    variant: 'destructive',
-                });
-            },
-        });
+        put(rolesUpdate.url(role.id));
     };
 
     const handlePermissionChange = (
@@ -112,19 +95,15 @@ export default function Edit({ role, permissions, flash }: Props) {
     // Show flash messages
     useEffect(() => {
         if (flash?.success) {
-            toast({
-                title: t('common.success'),
-                description: flash.success,
-            });
+            toast({ title: flash.success, variant: 'success' });
         }
         if (flash?.error) {
-            toast({
-                title: t('common.error'),
-                description: flash.error,
-                variant: 'destructive',
-            });
+            toast({ title: flash.error, variant: 'destructive' });
         }
-    }, [flash, toast, t]);
+        if (flash?.message) {
+            toast({ title: flash.message, variant: 'success' });
+        }
+    }, [flash, toast]);
 
     // Group permissions by resource
     const groupedPermissions = permissions.reduce(
